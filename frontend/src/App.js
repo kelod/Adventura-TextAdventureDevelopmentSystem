@@ -6,6 +6,7 @@ import { Route } from 'react-router-dom';
 import WelcomePage from './WelcomePage';
 import CreatePage from './CreatePage';
 import PlayPage from './PlayPage';
+import ParticularRoomEdit from './ParticularRoomEdit';
 import RoomCreatePage from './RoomCreatePage';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
@@ -210,6 +211,7 @@ class App extends Component {
         this.setGameProperty = this.setGameProperty.bind(this);
         this.submitGame = this.submitGame.bind(this);
         this.addRoom = this.addRoom.bind(this);
+        this.deleteRoom = this.deleteRoom.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -236,7 +238,20 @@ class App extends Component {
                 rooms: [ ...this.state.gameToCreate.rooms, room ]
             }
         });
-        console.log("rooms are " + this.state.gameToCreate.rooms);
+    }
+
+    deleteRoom = (index) => {
+        var _rooms = this.state.gameToCreate.rooms;
+        _rooms.splice(index, 1);
+
+        if (index > -1) {
+            this.setState({
+                gameToCreate: {
+                    ...this.state.gameToCreate,
+                    rooms: _rooms
+                }
+            })
+        }
     }
 
     render() {
@@ -247,7 +262,8 @@ class App extends Component {
                 <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
-                <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} rooms={this.state.gameToCreate.rooms} />} />
+                <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} /> }  />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
             </Router>
         );

@@ -27,6 +27,7 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
 
 
 function TablePaginationActions(props) {
@@ -127,7 +128,7 @@ function RoomList(props) {
                         onClick={handleClickOpen}
                     >
                         Add Room
-                            </Button>
+                    </Button>
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">New Room</DialogTitle>
                         <DialogContent>
@@ -171,18 +172,18 @@ function RoomList(props) {
                                 {(rowsPerPage > 0
                                     ? props.rooms.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     : props.rooms
-                                  ).map((room) => (
-                                    <TableRow key={room}>
+                                  ).map((room, index) => (
+                                    <TableRow key={index}>
                                     <TableCell component="th" scope="row">
-                                        {room}
+                                        {room.name}
                                     </TableCell>
-                                    <TableCell align="right">
-                                        <IconButton variant="contained">
+                                        <TableCell align="right">
+                                        <IconButton component={Link} to={`/create/rooms/${index}`} variant="contained">
                                                 <EditIcon />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell align="right">
-                                        <IconButton color="secondary">
+                                        <TableCell align="right">
+                                            <IconButton color="secondary" onClick={() => { props.deleteRoom(index) }}>
                                             <DeleteOutlineIcon />
                                         </IconButton>
                                     </TableCell>
@@ -220,7 +221,9 @@ function RoomList(props) {
 class RoomCreatePage extends Component {
 
     state = {
-        roomToCreateName: ''
+        roomToCreate: {
+            name: ''
+        }
     }
 
     constructor(props) {
@@ -231,9 +234,11 @@ class RoomCreatePage extends Component {
     setRoomToCreateName = (event) => {
         const { value } = event.target;
         this.setState({
-            roomToCreateName: value
+            roomToCreate: {
+                ...this.state.roomToCreate,
+                name: value
+            }
         })
-        console.log(this.state.roomToCreateName);
     }
 
     render() {
@@ -248,7 +253,7 @@ class RoomCreatePage extends Component {
                     </Grid>
                 </Grid>
 
-                <RoomList setRoomToCreateName={this.setRoomToCreateName} roomToAdd={this.state.roomToCreateName} addRoom={this.props.addRoom} rooms={this.props.rooms}/>              
+                <RoomList setRoomToCreateName={this.setRoomToCreateName} roomToAdd={this.state.roomToCreate} addRoom={this.props.addRoom} deleteRoom={this.props.deleteRoom} rooms={this.props.rooms} />              
             </div>
         )
     }
