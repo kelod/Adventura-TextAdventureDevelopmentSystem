@@ -31,7 +31,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 
-
 var selectedItem = 'Settings';
 
 const homeButtonPressed = (event) => {
@@ -147,7 +146,7 @@ function CreatePageHeader() {
                                     <DialogActions>
                                         <Button onClick={handleDialogClose1} color="primary">
                                             Cancel
-                                                </Button>
+                                        </Button>
                                         <Button component={Link} to={`/`}  color="primary" autoFocus>
                                             Continue
                                        
@@ -212,6 +211,9 @@ class App extends Component {
         this.submitGame = this.submitGame.bind(this);
         this.addRoom = this.addRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
+        this.setRoomName = this.setRoomName.bind(this);
+        this.setRoomDescription = this.setRoomDescription.bind(this);
+        this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -220,6 +222,59 @@ class App extends Component {
             gameToCreate: {
                 ...this.state.gameToCreate,
                 [name]: value
+            }
+        })
+    }
+
+    setRoomName = (index, event) => {
+        
+        const { value } = event.target;
+        var _rooms = this.state.gameToCreate.rooms;
+        _rooms[index].name = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms
+            }
+        })
+    }
+
+    setPassageBetweenRooms = (roomFrom, roomTo) => {
+        var _rooms = this.state.gameToCreate.rooms;
+
+        console.log('index of roomFrom: ' + _rooms.indexOf(roomFrom));
+        console.log('size of passages room2 before: ' + _rooms[1].passageTo.length);
+
+        if (_rooms[_rooms.indexOf(roomFrom)].passageTo.includes(roomTo)) {
+            _rooms[_rooms.indexOf(roomFrom)].passageTo.splice(_rooms[_rooms.indexOf(roomFrom)].passageTo.indexOf(roomTo), 1);
+        }
+        else {
+            console.log('pusholok ' + _rooms.indexOf(roomFrom) + ' indexnek');
+            console.log('a ' + _rooms.indexOf(roomTo) + " indexu szobat");
+            _rooms[_rooms.indexOf(roomFrom)].passageTo.push(roomTo);
+        }
+
+        console.log('size of passages room2 after: ' + _rooms[1].passageTo.length);
+        
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms
+            }
+        })
+    }
+
+    setRoomDescription = (index, event) => {
+
+        const { value } = event.target;
+        var _rooms = this.state.gameToCreate.rooms;
+        _rooms[index].description = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms
             }
         })
     }
@@ -263,7 +318,7 @@ class App extends Component {
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
-                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} /> }  />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
             </Router>
         );

@@ -41,15 +41,16 @@ class GeneralCreatePage extends Component {
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Box mb={3} ml={1}>
+                        <Box mb={3} ml={1} mr={1}>
                             <TextField
                                 id="game-description"
                                 name="description"
                                 label="Description"
                                 multiline
-                                rows={16}
+                                rows={14}
                                 variant="outlined"
                                 defaultValue={this.props.gameToCreate.description}
+                                fullWidth
                                 onChange={setGameProperty}/>
                         </Box>
                     </Grid>

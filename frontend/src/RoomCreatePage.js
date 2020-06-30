@@ -28,6 +28,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import { cyan, purple, lightGreen } from '@material-ui/core/colors';
 
 
 function TablePaginationActions(props) {
@@ -82,13 +83,23 @@ function TablePaginationActions(props) {
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-        backgroundColor: theme.palette.primary.dark,
+        backgroundColor: cyan[900],
         color: theme.palette.common.white,
     },
     body: {
         fontSize: 14,
     },
 }))(TableCell);
+
+const ColorButton = withStyles((theme) => ({
+    root: {
+        color: theme.palette.getContrastText(purple[500]),
+        backgroundColor: cyan[800],
+        '&:hover': {
+            backgroundColor: cyan[900],
+        },
+    },
+}))(Button);
 
 
 
@@ -121,14 +132,14 @@ function RoomList(props) {
         <Grid container direction='column'>
             <Grid item>
                 <Box mb={2} ml={1}>
-                    <Button
+                    <ColorButton
                         variant="contained"
                         color="primary"
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={handleClickOpen}
                     >
                         Add Room
-                    </Button>
+                    </ColorButton>
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">New Room</DialogTitle>
                         <DialogContent>
@@ -141,11 +152,12 @@ function RoomList(props) {
                                 id="name"
                                 label="Name of the room"
                                 fullWidth
+                                value={props.roomToAdd.name}
                                 onChange={props.setRoomToCreateName}
                             />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={() => { props.addRoom(props.roomToAdd) } } color="primary">
+                            <Button onClick={() => { props.addRoom(props.roomToAdd); props.resetRoomToCreate(); }} color="primary">
                                 Add
                             </Button>
                             <Button onClick={handleClose} color="primary">
@@ -179,7 +191,7 @@ function RoomList(props) {
                                     </TableCell>
                                         <TableCell align="right">
                                         <IconButton component={Link} to={`/create/rooms/${index}`} variant="contained">
-                                                <EditIcon />
+                                                <EditIcon style={{ color: cyan[800] }}/>
                                         </IconButton>
                                     </TableCell>
                                         <TableCell align="right">
@@ -222,13 +234,16 @@ class RoomCreatePage extends Component {
 
     state = {
         roomToCreate: {
-            name: ''
+            name: '',
+            description: '',
+            passageTo: []
         }
     }
 
     constructor(props) {
         super(props);
         this.setRoomToCreateName = this.setRoomToCreateName.bind(this);
+        this.resetRoomToCreate = this.resetRoomToCreate.bind(this);
     }
 
     setRoomToCreateName = (event) => {
@@ -237,6 +252,16 @@ class RoomCreatePage extends Component {
             roomToCreate: {
                 ...this.state.roomToCreate,
                 name: value
+            }
+        })
+    }
+
+    resetRoomToCreate = () => {
+        this.setState({
+            roomToCreate: {
+                name: '',
+                description: '',
+                passageTo: []
             }
         })
     }
@@ -253,7 +278,7 @@ class RoomCreatePage extends Component {
                     </Grid>
                 </Grid>
 
-                <RoomList setRoomToCreateName={this.setRoomToCreateName} roomToAdd={this.state.roomToCreate} addRoom={this.props.addRoom} deleteRoom={this.props.deleteRoom} rooms={this.props.rooms} />              
+                <RoomList setRoomToCreateName={this.setRoomToCreateName} roomToAdd={this.state.roomToCreate} addRoom={this.props.addRoom} deleteRoom={this.props.deleteRoom} rooms={this.props.rooms} resetRoomToCreate={this.resetRoomToCreate} />              
             </div>
         )
     }
