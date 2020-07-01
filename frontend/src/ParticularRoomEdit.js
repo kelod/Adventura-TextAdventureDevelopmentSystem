@@ -22,8 +22,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import { cyan, purple, grey } from '@material-ui/core/colors';
+import { cyan, purple, grey, green } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -102,7 +104,7 @@ const ColoredSwitch = withStyles({
             color: cyan[900],
         },
         '&$checked + $track': {
-            backgroundColor: cyan[900],
+            backgroundColor: cyan[900]
         },
     },
     checked: {},
@@ -147,10 +149,12 @@ function PageAbleList(props) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <ColoredSwitch
-                                            checked={props.rooms[props.roomIndex].passageTo.includes(room)}
-                                            onChange={() => { props.setPassageBetweenRooms(props.rooms[props.roomIndex], room); } }
+                                            checked={props.hasPassageBetweenRooms(props.rooms[props.roomIndex], room)}
+                                            onChange={() => { props.setPassageBetweenRooms(props.rooms[props.roomIndex], room); }}
                                             name="togglePassage"
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                            checkedIcon={<CheckCircleIcon />}
+                                            icon={<CancelIcon />}
                                         />
                                     </TableCell>
                                 </TableRow>
@@ -222,7 +226,7 @@ class ParticularRoomEdit extends Component {
                         </Box>
                     </Grid>
 
-                    <PageAbleList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} />
+                    <PageAbleList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
 
                 </Grid>
             </div>

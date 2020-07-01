@@ -214,6 +214,7 @@ class App extends Component {
         this.setRoomName = this.setRoomName.bind(this);
         this.setRoomDescription = this.setRoomDescription.bind(this);
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
+        this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -243,19 +244,20 @@ class App extends Component {
     setPassageBetweenRooms = (roomFrom, roomTo) => {
         var _rooms = this.state.gameToCreate.rooms;
 
-        console.log('index of roomFrom: ' + _rooms.indexOf(roomFrom));
-        console.log('size of passages room2 before: ' + _rooms[1].passageTo.length);
+        const newPassage = {
+            from: roomFrom,
+            to: roomTo
+        }
 
-        if (_rooms[_rooms.indexOf(roomFrom)].passageTo.includes(roomTo)) {
-            _rooms[_rooms.indexOf(roomFrom)].passageTo.splice(_rooms[_rooms.indexOf(roomFrom)].passageTo.indexOf(roomTo), 1);
+        const passageResult = this.hasPassageBetweenRooms(roomFrom, roomTo);
+
+        if (passageResult) {
+            _rooms[_rooms.indexOf(roomFrom)].passages.splice(_rooms[_rooms.indexOf(roomFrom)].passages.indexOf(passageResult), 1);
         }
         else {
-            console.log('pusholok ' + _rooms.indexOf(roomFrom) + ' indexnek');
-            console.log('a ' + _rooms.indexOf(roomTo) + " indexu szobat");
-            _rooms[_rooms.indexOf(roomFrom)].passageTo.push(roomTo);
+            _rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
         }
-
-        console.log('size of passages room2 after: ' + _rooms[1].passageTo.length);
+        
         
         this.setState({
             gameToCreate: {
@@ -263,6 +265,18 @@ class App extends Component {
                 rooms: _rooms
             }
         })
+    }
+
+    hasPassageBetweenRooms = (roomFrom, roomTo) => {
+        const _rooms = this.state.gameToCreate.rooms;
+        const _roomFrom = _rooms[_rooms.indexOf(roomFrom)];
+        
+        for (var i = 0; i < _roomFrom.passages.length; ++i) {
+            if (_roomFrom.passages[i].to === roomTo) {
+                return _roomFrom.passages[i];
+            }
+        }
+        return null;
     }
 
     setRoomDescription = (index, event) => {
@@ -318,7 +332,7 @@ class App extends Component {
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
-                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} />} />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
             </Router>
         );
