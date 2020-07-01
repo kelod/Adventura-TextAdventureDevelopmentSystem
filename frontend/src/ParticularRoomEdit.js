@@ -26,6 +26,7 @@ import { cyan, purple, grey, green } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
+import MapIcon from '@material-ui/icons/Map';
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -134,7 +135,8 @@ function PageAbleList(props) {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell>You can set passages here</StyledTableCell>
+                                <StyledTableCell>Passages</StyledTableCell>
+                                <StyledTableCell align="right">Navigate</StyledTableCell>
                                 <StyledTableCell align="right">On/Off</StyledTableCell>
                             </TableRow>
                         </TableHead>
@@ -146,6 +148,11 @@ function PageAbleList(props) {
                                 <TableRow key={index}>
                                     <TableCell component="th" scope="row">
                                         {room.name}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton  component={Link} to={`/create/rooms/${props.rooms.indexOf(room)}`} >
+                                            <MapIcon style={{ color: cyan[900] }}/>
+                                        </IconButton>
                                     </TableCell>
                                     <TableCell align="right">
                                         <ColoredSwitch
@@ -192,8 +199,6 @@ class ParticularRoomEdit extends Component {
     render() {
         const { match: { params } } = this.props;
 
-        
-
         return (
             <div>
                 <Box m={1}>
@@ -208,7 +213,7 @@ class ParticularRoomEdit extends Component {
 
                     <Grid item>
                         <Box mb={3} ml={1}>
-                            <TextField required id="room-name" name="name" label="Name of the room" defaultValue={this.props.rooms[params.roomIndex].name} onChange={(e) => { this.props.setRoomName(params.roomIndex, e) }} />
+                            <TextField required id="room-name" name="name" label="Name of the room" value={this.props.rooms[params.roomIndex].name} onChange={(e) => { this.props.setRoomName(params.roomIndex, e) }} />
                         </Box>
                     </Grid>
                     <Grid item>
