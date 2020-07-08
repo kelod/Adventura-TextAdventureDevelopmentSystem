@@ -23,7 +23,6 @@ import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import GeneralCreatePage from './GeneralCreatePage';
 import GameCreated from './GameCreated';
-import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
@@ -38,7 +37,7 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Icon, InlineIcon } from '@iconify/react';
 import toolsIcon from '@iconify/icons-mdi/tools';
 import swordCross from '@iconify/icons-mdi/sword-cross';
-import { cyan, purple, grey, green } from '@material-ui/core/colors';
+import { cyan } from '@material-ui/core/colors';
 
 var selectedItem = 'Settings';
 
@@ -123,8 +122,8 @@ function CreatePageHeader() {
     return (
         <Grid container direction="row" alignItems="flex-start">
             <Grid container item>
-                <AppBar position="static">
-                    <Toolbar variant="dense">
+                <AppBar position="fixed">
+                    <Toolbar variant="dense" style={{backgroundColor: cyan[700]}}>
                                 <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleClick}>
                                     <MenuIcon />
                                 </IconButton>
@@ -225,6 +224,7 @@ function CreatePageHeader() {
 
                     </Toolbar>
                 </AppBar>
+                <Toolbar />
             </Grid>
         </Grid>
     )
