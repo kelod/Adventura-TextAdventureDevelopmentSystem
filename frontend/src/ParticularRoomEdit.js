@@ -18,7 +18,6 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
@@ -27,6 +26,10 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
 import MapIcon from '@material-ui/icons/Map';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import InfoIcon from '@material-ui/icons/Info';
+
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -126,8 +129,6 @@ function PageAbleList(props) {
         setPage(0);
     };
 
-    console.log('room index = ' + props.roomIndex);
-
     return (
         <Grid item>
             <Box mb={3} ml={1} mr={1}>
@@ -194,6 +195,13 @@ function PageAbleList(props) {
     )
 }
 
+const BigTooltip = withStyles({
+    tooltip: {
+        fontSize: "12px",
+        maxWidth: "none"
+    }
+})(Tooltip);
+
 class ParticularRoomEdit extends Component {
 
     render() {
@@ -216,6 +224,13 @@ class ParticularRoomEdit extends Component {
                             <TextField required id="room-name" name="name" label="Name of the room" value={this.props.rooms[params.roomIndex].name} onChange={(e) => { this.props.setRoomName(params.roomIndex, e) }} />
                         </Box>
                     </Grid>
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="This text will appear when the player enters the room" arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                <InfoIcon style={{color: cyan[800] }}/>
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
                     <Grid item>
                         <Box mb={3} ml={1} mr={1}>
                             <TextField
@@ -230,6 +245,15 @@ class ParticularRoomEdit extends Component {
                                 fullWidth/>
                         </Box>
                     </Grid>
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="Handle passages between rooms" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+
 
                     <PageAbleList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
 

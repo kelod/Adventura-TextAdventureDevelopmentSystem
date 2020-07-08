@@ -8,7 +8,10 @@ import CreatePage from './CreatePage';
 import PlayPage from './PlayPage';
 import ParticularRoomEdit from './ParticularRoomEdit';
 import RoomCreatePage from './RoomCreatePage';
+import ItemCreatePage from './ItemCreatePage';
 import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
@@ -30,6 +33,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
+import { Icon, InlineIcon } from '@iconify/react';
+import toolsIcon from '@iconify/icons-mdi/tools';
+import swordCross from '@iconify/icons-mdi/sword-cross';
+import { cyan, purple, grey, green } from '@material-ui/core/colors';
 
 var selectedItem = 'Settings';
 
@@ -55,15 +64,41 @@ function CreatePageHeader() {
 
     const handleClose = (event) => {
         setAnchorEl(null);
-        selectedItem = event.target.name;
+        const { myValue } = event.currentTarget.dataset;
+        selectedItem = myValue;
     };
 
+    var items = options.map((option, index) => {
 
-    var items = options.map((option, index) => (
-        <MenuItem component={Link} to={`/create/${option.toLowerCase()}`} key={index} value={option} name={option} onClick={handleClose}>
-            {option}
-        </MenuItem>
-    ))
+        var icon;
+        switch (option) {
+            case "General": {
+                icon = <MenuBookIcon style={{ color: cyan[900] }}/>;
+                break;
+            }
+            case "Rooms": {
+                icon = <MeetingRoomIcon style={{ color: cyan[900] }} />;
+                break;
+            }
+            case "Items": {
+                icon = <Icon icon={toolsIcon} style={{fontSize: "24px", color: cyan[900]}}/>;
+                break;
+            }
+            case "Enemies": {
+                icon = <Icon icon={swordCross} style={{ fontSize: "24px", color: cyan[900] }} />;
+                break;
+            }
+        }
+
+        return(
+            <MenuItem component={Link} to={`/create/${option.toLowerCase()}`} key={index} data-my-value={option} name={option} onClick={handleClose}>
+                <ListItemIcon>
+                    {icon}
+                </ListItemIcon>
+                <ListItemText primary={option} />
+            </MenuItem>
+        )
+    });
 
     //Dialogs
     const [open, setOpen] = React.useState(false);
@@ -333,6 +368,7 @@ class App extends Component {
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} />} />
+                <Route exact path="/create/items" component={ItemCreatePage} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
             </Router>
         );
