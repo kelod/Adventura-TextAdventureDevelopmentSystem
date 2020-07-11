@@ -30,7 +30,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
 import { cyan, purple } from '@material-ui/core/colors';
 
-
 function TablePaginationActions(props) {
     const theme = useTheme();
     const { count, page, rowsPerPage, onChangePage } = props;
@@ -102,8 +101,7 @@ const ColorButton = withStyles((theme) => ({
 }))(Button);
 
 
-
-function RoomList(props) {
+function ItemList(props) {
     //Default list
     const [open, setOpen] = React.useState(false);
 
@@ -138,26 +136,26 @@ function RoomList(props) {
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={handleClickOpen}
                     >
-                        Add Room
+                        Add Item
                     </ColorButton>
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">New Room</DialogTitle>
+                        <DialogTitle id="form-dialog-title">New Item</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Give your new room's name below. You can edit it later from the room list.
-                                    </DialogContentText>
+                                Give your new item's name below. You can edit it later from the room list.
+                            </DialogContentText>
                             <TextField
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                label="Name of the room"
+                                label="Name of the item"
                                 fullWidth
-                                value={props.roomToAdd.name}
-                                onChange={props.setRoomToCreateName}
+                                value={props.itemToAdd.name}
+                                onChange={props.setItemToCreateName}
                             />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={() => { props.addRoom(props.roomToAdd); props.resetRoomToCreate(); }} color="primary">
+                            <Button onClick={() => { props.addItem(props.itemToAdd); props.resetItemToCreate(); }} color="primary">
                                 Add
                             </Button>
                             <Button onClick={handleClose} color="primary">
@@ -182,34 +180,34 @@ function RoomList(props) {
                             </TableHead>
                             <TableBody>
                                 {(rowsPerPage > 0
-                                    ? props.rooms.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : props.rooms
-                                  ).map((room, index) => (
+                                    ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : props.items
+                                ).map((item, index) => (
                                     <TableRow key={index}>
-                                    <TableCell component="th" scope="row">
-                                        {room.name}
-                                    </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {item.name}
+                                        </TableCell>
                                         <TableCell align="right">
-                                        <IconButton component={Link} to={`/create/rooms/${index}`} variant="contained">
-                                                <EditIcon style={{ color: cyan[800] }}/>
-                                        </IconButton>
-                                    </TableCell>
+                                            <IconButton component={Link} to={`/create/items/${index}`} variant="contained">
+                                                <EditIcon style={{ color: cyan[800] }} />
+                                            </IconButton>
+                                        </TableCell>
                                         <TableCell align="right">
-                                            <IconButton color="secondary" onClick={() => { props.deleteRoom(index) }}>
-                                            <DeleteOutlineIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
+                                            <IconButton color="secondary" onClick={() => { props.deleteItem(index) }}>
+                                                <DeleteOutlineIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
                                 ))}
 
-                            
+
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                         colSpan={2}
-                                        count={props.rooms.length}
+                                        count={props.items.length}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         SelectProps={{
@@ -230,40 +228,38 @@ function RoomList(props) {
     )
 }
 
-class RoomCreatePage extends Component {
+class ItemCreatePage extends Component {
 
     state = {
-        roomToCreate: {
+        itemToCreate: {
             name: '',
             description: '',
-            passages: [],
-            items: []
+            presentInRoom: false
         }
     }
 
     constructor(props) {
         super(props);
-        this.setRoomToCreateName = this.setRoomToCreateName.bind(this);
-        this.resetRoomToCreate = this.resetRoomToCreate.bind(this);
+        this.setItemToCreateName = this.setItemToCreateName.bind(this);
+        this.resetItemToCreate = this.resetItemToCreate.bind(this);
     }
 
-    setRoomToCreateName = (event) => {
+    setItemToCreateName = (event) => {
         const { value } = event.target;
         this.setState({
-            roomToCreate: {
-                ...this.state.roomToCreate,
+            itemToCreate: {
+                ...this.state.itemToCreate,
                 name: value
             }
         })
     }
 
-    resetRoomToCreate = () => {
+    resetItemToCreate = () => {
         this.setState({
-            roomToCreate: {
+            itemToCreate: {
                 name: '',
                 description: '',
-                passages: [],
-                items: []
+                presentInRoom: false
             }
         })
     }
@@ -275,15 +271,15 @@ class RoomCreatePage extends Component {
                 <Grid container direction="column">
                     <Grid container item justify="center">
                         <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">
-                            Here you can manage your rooms, that will be used during your game
+                            Here you can create and edit items
                         </Box>
                     </Grid>
                 </Grid>
 
-                <RoomList setRoomToCreateName={this.setRoomToCreateName} roomToAdd={this.state.roomToCreate} addRoom={this.props.addRoom} deleteRoom={this.props.deleteRoom} rooms={this.props.rooms} resetRoomToCreate={this.resetRoomToCreate} />              
+                <ItemList setItemToCreateName={this.setItemToCreateName} itemToAdd={this.state.itemToCreate} addItem={this.props.addItem} deleteItem={this.props.deleteItem} items={this.props.items} resetItemToCreate={this.resetItemToCreate} />
             </div>
         )
     }
 }
 
-export default RoomCreatePage;
+export default ItemCreatePage;

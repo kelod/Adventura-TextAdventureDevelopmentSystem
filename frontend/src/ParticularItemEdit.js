@@ -1,0 +1,126 @@
+import React, { Component } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Switch from '@material-ui/core/Switch';
+import Paper from '@material-ui/core/Paper';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import { useTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { cyan, purple, grey, green } from '@material-ui/core/colors';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
+import MapIcon from '@material-ui/icons/Map';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import InfoIcon from '@material-ui/icons/Info';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: cyan[900],
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+
+const ColorButton = withStyles((theme) => ({
+    root: {
+        color: theme.palette.getContrastText(purple[500]),
+        backgroundColor: grey[500],
+        '&:hover': {
+            backgroundColor: grey[600],
+        },
+    },
+}))(Button);
+
+const BigTooltip = withStyles({
+    tooltip: {
+        fontSize: "12px",
+        maxWidth: "none"
+    }
+})(Tooltip);
+
+class ParticularRoomEdit extends Component {
+
+    state = {
+        roomName: 'default'
+    }
+
+
+    render() {
+        const { match: { params } } = this.props;
+
+        console.log( this.props.items[params.itemIndex].presentInRoom.name);
+
+        return (
+            <div>
+                <Box m={1}>
+                    <ColorButton component={Link} to={`/create/items`} size="small" variant="contained" color="primary" startIcon={<ArrowBackIosIcon />}>Back</ColorButton>
+                </Box>
+                <Grid container direction="column">
+                    <Grid container item justify="center">
+                        <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">
+                            Here you can edit your item
+                        </Box>
+                    </Grid>
+
+                    <Grid item>
+                        <Box mb={3} ml={1}>
+                            <TextField required id="item-name" name="name" label="Name of the item" value={this.props.items[params.itemIndex].name} onChange={(e) => { this.props.setItemName(params.itemIndex, e) }} />
+                        </Box>
+                    </Grid>
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="This text will appear when the player will observe the item" arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Box mb={3} ml={1} mr={1}>
+                            <TextField
+                                id="item-description"
+                                name="description"
+                                label="Description"
+                                multiline
+                                rows={14}
+                                variant="outlined"
+                                defaultValue={this.props.items[params.itemIndex].description}
+                                onChange={(e) => { this.props.setItemDescription(params.itemIndex, e) }}
+                                fullWidth />
+                        </Box>
+                    </Grid>
+
+                    
+
+                </Grid>
+            </div>
+        )
+    }
+
+}
+
+export default ParticularRoomEdit;

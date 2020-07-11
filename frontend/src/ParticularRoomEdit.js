@@ -115,7 +115,7 @@ const ColoredSwitch = withStyles({
     track: {},
 })(Switch);
 
-function PageAbleList(props) {
+function PassageList(props) {
     //Pageable List
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -195,6 +195,86 @@ function PageAbleList(props) {
     )
 }
 
+function ItemList(props) {
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    return (
+        <Grid item>
+            <Box mb={3} ml={1} mr={1}>
+                <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell>Items</StyledTableCell>
+                                <StyledTableCell align="right">Navigate</StyledTableCell>
+                                <StyledTableCell align="right">Present</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(rowsPerPage > 0
+                                ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : props.items
+                            ).map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row">
+                                        {item.name}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} >
+                                            <MapIcon style={{ color: cyan[900] }} />
+                                        </IconButton>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <ColoredSwitch
+                                            checked={props.IsItemInRoom(props.rooms[props.roomIndex], item)}
+                                            onChange={() => { props.setItemToRoom(props.rooms[props.roomIndex], item); }}
+                                            name="togglePassage"
+                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                            checkedIcon={<CheckCircleIcon />}
+                                            icon={<CancelIcon />}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+
+
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                    colSpan={2}
+                                    count={props.items.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Grid>
+    )
+}
+
 const BigTooltip = withStyles({
     tooltip: {
         fontSize: "12px",
@@ -254,9 +334,12 @@ class ParticularRoomEdit extends Component {
                         </Box>
                     </Grid>
 
+                    <Grid container item direction="row">
 
-                    <PageAbleList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
+                        <PassageList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
+                        <ItemList items={this.props.items} rooms={this.props.rooms} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
 
+                    </Grid>
                 </Grid>
             </div>
         )

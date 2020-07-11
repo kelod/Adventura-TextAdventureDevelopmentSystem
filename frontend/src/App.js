@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Route } from 'react-router-dom';
@@ -7,6 +6,7 @@ import WelcomePage from './WelcomePage';
 import CreatePage from './CreatePage';
 import PlayPage from './PlayPage';
 import ParticularRoomEdit from './ParticularRoomEdit';
+import ParticularItemEdit from './ParticularItemEdit';
 import RoomCreatePage from './RoomCreatePage';
 import ItemCreatePage from './ItemCreatePage';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -34,7 +34,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
-import { Icon, InlineIcon } from '@iconify/react';
+import { Icon } from '@iconify/react';
 import toolsIcon from '@iconify/icons-mdi/tools';
 import swordCross from '@iconify/icons-mdi/sword-cross';
 import { cyan } from '@material-ui/core/colors';
@@ -87,6 +87,7 @@ function CreatePageHeader() {
                 icon = <Icon icon={swordCross} style={{ fontSize: "24px", color: cyan[900] }} />;
                 break;
             }
+            default: break;
         }
 
         return(
@@ -236,7 +237,8 @@ class App extends Component {
         gameToCreate: {
             name: '',
             description: '',
-            rooms: []
+            rooms: [],
+            items: []
         }
     }
 
@@ -250,6 +252,13 @@ class App extends Component {
         this.setRoomDescription = this.setRoomDescription.bind(this);
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
         this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
+        this.addItem = this.addItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
+        this.setItemDescription = this.setItemDescription.bind(this);
+        this.setItemName = this.setItemName.bind(this);
+        this.renderItemToRoom = this.renderItemToRoom.bind(this);
+        this.setItemToRoom = this.setItemToRoom.bind(this);
+        this.IsItemInRoom = this.IsItemInRoom.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -358,6 +367,119 @@ class App extends Component {
         }
     }
 
+    addItem = (item) => {
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: [...this.state.gameToCreate.items, item]
+            }
+        });
+    }
+
+    deleteItem = (index) => {
+        var _items = this.state.gameToCreate.items;
+        _items.splice(index, 1);
+
+        if (index > -1) {
+            this.setState({
+                gameToCreate: {
+                    ...this.state.gameToCreate,
+                    items: _items
+                }
+            })
+        }
+    }
+
+    setItemName = (index, event) => {
+
+        const { value } = event.target;
+        var _items = this.state.gameToCreate.items;
+        _items[index].name = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
+    setItemDescription = (index, event) => {
+
+        const { value } = event.target;
+        var _items = this.state.gameToCreate.items;
+        _items[index].description = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
+    renderItemToRoom = (itemIndex, event) => {
+        var _items = this.state.gameToCreate.items;
+        _items[itemIndex].presentInRoom = event.target.value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
+    setItemToRoom = (room, item) => {
+        var _rooms = this.state.gameToCreate.rooms;
+        var _items = this.state.gameToCreate.items;
+
+       /* if (_rooms[_rooms.indexOf(item.presentInRoom)]) {
+            _rooms[_rooms.indexOf(item.presentInRoom)].items.splice(_rooms[_rooms.indexOf(item.presentInRoom)].items.indexOf(item), 1);
+        }*/
+
+        if (!item.presentInRoom) {
+            
+            _items[_items.indexOf(item)].presentInRoom = room;
+            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
+        }
+        else {
+            if (_items[_items.indexOf(item)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
+                _rooms[_rooms.indexOf(room)].items.splice(_rooms[_rooms.indexOf(room)].items.indexOf(item), 1);
+                _items[_items.indexOf(item)].presentInRoom = false;
+                this.setState({
+                    gameToCreate: {
+                        ...this.state.gameToCreate,
+                        rooms: _rooms,
+                        items: _items
+                    }
+                });
+                return;
+            }
+            _rooms[_rooms.indexOf(item.presentInRoom)].items.splice(_rooms[_rooms.indexOf(item.presentInRoom)].items.indexOf(item), 1);
+            _items[_items.indexOf(item)].presentInRoom = room;
+            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms,
+                items: _items
+            }
+        })
+    }
+
+    IsItemInRoom = (room, item) => {
+
+        for (var i = 0; i < room.items.length; ++i) {
+            if (room.items[i] === item) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     render() {
         return (
             <Router>
@@ -367,8 +489,9 @@ class App extends Component {
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
-                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} />} />
-                <Route exact path="/create/items" component={ItemCreatePage} />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} />} />
+                <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
+                <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
             </Router>
         );
