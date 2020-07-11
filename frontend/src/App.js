@@ -7,6 +7,7 @@ import CreatePage from './CreatePage';
 import PlayPage from './PlayPage';
 import ParticularRoomEdit from './ParticularRoomEdit';
 import ParticularItemEdit from './ParticularItemEdit';
+import ParticularEnemyEdit from './ParticularEnemyEdit';
 import RoomCreatePage from './RoomCreatePage';
 import ItemCreatePage from './ItemCreatePage';
 import EnemyCreatePage from './EnemyCreatePage';
@@ -263,6 +264,10 @@ class App extends Component {
         this.IsItemInRoom = this.IsItemInRoom.bind(this);
         this.addEnemy = this.addEnemy.bind(this);
         this.deleteEnemy = this.deleteEnemy.bind(this);
+        this.setEnemyName = this.setEnemyName.bind(this);
+        this.setEnemyDescription = this.setEnemyDescription.bind(this);
+        this.setEnemyToRoom = this.setEnemyToRoom.bind(this);
+        this.IsEnemyInRoom = this.IsEnemyInRoom.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -501,6 +506,80 @@ class App extends Component {
         
     }
 
+    setEnemyName = (index, event) => {
+
+        const { value } = event.target;
+        var _enemies = this.state.gameToCreate.enemies;
+        _enemies[index].name = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                enemies: _enemies
+            }
+        })
+    }
+
+    setEnemyDescription = (index, event) => {
+
+        const { value } = event.target;
+        var _enemies = this.state.gameToCreate.enemies;
+        _enemies[index].description = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                enemies: _enemies
+            }
+        })
+    }
+
+    setEnemyToRoom = (room, enemy) => {
+        var _rooms = this.state.gameToCreate.rooms;
+        var _enemies = this.state.gameToCreate.enemies;
+
+        if (!enemy.presentInRoom) {
+
+            _enemies[_enemies.indexOf(enemy)].presentInRoom = room;
+            _rooms[_rooms.indexOf(room)].enemies = [..._rooms[_rooms.indexOf(room)].enemies, enemy];
+        }
+        else {
+            if (_enemies[_enemies.indexOf(enemy)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
+                _rooms[_rooms.indexOf(room)].enemies.splice(_rooms[_rooms.indexOf(room)].enemies.indexOf(enemy), 1);
+                _enemies[_enemies.indexOf(enemy)].presentInRoom = false;
+                this.setState({
+                    gameToCreate: {
+                        ...this.state.gameToCreate,
+                        rooms: _rooms,
+                        enemies: _enemies
+                    }
+                });
+                return;
+            }
+            _rooms[_rooms.indexOf(enemy.presentInRoom)].enemies.splice(_rooms[_rooms.indexOf(enemy.presentInRoom)].enemies.indexOf(enemy), 1);
+            _enemies[_enemies.indexOf(enemy)].presentInRoom = room;
+            _rooms[_rooms.indexOf(room)].enemies = [..._rooms[_rooms.indexOf(room)].enemies, enemy];
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms,
+                enemies: _enemies
+            }
+        })
+    }
+
+    IsEnemyInRoom = (room, enemy) => {
+
+        for (var i = 0; i < room.enemies.length; ++i) {
+            if (room.enemies[i] === enemy) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     render() {
         return (
             <Router>
@@ -510,11 +589,12 @@ class App extends Component {
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
-                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} />} />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} />} />
                 <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
                 <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
+                <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} />} />
             </Router>
         );
     }

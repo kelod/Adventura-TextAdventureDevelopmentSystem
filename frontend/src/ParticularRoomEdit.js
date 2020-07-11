@@ -275,6 +275,86 @@ function ItemList(props) {
     )
 }
 
+function EnemyList(props) {
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    return (
+        <Grid item>
+            <Box mb={3} ml={1} mr={1}>
+                <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell style={{ fontWeight: "bold" }}>Enemies</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Navigate</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Present</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(rowsPerPage > 0
+                                ? props.enemies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : props.enemies
+                            ).map((enemy, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row">
+                                        {enemy.name}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton component={Link} to={`/create/enemies/${props.enemies.indexOf(enemy)}`} >
+                                            <MapIcon style={{ color: cyan[900] }} />
+                                        </IconButton>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <ColoredSwitch
+                                            checked={props.IsEnemyInRoom(props.rooms[props.roomIndex], enemy)}
+                                            onChange={() => { props.setEnemyToRoom(props.rooms[props.roomIndex], enemy); }}
+                                            name="toggleEnemy"
+                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                            checkedIcon={<CheckCircleIcon />}
+                                            icon={<CancelIcon />}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+
+
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                    colSpan={2}
+                                    count={props.enemies.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Grid>
+    )
+}
+
 const BigTooltip = withStyles({
     tooltip: {
         fontSize: "12px",
@@ -343,6 +423,15 @@ class ParticularRoomEdit extends Component {
                         </Box>
                     </Grid>
                     <ItemList items={this.props.items} rooms={this.props.rooms} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="Set which enemies you want to appear in room" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+                    <EnemyList enemies={this.props.enemies} rooms={this.props.rooms} roomIndex={params.roomIndex} setEnemyToRoom={this.props.setEnemyToRoom} IsEnemyInRoom={this.props.IsEnemyInRoom} />
 
                 </Grid>
             </div>

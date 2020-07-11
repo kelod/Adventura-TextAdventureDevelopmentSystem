@@ -66,41 +66,39 @@ const BigTooltip = withStyles({
     }
 })(Tooltip);
 
-class ParticularItemEdit extends Component {
+class ParticularEnemyEdit extends Component {
     
 
     render() {
         const { match: { params } } = this.props;
 
-        console.log( this.props.items[params.itemIndex].presentInRoom.name);
-
         return (
             <div>
                 <Box m={1}>
-                    <ColorButton component={Link} to={`/create/items`} size="small" variant="contained" color="primary" startIcon={<ArrowBackIosIcon />}>Back</ColorButton>
+                    <ColorButton component={Link} to={`/create/enemies`} size="small" variant="contained" color="primary" startIcon={<ArrowBackIosIcon />}>Back</ColorButton>
                 </Box>
                 <Grid container direction="column">
                     <Grid container item justify="center">
                         <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">
-                            Here you can edit your item
+                            Here you can edit your enemy
                         </Box>
                     </Grid>
 
                     <Grid item>
                         <Box mb={3} ml={1}>
-                            <TextField required id="item-name" name="name" label="Name of the item" value={this.props.items[params.itemIndex].name} onChange={(e) => { this.props.setItemName(params.itemIndex, e) }} />
+                            <TextField required id="enemy-name" name="name" label="Name of the enemy" value={this.props.enemies[params.enemyIndex].name} onChange={(e) => { this.props.setEnemyName(params.enemyIndex, e) }} />
                         </Box>
                     </Grid>
 
                     <Grid container item spacing={1} alignItems="flex-end">
                         <Grid item>
                             <Box ml={1}>
-                                <TextField id="input-with-icon-grid" label="This item is in room:" value={this.props.items[params.itemIndex].presentInRoom.name} variant="outlined" disabled />
+                                <TextField id="input-with-icon-grid" label="This enemy will appear in room:" value={this.props.enemies[params.enemyIndex].presentInRoom.name} variant="outlined" disabled />
                             </Box>
                         </Grid>
                         <Grid item>
                             <BigTooltip title="Go to room" arrow TransitionComponent={Zoom} placement="right" justify="right">
-                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.items[params.itemIndex].presentInRoom)}`} disabled={!this.props.items[params.itemIndex].presentInRoom} >
+                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.enemies[params.enemyIndex].presentInRoom)}`} disabled={!this.props.enemies[params.enemyIndex].presentInRoom} >
                                     <Icon icon={arrowRightCircle} style={{ color: cyan[900] }} />
                                 </IconButton>
                             </BigTooltip>
@@ -109,7 +107,7 @@ class ParticularItemEdit extends Component {
 
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
-                            <BigTooltip title="This text will appear when the player will observe the item" arrow TransitionComponent={Zoom} placement="right" justify="left">
+                            <BigTooltip title="This text will appear when the player will meet the enemy" arrow TransitionComponent={Zoom} placement="right" justify="left">
                                 <InfoIcon style={{ color: cyan[800] }} />
                             </BigTooltip>
                         </Box>
@@ -117,19 +115,19 @@ class ParticularItemEdit extends Component {
                     <Grid item>
                         <Box mb={3} ml={1} mr={1}>
                             <TextField
-                                id="item-description"
+                                id="enemy-description"
                                 name="description"
                                 label="Description"
                                 multiline
                                 rows={14}
                                 variant="outlined"
-                                defaultValue={this.props.items[params.itemIndex].description}
-                                onChange={(e) => { this.props.setItemDescription(params.itemIndex, e) }}
+                                defaultValue={this.props.enemies[params.enemyIndex].description}
+                                onChange={(e) => { this.props.setEnemyDescription(params.enemyIndex, e) }}
                                 fullWidth />
                         </Box>
                     </Grid>
 
-                    
+
 
                 </Grid>
             </div>
@@ -138,4 +136,4 @@ class ParticularItemEdit extends Component {
 
 }
 
-export default ParticularItemEdit;
+export default ParticularEnemyEdit;
