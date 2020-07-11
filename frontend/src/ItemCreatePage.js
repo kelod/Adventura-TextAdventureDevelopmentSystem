@@ -188,7 +188,7 @@ function ItemList(props) {
                                             {item.name}
                                         </TableCell>
                                         <TableCell align="right">
-                                            <IconButton component={Link} to={`/create/items/${index}`} variant="contained">
+                                            <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} variant="contained">
                                                 <EditIcon style={{ color: cyan[800] }} />
                                             </IconButton>
                                         </TableCell>

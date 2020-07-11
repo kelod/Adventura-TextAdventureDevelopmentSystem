@@ -190,7 +190,7 @@ function RoomList(props) {
                                         {room.name}
                                     </TableCell>
                                         <TableCell align="right">
-                                        <IconButton component={Link} to={`/create/rooms/${index}`} variant="contained">
+                                        <IconButton component={Link} to={`/create/rooms/${props.rooms.indexOf(room)}`} variant="contained">
                                                 <EditIcon style={{ color: cyan[800] }}/>
                                         </IconButton>
                                     </TableCell>

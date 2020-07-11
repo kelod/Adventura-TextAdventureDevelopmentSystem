@@ -188,7 +188,7 @@ function EnemyList(props) {
                                             {enemy.name}
                                         </TableCell>
                                         <TableCell align="right">
-                                            <IconButton component={Link} to={`/create/enemies/${index}`} variant="contained">
+                                            <IconButton component={Link} to={`/create/enemies/${props.enemies.indexOf(enemy)}`} variant="contained">
                                                 <EditIcon style={{ color: cyan[800] }} />
                                             </IconButton>
                                         </TableCell>
