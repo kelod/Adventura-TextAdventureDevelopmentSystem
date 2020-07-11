@@ -29,11 +29,15 @@ import MapIcon from '@material-ui/icons/Map';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import InfoIcon from '@material-ui/icons/Info';
+import arrowRightCircle from '@iconify/icons-mdi/arrow-right-circle';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import { Icon } from '@iconify/react';
+
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -90,6 +94,21 @@ class ParticularRoomEdit extends Component {
                         <Box mb={3} ml={1}>
                             <TextField required id="item-name" name="name" label="Name of the item" value={this.props.items[params.itemIndex].name} onChange={(e) => { this.props.setItemName(params.itemIndex, e) }} />
                         </Box>
+                    </Grid>
+
+                    <Grid container item spacing={1} alignItems="flex-end">
+                        <Grid item>
+                            <Box ml={1}>
+                                <TextField id="input-with-icon-grid" label="This item is in room:" value={this.props.items[params.itemIndex].presentInRoom.name} variant="outlined" disabled />
+                            </Box>
+                        </Grid>
+                        <Grid item>
+                            <BigTooltip title="Go to room" arrow TransitionComponent={Zoom} placement="right" justify="right">
+                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.items[params.itemIndex].presentInRoom)}`} disabled={!this.props.items[params.itemIndex].presentInRoom} >
+                                    <Icon icon={arrowRightCircle} style={{ color: cyan[900] }} />
+                                </IconButton>
+                            </BigTooltip>
+                        </Grid>
                     </Grid>
 
                     <Grid container item justify="flex-end">

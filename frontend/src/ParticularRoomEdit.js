@@ -136,9 +136,9 @@ function PassageList(props) {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell>Passages</StyledTableCell>
-                                <StyledTableCell align="right">Navigate</StyledTableCell>
-                                <StyledTableCell align="right">On/Off</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }}>Passages</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Navigate</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">On/Off</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -216,9 +216,9 @@ function ItemList(props) {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell>Items</StyledTableCell>
-                                <StyledTableCell align="right">Navigate</StyledTableCell>
-                                <StyledTableCell align="right">Present</StyledTableCell>
+                                <StyledTableCell style={{fontWeight: "bold"}}>Items</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Navigate</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Present</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -292,7 +292,7 @@ class ParticularRoomEdit extends Component {
                 <Box m={1}>
                     <ColorButton component={Link} to={`/create/rooms`} size="small" variant="contained" color="primary" startIcon={<ArrowBackIosIcon />}>Back</ColorButton>
                 </Box>
-                <Grid container direction="column">
+                <Grid container direction="column" fullWidth>
                     <Grid container item justify="center">
                         <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">
                             Here you can edit your room
@@ -333,13 +333,17 @@ class ParticularRoomEdit extends Component {
                             </BigTooltip>
                         </Box>
                     </Grid>
+                    <PassageList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
 
-                    <Grid container item direction="row">
-
-                        <PassageList rooms={this.props.rooms} roomIndex={params.roomIndex} setPassageBetweenRooms={this.props.setPassageBetweenRooms} hasPassageBetweenRooms={this.props.hasPassageBetweenRooms} />
-                        <ItemList items={this.props.items} rooms={this.props.rooms} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
-
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="Note that one item only can be rendered to one room at once" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
                     </Grid>
+                    <ItemList items={this.props.items} rooms={this.props.rooms} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
+
                 </Grid>
             </div>
         )
