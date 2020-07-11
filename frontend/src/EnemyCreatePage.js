@@ -101,7 +101,7 @@ const ColorButton = withStyles((theme) => ({
 }))(Button);
 
 
-function ItemList(props) {
+function EnemyList(props) {
     //Default list
     const [open, setOpen] = React.useState(false);
 
@@ -136,26 +136,26 @@ function ItemList(props) {
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={handleClickOpen}
                     >
-                        Add Item
+                        Add Enemy
                     </ColorButton>
                     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">New Item</DialogTitle>
+                        <DialogTitle id="form-dialog-title">New Enemy</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Give your new item's name below. You can edit it later from the room list.
+                                Give your new enemy's name below. You can edit it later from the enemy list.
                             </DialogContentText>
                             <TextField
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                label="Name of the item"
+                                label="Name of the enemy"
                                 fullWidth
-                                value={props.itemToAdd.name}
-                                onChange={props.setItemToCreateName}
+                                value={props.enemyToAdd.name}
+                                onChange={props.setEnemyToCreateName}
                             />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={() => { props.addItem(props.itemToAdd); props.resetItemToCreate(); }} color="primary">
+                            <Button onClick={() => { props.addEnemy(props.enemyToAdd); props.resetEnemyToCreate(); }} color="primary">
                                 Add
                             </Button>
                             <Button onClick={handleClose} color="primary">
@@ -180,20 +180,20 @@ function ItemList(props) {
                             </TableHead>
                             <TableBody>
                                 {(rowsPerPage > 0
-                                    ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : props.items
-                                ).map((item, index) => (
+                                    ? props.enemies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : props.enemies
+                                ).map((enemy, index) => (
                                     <TableRow key={index}>
                                         <TableCell component="th" scope="row">
-                                            {item.name}
+                                            {enemy.name}
                                         </TableCell>
                                         <TableCell align="right">
-                                            <IconButton component={Link} to={`/create/items/${index}`} variant="contained">
+                                            <IconButton component={Link} to={`/create/enemies/${index}`} variant="contained">
                                                 <EditIcon style={{ color: cyan[800] }} />
                                             </IconButton>
                                         </TableCell>
                                         <TableCell align="right">
-                                            <IconButton color="secondary" onClick={() => { props.deleteItem(item) }}>
+                                            <IconButton color="secondary" onClick={() => { props.deleteEnemy(enemy) }}>
                                                 <DeleteOutlineIcon />
                                             </IconButton>
                                         </TableCell>
@@ -207,7 +207,7 @@ function ItemList(props) {
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                         colSpan={2}
-                                        count={props.items.length}
+                                        count={props.enemies.length}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         SelectProps={{
@@ -228,38 +228,40 @@ function ItemList(props) {
     )
 }
 
-class ItemCreatePage extends Component {
+class EnemyCreatePage extends Component {
 
     state = {
-        itemToCreate: {
+        enemyToCreate: {
             name: '',
             description: '',
-            presentInRoom: false
+            presentInRoom: false,
+            health: 0
         }
     }
 
     constructor(props) {
         super(props);
-        this.setItemToCreateName = this.setItemToCreateName.bind(this);
-        this.resetItemToCreate = this.resetItemToCreate.bind(this);
+        this.setEnemyToCreateName = this.setEnemyToCreateName.bind(this);
+        this.resetEnemyToCreate = this.resetEnemyToCreate.bind(this);
     }
 
-    setItemToCreateName = (event) => {
+    setEnemyToCreateName = (event) => {
         const { value } = event.target;
         this.setState({
-            itemToCreate: {
-                ...this.state.itemToCreate,
+            enemyToCreate: {
+                ...this.state.enemyToCreate,
                 name: value
             }
         })
     }
 
-    resetItemToCreate = () => {
+    resetEnemyToCreate = () => {
         this.setState({
-            itemToCreate: {
+            enemyToCreate: {
                 name: '',
                 description: '',
-                presentInRoom: false
+                presentInRoom: false,
+                health: 0
             }
         })
     }
@@ -271,15 +273,15 @@ class ItemCreatePage extends Component {
                 <Grid container direction="column">
                     <Grid container item justify="center">
                         <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">
-                            Here you can create and edit items
+                            Here you can create and edit enemies, that will appear in game
                         </Box>
                     </Grid>
                 </Grid>
 
-                <ItemList setItemToCreateName={this.setItemToCreateName} itemToAdd={this.state.itemToCreate} addItem={this.props.addItem} deleteItem={this.props.deleteItem} items={this.props.items} resetItemToCreate={this.resetItemToCreate} />
+                <EnemyList setEnemyToCreateName={this.setEnemyToCreateName} enemyToAdd={this.state.enemyToCreate} addEnemy={this.props.addEnemy} deleteEnemy={this.props.deleteEnemy} enemies={this.props.enemies} resetEnemyToCreate={this.resetEnemyToCreate} />
             </div>
         )
     }
 }
 
-export default ItemCreatePage;
+export default EnemyCreatePage;

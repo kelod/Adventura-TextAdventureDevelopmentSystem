@@ -195,7 +195,7 @@ function RoomList(props) {
                                         </IconButton>
                                     </TableCell>
                                         <TableCell align="right">
-                                            <IconButton color="secondary" onClick={() => { props.deleteRoom(index) }}>
+                                            <IconButton color="secondary" onClick={() => { props.deleteRoom(room) }}>
                                             <DeleteOutlineIcon />
                                         </IconButton>
                                     </TableCell>
