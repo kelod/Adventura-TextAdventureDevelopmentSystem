@@ -39,7 +39,7 @@ import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Icon } from '@iconify/react';
 import toolsIcon from '@iconify/icons-mdi/tools';
 import swordCross from '@iconify/icons-mdi/sword-cross';
-import { cyan } from '@material-ui/core/colors';
+import { cyan, red } from '@material-ui/core/colors';
 
 var selectedItem = 'Settings';
 
@@ -86,7 +86,7 @@ function CreatePageHeader() {
                 break;
             }
             case "Enemies": {
-                icon = <Icon icon={swordCross} style={{ fontSize: "24px", color: cyan[900] }} />;
+                icon = <Icon icon={swordCross} style={{ fontSize: "24px", color: red[600] }} />;
                 break;
             }
             default: break;

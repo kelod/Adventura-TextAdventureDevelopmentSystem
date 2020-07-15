@@ -21,7 +21,7 @@ import LastPageIcon from '@material-ui/icons/LastPage';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import { cyan, purple, grey, green } from '@material-ui/core/colors';
+import { cyan, purple, grey, red } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -275,6 +275,30 @@ function ItemList(props) {
     )
 }
 
+const RedTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: red[600],
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+
+const RedSwitch = withStyles({
+    switchBase: {
+        color: red[500],
+        '&$checked': {
+            color: red[600],
+        },
+        '&$checked + $track': {
+            backgroundColor: red[600]
+        },
+    },
+    checked: {},
+    track: {},
+})(Switch);
+
 function EnemyList(props) {
     //Pageable List
     const [page, setPage] = React.useState(0);
@@ -296,9 +320,9 @@ function EnemyList(props) {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell style={{ fontWeight: "bold" }}>Enemies</StyledTableCell>
-                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Navigate</StyledTableCell>
-                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Present</StyledTableCell>
+                                <RedTableCell style={{ fontWeight: "bold" }}>Enemies</RedTableCell>
+                                <RedTableCell style={{ fontWeight: "bold" }} align="right">Navigate</RedTableCell>
+                                <RedTableCell style={{ fontWeight: "bold" }} align="right">Present</RedTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -312,11 +336,11 @@ function EnemyList(props) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <IconButton component={Link} to={`/create/enemies/${props.enemies.indexOf(enemy)}`} >
-                                            <MapIcon style={{ color: cyan[900] }} />
+                                            <MapIcon style={{ color: red[600] }} />
                                         </IconButton>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <ColoredSwitch
+                                        <RedSwitch
                                             checked={props.IsEnemyInRoom(props.rooms[props.roomIndex], enemy)}
                                             onChange={() => { props.setEnemyToRoom(props.rooms[props.roomIndex], enemy); }}
                                             name="toggleEnemy"
@@ -427,7 +451,7 @@ class ParticularRoomEdit extends Component {
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
                             <BigTooltip title="Set which enemies you want to appear in room" arrow TransitionComponent={Zoom} placement="left">
-                                <InfoIcon style={{ color: cyan[800] }} />
+                                <InfoIcon style={{ color: red[500] }} />
                             </BigTooltip>
                         </Box>
                     </Grid>

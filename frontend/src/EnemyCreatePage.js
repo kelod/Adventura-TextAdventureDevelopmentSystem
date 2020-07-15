@@ -28,7 +28,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import { cyan, purple } from '@material-ui/core/colors';
+import { cyan, purple, red } from '@material-ui/core/colors';
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -82,7 +82,7 @@ function TablePaginationActions(props) {
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-        backgroundColor: cyan[900],
+        backgroundColor: red[600],
         color: theme.palette.common.white,
     },
     body: {
@@ -93,9 +93,9 @@ const StyledTableCell = withStyles((theme) => ({
 const ColorButton = withStyles((theme) => ({
     root: {
         color: theme.palette.getContrastText(purple[500]),
-        backgroundColor: cyan[800],
+        backgroundColor: red[500],
         '&:hover': {
-            backgroundColor: cyan[900],
+            backgroundColor: red[600],
         },
     },
 }))(Button);
@@ -189,7 +189,7 @@ function EnemyList(props) {
                                         </TableCell>
                                         <TableCell align="right">
                                             <IconButton component={Link} to={`/create/enemies/${props.enemies.indexOf(enemy)}`} variant="contained">
-                                                <EditIcon style={{ color: cyan[800] }} />
+                                                <EditIcon style={{ color: red[600] }} />
                                             </IconButton>
                                         </TableCell>
                                         <TableCell align="right">

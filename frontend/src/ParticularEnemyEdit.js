@@ -21,7 +21,7 @@ import LastPageIcon from '@material-ui/icons/LastPage';
 import { useTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import { cyan, purple, grey, green } from '@material-ui/core/colors';
+import { cyan, purple, grey, red } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -99,7 +99,7 @@ class ParticularEnemyEdit extends Component {
                         <Grid item>
                             <BigTooltip title="Go to room" arrow TransitionComponent={Zoom} placement="right" justify="right">
                                 <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.enemies[params.enemyIndex].presentInRoom)}`} disabled={!this.props.enemies[params.enemyIndex].presentInRoom} >
-                                    <Icon icon={arrowRightCircle} style={{ color: cyan[900] }} />
+                                    <Icon icon={arrowRightCircle} style={{ color: red[600] }} />
                                 </IconButton>
                             </BigTooltip>
                         </Grid>
@@ -108,7 +108,7 @@ class ParticularEnemyEdit extends Component {
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
                             <BigTooltip title="This text will appear when the player will meet the enemy" arrow TransitionComponent={Zoom} placement="right" justify="left">
-                                <InfoIcon style={{ color: cyan[800] }} />
+                                <InfoIcon style={{ color: red[500] }} />
                             </BigTooltip>
                         </Box>
                     </Grid>
