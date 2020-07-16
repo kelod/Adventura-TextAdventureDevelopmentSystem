@@ -241,7 +241,8 @@ class App extends Component {
             description: '',
             rooms: [],
             items: [],
-            enemies: []
+            enemies: [],
+            passages: []
         }
     }
 
@@ -296,8 +297,9 @@ class App extends Component {
 
     setPassageBetweenRooms = (roomFrom, roomTo) => {
         var _rooms = this.state.gameToCreate.rooms;
+        var _passages = this.state.gameToCreate.passages;
 
-        const newPassage = {
+        const newPassage = { //Ugyanaz az object kerul a passagesbe es a room passagei koze is
             from: roomFrom,
             to: roomTo
         }
@@ -306,16 +308,19 @@ class App extends Component {
 
         if (passageResult) {
             _rooms[_rooms.indexOf(roomFrom)].passages.splice(_rooms[_rooms.indexOf(roomFrom)].passages.indexOf(passageResult), 1);
+            _passages.splice(_passages.indexOf(passageResult), 1);
         }
         else {
             _rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
+            _passages = [..._passages, newPassage];
         }
         
         
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: _rooms
+                rooms: _rooms,
+                passages: _passages
             }
         })
     }
