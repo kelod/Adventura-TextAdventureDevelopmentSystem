@@ -30,12 +30,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import InfoIcon from '@material-ui/icons/Info';
 import arrowRightCircle from '@iconify/icons-mdi/arrow-right-circle';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Icon } from '@iconify/react';
 
 

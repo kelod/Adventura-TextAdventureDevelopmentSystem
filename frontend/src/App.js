@@ -11,6 +11,7 @@ import ParticularEnemyEdit from './ParticularEnemyEdit';
 import RoomCreatePage from './RoomCreatePage';
 import ItemCreatePage from './ItemCreatePage';
 import EnemyCreatePage from './EnemyCreatePage';
+import Map from './Map';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -40,12 +41,23 @@ import { Icon } from '@iconify/react';
 import toolsIcon from '@iconify/icons-mdi/tools';
 import swordCross from '@iconify/icons-mdi/sword-cross';
 import { cyan, red } from '@material-ui/core/colors';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import { withStyles } from '@material-ui/core/styles';
+import SaveIcon from '@material-ui/icons/Save';
 
-var selectedItem = 'Settings';
+/*var selectedItem = 'Settings';
 
 const homeButtonPressed = (event) => {
     selectedItem = "Settings";
-}
+}*/
+
+const BigTooltip = withStyles({
+    tooltip: {
+        fontSize: "12px",
+        maxWidth: "none"
+    }
+})(Tooltip);
 
 function CreatePageHeader() {
     //Menu
@@ -54,6 +66,7 @@ function CreatePageHeader() {
         "Rooms",
         "Items",
         "Enemies",
+        "Map",
         "Etc..."
     ]
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -66,7 +79,7 @@ function CreatePageHeader() {
     const handleClose = (event) => {
         setAnchorEl(null);
         const { myValue } = event.currentTarget.dataset;
-        selectedItem = myValue;
+        //selectedItem = myValue;
     };
 
     var items = options.map((option, index) => {
@@ -126,10 +139,12 @@ function CreatePageHeader() {
         <Grid container direction="row" alignItems="flex-start">
             <Grid container item>
                 <AppBar position="fixed">
-                    <Toolbar variant="dense" style={{backgroundColor: cyan[700]}}>
-                                <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleClick}>
-                                    <MenuIcon />
-                                </IconButton>
+                    <Toolbar variant="dense" style={{ backgroundColor: cyan[700] }}>
+                                <BigTooltip title="Menu" TransitionComponent={Zoom} placement="bottom">
+                                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleClick}>
+                                        <MenuIcon />
+                                    </IconButton>
+                                </BigTooltip>
                                 <Menu
                                     id="long-menu"
                                     anchorEl={anchorEl}
@@ -139,10 +154,8 @@ function CreatePageHeader() {
                                 >
                                     {items}
                                 </Menu>
-                                <Typography variant="h6" color="inherit">
-                                    {selectedItem}
-                                </Typography>
                                 <Grid container item justify="right">
+                                    <BigTooltip title="Finish" TransitionComponent={Zoom} placement="bottom">
                                         <IconButton
                                             component={Link}
                                             to={`/create`}
@@ -150,10 +163,10 @@ function CreatePageHeader() {
                                             aria-controls="menu-appbar"
                                             aria-haspopup="true"
                                             color="inherit"
-                                            onClick={homeButtonPressed}
                                         >
-                                            <SettingsIcon />
+                                            <SaveIcon />
                                         </IconButton>
+                                    </BigTooltip>
                                 </Grid>
                                 <IconButton
                                  //   component={Link}
@@ -600,6 +613,7 @@ class App extends Component {
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
                 <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} />} />
+                <Route exact path="/create/map" render={(props) => <Map {...props} rooms={this.state.gameToCreate.rooms} passages={this.state.gameToCreate.passages} />} />
             </Router>
         );
     }
