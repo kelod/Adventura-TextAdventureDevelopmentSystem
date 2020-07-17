@@ -45,12 +45,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import { withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
+import graphqlIcon from '@iconify/icons-mdi/graphql';
 
-/*var selectedItem = 'Settings';
-
-const homeButtonPressed = (event) => {
-    selectedItem = "Settings";
-}*/
 
 const BigTooltip = withStyles({
     tooltip: {
@@ -79,7 +75,6 @@ function CreatePageHeader() {
     const handleClose = (event) => {
         setAnchorEl(null);
         const { myValue } = event.currentTarget.dataset;
-        //selectedItem = myValue;
     };
 
     var items = options.map((option, index) => {
@@ -100,6 +95,10 @@ function CreatePageHeader() {
             }
             case "Enemies": {
                 icon = <Icon icon={swordCross} style={{ fontSize: "24px", color: red[600] }} />;
+                break;
+            }
+            case "Map": {
+                icon = <Icon icon={graphqlIcon} style={{ fontSize: "29px", color: cyan[900] }} />;
                 break;
             }
             default: break;
@@ -168,17 +167,19 @@ function CreatePageHeader() {
                                         </IconButton>
                                     </BigTooltip>
                                 </Grid>
-                                <IconButton
-                                 //   component={Link}
-                                  //  to={`/`}
-                                    aria-label="home page"
-                                    aria-controls="menu-appbar"
-                                    aria-haspopup="true"
-                                    color="inherit"
-                                    onClick={handleDialogClickOpen1}
-                                >
-                                    <HomeIcon />
-                                </IconButton>
+                                <BigTooltip title="Home page" TransitionComponent={Zoom} placement="bottom">
+                                    <IconButton
+                                     //   component={Link}
+                                      //  to={`/`}
+                                        aria-label="home page"
+                                        aria-controls="menu-appbar"
+                                        aria-haspopup="true"
+                                        color="inherit"
+                                        onClick={handleDialogClickOpen1}
+                                    >
+                                        <HomeIcon />
+                                    </IconButton>
+                                </BigTooltip>
 
                                 <Dialog
                                     open={open1}
@@ -203,17 +204,19 @@ function CreatePageHeader() {
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
-                                <IconButton
-                                   // component={Link}
-                                    //to={`/about`}
-                                    aria-label="about"
-                                    aria-controls="menu-appbar"
-                                    aria-haspopup="true"
-                                    color="inherit"
-                                    onClick={handleDialogClickOpen}
-                                >
-                                    <HelpIcon />
-                                </IconButton>
+                                <BigTooltip title="About" TransitionComponent={Zoom} placement="bottom">
+                                    <IconButton
+                                       // component={Link}
+                                        //to={`/about`}
+                                        aria-label="about"
+                                        aria-controls="menu-appbar"
+                                        aria-haspopup="true"
+                                        color="inherit"
+                                        onClick={handleDialogClickOpen}
+                                    >
+                                        <HelpIcon />
+                                    </IconButton>
+                                </BigTooltip>
 
                                 <Dialog
                                     open={open}
@@ -269,6 +272,7 @@ class App extends Component {
         this.setRoomDescription = this.setRoomDescription.bind(this);
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
         this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
+        this.getRoomByName = this.getRoomByName.bind(this);
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
         this.setItemDescription = this.setItemDescription.bind(this);
@@ -298,6 +302,14 @@ class App extends Component {
         
         const { value } = event.target;
         var _rooms = this.state.gameToCreate.rooms;
+
+        for (var i = 0; i < this.state.gameToCreate.rooms.length; ++i) {
+            if (value === this.state.gameToCreate.rooms[i].name) {
+                window.alert(`Room with name ${value} already exists. Please give another name!`);
+                return;
+            }
+        }
+
         _rooms[index].name = value;
 
         this.setState({
@@ -312,11 +324,6 @@ class App extends Component {
         var _rooms = this.state.gameToCreate.rooms;
         var _passages = this.state.gameToCreate.passages;
 
-        const newPassage = { //Ugyanaz az object kerul a passagesbe es a room passagei koze is
-            from: roomFrom,
-            to: roomTo
-        }
-
         const passageResult = this.hasPassageBetweenRooms(roomFrom, roomTo);
 
         if (passageResult) {
@@ -324,6 +331,10 @@ class App extends Component {
             _passages.splice(_passages.indexOf(passageResult), 1);
         }
         else {
+            const newPassage = { //Ugyanaz az object kerul a passagesbe es a room passagei koze is
+                from: roomFrom,
+                to: roomTo
+            }
             _rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
             _passages = [..._passages, newPassage];
         }
@@ -372,6 +383,14 @@ class App extends Component {
     }
 
     addRoom = (room) => {
+
+        for (var i = 0; i < this.state.gameToCreate.rooms.length; ++i) {
+            if (room.name === this.state.gameToCreate.rooms[i].name) {
+                window.alert(`Room with name ${room.name} already exists. Please give another name!`);
+                return;
+            }
+        }
+
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
@@ -392,6 +411,15 @@ class App extends Component {
                 }
             })
         
+    }
+
+    getRoomByName = (name) => {
+        for (var i = 0; i < this.state.gameToCreate.rooms.length; ++i) {
+            if (name === this.state.gameToCreate.rooms[i].name) {
+                return this.state.gameToCreate.rooms[i];
+            }
+        }
+        return null;
     }
 
     addItem = (item) => {
@@ -613,7 +641,7 @@ class App extends Component {
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
                 <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} />} />
-                <Route exact path="/create/map" render={(props) => <Map {...props} rooms={this.state.gameToCreate.rooms} passages={this.state.gameToCreate.passages} />} />
+                <Route exact path="/create/map" render={(props) => <Map {...props} rooms={this.state.gameToCreate.rooms} passages={this.state.gameToCreate.passages} setPassageBetweenRooms={this.setPassageBetweenRooms} getRoomByName={this.getRoomByName} />} />
             </Router>
         );
     }
