@@ -45,6 +45,8 @@ import Zoom from '@material-ui/core/Zoom';
 import { withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import graphqlIcon from '@iconify/icons-mdi/graphql';
+import roadtunnelIcon from '@iconify/icons-whh/roadtunnel';
+
 
 
 const BigTooltip = withStyles({
@@ -91,6 +93,10 @@ function CreatePageHeader() {
             }
             case "Items": {
                 icon = <Icon icon={toolsIcon} style={{fontSize: "24px", color: cyan[900]}}/>;
+                break;
+            }
+            case "Passages": {
+                icon = <Icon icon={roadtunnelIcon} style={{ fontSize: "24px", color: cyan[900] }} />;
                 break;
             }
             case "Enemies": {
