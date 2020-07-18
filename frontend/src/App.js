@@ -11,6 +11,7 @@ import ParticularEnemyEdit from './ParticularEnemyEdit';
 import RoomCreatePage from './RoomCreatePage';
 import ItemCreatePage from './ItemCreatePage';
 import EnemyCreatePage from './EnemyCreatePage';
+import PassageCreatePage from './PassageCreatePage';
 import Map from './Map';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -22,12 +23,10 @@ import Grid from '@material-ui/core/Grid';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
-import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import GeneralCreatePage from './GeneralCreatePage';
 import GameCreated from './GameCreated';
 import axios from 'axios';
-import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -61,6 +60,7 @@ function CreatePageHeader() {
         "General",
         "Rooms",
         "Items",
+        "Passages",
         "Enemies",
         "Map",
         "Etc..."
@@ -268,6 +268,7 @@ class App extends Component {
         this.submitGame = this.submitGame.bind(this);
         this.addRoom = this.addRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
+        this.deletePassage = this.deletePassage.bind(this);
         this.setRoomName = this.setRoomName.bind(this);
         this.setRoomDescription = this.setRoomDescription.bind(this);
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
@@ -626,6 +627,22 @@ class App extends Component {
         return false;
     }
 
+    deletePassage = (passage) => {
+        var _passages = this.state.gameToCreate.passages;
+        var _rooms = this.state.gameToCreate.rooms;
+
+        _rooms[_rooms.indexOf(passage.from)].passages.splice(_rooms[_rooms.indexOf(passage.from)].passages.indexOf(passage), 1);
+        _passages.splice(_passages.indexOf(passage), 1);
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                rooms: _rooms,
+                passages: _passages
+            }
+        })
+    }
+
     render() {
         return (
             <Router>
@@ -637,6 +654,7 @@ class App extends Component {
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} />} />
                 <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
+                <Route exact path="/create/passages" render={(props) => <PassageCreatePage {...props} deletePassage={this.deletePassage} passages={this.state.gameToCreate.passages} />} />
                 <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
