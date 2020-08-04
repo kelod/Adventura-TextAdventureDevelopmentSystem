@@ -117,19 +117,28 @@ class Map extends Component {
 
         const onClickLink =  (source, target) => {
            // window.alert(`Clicked link between ${source} and ${target}`);
+
+            for (var i = 0; i < this.props.passages.length; ++i) {
+                if (this.props.passages[i].from.name === source && this.props.passages[i].to.name === target) {
+                    this.props.history.push(`/create/passages/${i}`)
+                }
+            }
+        };
+
+        const onRightClickLink = (event, source, target) => {
+
             var roomFrom = this.props.getRoomByName(source);
             var roomTo = this.props.getRoomByName(target);
 
             this.props.setPassageBetweenRooms(roomFrom, roomTo);
-        };
+        }
 
         const onMouseOverLink = function (source, target) {
           //  window.alert(`Mouse over in link between ${source} and ${target}`);
         };
 
         const onMouseOutLink = function (source, target) {
-           // window.alert(`Mouse out link between ${source} and ${target}`);
-
+            // window.alert(`Mouse out link between ${source} and ${target}`);
         };
 
         return (
@@ -139,8 +148,8 @@ class Map extends Component {
                         <Typography variant="h6" color="inherit">
                             <Box textAlign="center" m={2} fontWeight="fontWeightMedium" fontFamily="Monospace">
                                 Below you can see the game map you have created so far... Note that if you don't see any rooms, maybe its not connected to any other room.
-                                You can simply remove passages by clicking on them, or add new ones, by selecting the source and the target rooms after each other.
-                                If you double click on a room, you can navigate to its edit page.
+                                You can simply remove passages by right-clicking on them, or add new ones, by selecting the source and the target rooms after each other.
+                                If you click on a room, you can navigate to its edit page.
                             </Box>
                         </Typography>
                     </Grid>
@@ -152,6 +161,7 @@ class Map extends Component {
                             onClickNode={onClickNode}
                             onDoubleClickNode={onDoubleClickNode}
                             onClickLink={onClickLink}
+                            onRightClickLink={onRightClickLink}
                             onMouseOverNode={onMouseOverNode}
                             onMouseOutNode={onMouseOutNode}
                             onMouseOverLink={onMouseOverLink}
