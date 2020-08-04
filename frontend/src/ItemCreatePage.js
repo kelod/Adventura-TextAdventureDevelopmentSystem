@@ -234,7 +234,8 @@ class ItemCreatePage extends Component {
         itemToCreate: {
             name: '',
             description: '',
-            presentInRoom: false
+            presentInRoom: false,
+            requestedInPassages: []
         }
     }
 
@@ -259,7 +260,8 @@ class ItemCreatePage extends Component {
             itemToCreate: {
                 name: '',
                 description: '',
-                presentInRoom: false
+                presentInRoom: false,
+                requestedInPassages: []
             }
         })
     }

@@ -5,11 +5,106 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import { cyan, purple, grey, green } from '@material-ui/core/colors';
+import { cyan, purple, grey } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import arrowRightCircle from '@iconify/icons-mdi/arrow-right-circle';
 import { Icon } from '@iconify/react';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import IconButton from '@material-ui/core/IconButton';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
+import MapIcon from '@material-ui/icons/Map';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import Switch from '@material-ui/core/Switch';
+import { useTheme } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import InfoIcon from '@material-ui/icons/Info';
 
+function TablePaginationActions(props) {
+    const theme = useTheme();
+    const { count, page, rowsPerPage, onChangePage } = props;
+
+    const handleFirstPageButtonClick = (event) => {
+        onChangePage(event, 0);
+    };
+
+    const handleBackButtonClick = (event) => {
+        onChangePage(event, page - 1);
+    };
+
+    const handleNextButtonClick = (event) => {
+        onChangePage(event, page + 1);
+    };
+
+    const handleLastPageButtonClick = (event) => {
+        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    return (
+        <div>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="first page"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="next page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="last page"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </div>
+    );
+}
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: cyan[900],
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+
+const ColoredSwitch = withStyles({
+    switchBase: {
+        color: cyan[800],
+        '&$checked': {
+            color: cyan[900],
+        },
+        '&$checked + $track': {
+            backgroundColor: cyan[900]
+        },
+    },
+    checked: {},
+    track: {},
+})(Switch);
 
 const ColorButton = withStyles((theme) => ({
     root: {
@@ -21,6 +116,92 @@ const ColorButton = withStyles((theme) => ({
     },
 }))(Button);
 
+function ItemList(props) {
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    return (
+        <Grid item>
+            <Box mb={3} ml={1} mr={1}>
+                <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <StyledTableCell style={{ fontWeight: "bold" }}>Neccessary Items</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Navigate</StyledTableCell>
+                                <StyledTableCell style={{ fontWeight: "bold" }} align="right">Needed</StyledTableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(rowsPerPage > 0
+                                ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : props.items
+                            ).map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row">
+                                        {item.name}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} >
+                                            <MapIcon style={{ color: cyan[900] }} />
+                                        </IconButton>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <ColoredSwitch
+                                            checked={/*props.IsItemNeededInPassage(props.passages[props.passageIndex], item)*/ props.passages[props.passageIndex].requestedItems.includes(item)}
+                                            onChange={() => { props.setNeccessaryItemToPassage(props.passages[props.passageIndex], item); }}
+                                            name="togglePassage"
+                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                            checkedIcon={<CheckCircleIcon />}
+                                            icon={<CancelIcon />}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+
+
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                    colSpan={2}
+                                    count={props.items.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: { 'aria-label': 'rows per page' },
+                                        native: true,
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Grid>
+    )
+}
+
+const BigTooltip = withStyles({
+    tooltip: {
+        fontSize: "12px",
+        maxWidth: "none"
+    }
+})(Tooltip);
 
 class ParticularPassageEdit extends Component {
 
@@ -39,7 +220,7 @@ class ParticularPassageEdit extends Component {
                         </Box>
                     </Grid>
 
-                    <Grid container item spacing={1} alignItems="flex-end">
+                    <Grid container item spacing={1} alignItems="flex-end" justify="center">
                         <Grid item>
                             <Box ml={1}>
                                 <TextField id="input-with-icon-grid" label="From:" value={this.props.passages[params.passageIndex].from.name} variant="outlined" disabled />
@@ -54,6 +235,22 @@ class ParticularPassageEdit extends Component {
                             </Box>
                         </Grid>
                     </Grid>
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="Select which items are needed to activate the passage" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+                    <ItemList
+                        passageIndex={params.passageIndex}
+                        passages={this.props.passages}
+                        items={this.props.items}
+                        setNeccessaryItemToPassage={this.props.setNeccessaryItemToPassage}
+                    />
+
+
                 </Grid>
             </div>
         )
