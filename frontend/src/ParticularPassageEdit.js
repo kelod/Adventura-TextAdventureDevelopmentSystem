@@ -238,6 +238,28 @@ class ParticularPassageEdit extends Component {
 
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
+                            <BigTooltip title="This description will appear in the options which can be selected. For example: Go across the river" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Box mb={3} ml={1} mr={1}>
+                            <TextField
+                                id="passage-description"
+                                name="description"
+                                label="Description"
+                                multiline
+                                rows={7}
+                                variant="outlined"
+                                defaultValue={this.props.passages[params.passageIndex].description}
+                                onChange={(e) => { this.props.setPassageDescription(params.passageIndex, e) }}
+                                fullWidth />
+                        </Box>
+                    </Grid>
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
                             <BigTooltip title="Select which items are needed to activate the passage" arrow TransitionComponent={Zoom} placement="left">
                                 <InfoIcon style={{ color: cyan[800] }} />
                             </BigTooltip>
