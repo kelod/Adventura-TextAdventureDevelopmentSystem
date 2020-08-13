@@ -234,8 +234,12 @@ class ItemCreatePage extends Component {
         itemToCreate: {
             name: '',
             description: '',
+            usageDescription: '',
             presentInRoom: false,
-            requestedInPassages: []
+            requestedInPassages: [],
+           /* isInventoryItem: false*/
+            type: '',
+            usageType: ''
         }
     }
 
@@ -260,8 +264,12 @@ class ItemCreatePage extends Component {
             itemToCreate: {
                 name: '',
                 description: '',
+                usageDescription: '',
                 presentInRoom: false,
-                requestedInPassages: []
+                requestedInPassages: [],
+                /*isInventoryItem: false*/
+                type: '',
+                usageType: ''
             }
         })
     }

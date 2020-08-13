@@ -91,7 +91,7 @@ class WelcomePage extends Component {
                                     </Box>
                                 </CardContent>
                                 <CardActions>
-                                    <Button variant="contained" color="primary" size="small">Start this bitch!</Button>
+                                    <Button variant="contained" color="primary" size="small">Start!</Button>
                                 </CardActions>
                             </Card>
                         </Grid>
