@@ -281,7 +281,10 @@ class App extends Component {
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
         this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
         this.setPassageDescription = this.setPassageDescription.bind(this);
+        this.setPassageActivationToItem = this.setPassageActivationToItem.bind(this);
+        this.deletePassageActivationToItem = this.deletePassageActivationToItem.bind(this);
         this.setNeccessaryItemToPassage = this.setNeccessaryItemToPassage.bind(this);
+        this.togglePassageActivationByItem = this.togglePassageActivationByItem.bind(this);
         this.getRoomByName = this.getRoomByName.bind(this);
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
@@ -524,6 +527,53 @@ class App extends Component {
         })
     }
 
+    setPassageActivationToItem = (passage, item) => {
+        var _items = this.state.gameToCreate.items;
+
+        const newPassageActivation = {
+            enable: true,
+            passage: passage
+        }
+
+        _items[_items.indexOf(item)].passageActivations = [..._items[_items.indexOf(item)].passageActivations, newPassageActivation];
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
+    deletePassageActivationToItem = (passageActivation, item) => {
+        var _items = this.state.gameToCreate.items;
+
+        _items[_items.indexOf(item)].passageActivations.splice(_items[_items.indexOf(item)].passageActivations.indexOf(passageActivation), 1);
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
+    togglePassageActivationByItem = (passageActivation, item) => {
+        var _items = this.state.gameToCreate.items;
+
+        if (passageActivation.enable)
+            passageActivation.enable = false;
+        else
+            passageActivation.enable = true;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items
+            }
+        })
+    }
+
     renderItemToRoom = (itemIndex, event) => {
         var _items = this.state.gameToCreate.items;
         _items[itemIndex].presentInRoom = event.target.value;
@@ -724,7 +774,7 @@ class App extends Component {
                 <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
                 <Route exact path="/create/passages" render={(props) => <PassageCreatePage {...props} deletePassage={this.deletePassage} passages={this.state.gameToCreate.passages} />} />
                 <Route exact path="/create/passages/:passageIndex" render={(props) => <ParticularPassageEdit {...props} passages={this.state.gameToCreate.passages} items={this.state.gameToCreate.items} setNeccessaryItemToPassage={this.setNeccessaryItemToPassage} setPassageDescription={this.setPassageDescription} />} />
-                <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} setItemType={this.setItemType} />} />
+                <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} setItemType={this.setItemType} setPassageActivationToItem={this.setPassageActivationToItem} passages={this.state.gameToCreate.passages} togglePassageActivationByItem={this.togglePassageActivationByItem} deletePassageActivationToItem={this.deletePassageActivationToItem} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
                 <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} />} />

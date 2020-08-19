@@ -237,9 +237,11 @@ class ItemCreatePage extends Component {
             usageDescription: '',
             presentInRoom: false,
             requestedInPassages: [],
-           /* isInventoryItem: false*/
             type: '',
-            usageType: ''
+            usageType: '',
+            hp: null,
+            game: null,
+            passageActivations: []
         }
     }
 
@@ -267,9 +269,11 @@ class ItemCreatePage extends Component {
                 usageDescription: '',
                 presentInRoom: false,
                 requestedInPassages: [],
-                /*isInventoryItem: false*/
                 type: '',
-                usageType: ''
+                usageType: '',
+                hp: null,
+                game: null,
+                passageActivations: []
             }
         })
     }
