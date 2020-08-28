@@ -31,6 +31,17 @@ import Zoom from '@material-ui/core/Zoom';
 import InfoIcon from '@material-ui/icons/Info';
 import arrowRightCircle from '@iconify/icons-mdi/arrow-right-circle';
 import { Icon } from '@iconify/react';
+import Card from '@material-ui/core/Card';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -118,6 +129,65 @@ class ParticularEnemyEdit extends Component {
                                 defaultValue={this.props.enemies[params.enemyIndex].description}
                                 onChange={(e) => { this.props.setEnemyDescription(params.enemyIndex, e) }}
                                 fullWidth />
+                        </Box>
+                    </Grid>
+
+                    <Box m={1} boxShadow={3}>
+                        <Card variant="outlined" raised>
+                            <Grid item>
+                                    <Box ml={1}>
+                                        <BigTooltip title="You can choose whether its mandatory or not to fight with this enemy" arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                            <InfoIcon style={{ color: red[600] }} />
+                                        </BigTooltip>
+                                    </Box>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Box ml={1}>
+                                    <FormControl component="fieldset">
+                                        <FormLabel component="legend">Fighting Type</FormLabel>
+                                        <RadioGroup aria-label="type" name="type" value={this.props.enemies[params.enemyIndex].fightingType} onChange={(e) => { this.props.setEnemyFightingType(this.props.enemies[params.enemyIndex], e); }} >
+                                              <FormControlLabel value="optional" control={<Radio />} label="Optional" />
+                                              <FormControlLabel value="mandatory" control={<Radio />} label="Mandatory" />
+                                          </RadioGroup>
+                                    </FormControl>
+                                </Box>
+                            </Grid>
+                        </Card>
+                    </Box>
+
+                    <Grid item>
+                        <Box m={1} boxShadow={3}>
+                            <Accordion>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
+                                    <Typography>Properties</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                        <Box ml={1}>
+                                            <TextField
+                                                id="hp"
+                                                name="hp"
+                                                label="HP"
+                                                value={this.props.enemies[params.enemyIndex].hp}
+                                                variant="outlined"
+                                                style={{ marginRight: "20px" }}
+                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                            />
+                                            <TextField
+                                                id="attack"
+                                                name="attack"
+                                                label="Average attack"
+                                                value={this.props.enemies[params.enemyIndex].attack}
+                                                variant="outlined"
+                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                            />
+                                        </Box>
+                                </AccordionDetails>
+                            </Accordion>
                         </Box>
                     </Grid>
 

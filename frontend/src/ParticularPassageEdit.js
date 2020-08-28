@@ -31,6 +31,7 @@ import { useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import InfoIcon from '@material-ui/icons/Info';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 function TablePaginationActions(props) {
     const theme = useTheme();
@@ -158,7 +159,7 @@ function ItemList(props) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <ColoredSwitch
-                                            checked={/*props.IsItemNeededInPassage(props.passages[props.passageIndex], item)*/ props.passages[props.passageIndex].requestedItems.includes(item)}
+                                            checked={props.passages[props.passageIndex].requestedItems.includes(item)}
                                             onChange={() => { props.setNeccessaryItemToPassage(props.passages[props.passageIndex], item); }}
                                             name="togglePassage"
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
@@ -234,6 +235,25 @@ class ParticularPassageEdit extends Component {
                                 <TextField id="input-with-icon-grid" label="To:" value={this.props.passages[params.passageIndex].to.name} variant="outlined" disabled />
                             </Box>
                         </Grid>
+                    </Grid>
+
+                    <Grid container item justify="center">
+                        <Box ml={1} mt={1}>
+                            <FormControlLabel
+                                control={
+                                    <ColoredSwitch
+                                        checked={this.props.passages[params.passageIndex].defaultEnabled}
+                                        onChange={() => { this.props.togglePassageDefaultEnabled(this.props.passages[params.passageIndex]) }}
+                                        name="togglePassageEnabled"
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                        checkedIcon={<CheckCircleIcon />}
+                                        icon={<CancelIcon />}
+                                    />
+                                }
+                                label="Default activation"
+                                labelPlacement="top"
+                            />
+                        </Box>
                     </Grid>
 
                     <Grid container item justify="flex-end">

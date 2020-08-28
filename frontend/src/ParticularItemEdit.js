@@ -42,6 +42,8 @@ import { useTheme } from '@material-ui/core/styles';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { shadows } from '@material-ui/system';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 
@@ -462,7 +464,7 @@ function AccordionList(props) {
                                                         </TableCell>
                                                         <TableCell align="right">
                                                             <IconButton color="secondary" onClick={() => { props.setPassageActivationToItem(passage, props.items[props.itemIndex]) }}>
-                                                                <DeleteOutlineIcon />
+                                                                <ArrowForwardIcon style={{ color: cyan[900] }}/>
                                                             </IconButton>
                                                         </TableCell>
                                                     </TableRow>)}
@@ -511,7 +513,7 @@ function AccordionList(props) {
                                                         <TableRow key={index}>
                                                             <TableCell component="th" scope="row">
                                                                 <IconButton color="secondary" onClick={() => { props.deletePassageActivationToItem(passageActivation, props.items[props.itemIndex]) }}>
-                                                                    <DeleteOutlineIcon />
+                                                                    <ArrowBackIcon style={{ color: cyan[900] }}/>
                                                                 </IconButton>
                                                             </TableCell>
                                                             <TableCell align="right">

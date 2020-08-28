@@ -235,7 +235,9 @@ class EnemyCreatePage extends Component {
             name: '',
             description: '',
             presentInRoom: false,
-            health: 0
+            hp: null,
+            attack: null,
+            fightingType: 'mandatory'
         }
     }
 
@@ -261,7 +263,9 @@ class EnemyCreatePage extends Component {
                 name: '',
                 description: '',
                 presentInRoom: false,
-                health: 0
+                hp: null,
+                attack: null,
+                fightingType: 'mandatory'
             }
         })
     }
