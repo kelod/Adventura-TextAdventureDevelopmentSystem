@@ -237,7 +237,12 @@ class EnemyCreatePage extends Component {
             presentInRoom: false,
             hp: null,
             attack: null,
-            fightingType: 'mandatory'
+            fightingType: 'mandatory',
+            hpGainReward: null,
+            itemGainReward: null,
+            passageActivationReward: null,
+            gameOverPenalty: null,
+            itemLostPenalty: null
         }
     }
 
@@ -265,7 +270,12 @@ class EnemyCreatePage extends Component {
                 presentInRoom: false,
                 hp: null,
                 attack: null,
-                fightingType: 'mandatory'
+                fightingType: 'mandatory',
+                hpGainReward: null,
+                itemGainReward: null,
+                passageActivationReward: null,
+                gameOverPenalty: null,
+                itemLostPenalty: null
             }
         })
     }

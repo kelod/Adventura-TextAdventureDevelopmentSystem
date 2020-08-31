@@ -32,6 +32,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import arrowRightCircle from '@iconify/icons-mdi/arrow-right-circle';
 import { Icon } from '@iconify/react';
 import Card from '@material-ui/core/Card';
+import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -70,6 +71,168 @@ const BigTooltip = withStyles({
         maxWidth: "none"
     }
 })(Tooltip);
+
+function ConseqAccordionWin(props) {
+
+    const [checked, setChecked] = React.useState(false);
+    const [checked1, setChecked1] = React.useState(false);
+    const [checked2, setChecked2] = React.useState(false);
+
+    return (
+        <div>
+            <Grid container item direction="row">
+                <Grid item xs={1}>
+                    <Checkbox
+                        name="checkbox"
+                        checked={props.enemies[props.enemyIndex].hpGainReward || checked}
+                        onChange={(event) => { setChecked(event.target.checked); props.setEnemyReward(props.enemies[props.enemyIndex], event); }}
+                        inputProps={{ 'aria-label': 'primary checkbox' }} />
+                </Grid>
+                <Grid item xs={11}>
+                    <Accordion disabled={!props.enemies[props.enemyIndex].hpGainReward && !checked} style={{marginBottom: "5px"}}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label="Expand"
+                            aria-controls="additional-actions1-content"
+                            id="additional-actions1-header"
+                        >
+                            <Typography>HP gain</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TextField
+                                id="hpReward"
+                                name="hpGainReward"
+                                label="Amount"
+                                variant="outlined"
+                                defaultValue={props.enemies[props.enemyIndex].hpGainReward}
+                                value={props.enemies[props.enemyIndex].hpGainReward}
+                                onChange={(e) => { props.setEnemyReward( props.enemies[props.enemyIndex], e); }}
+                            />
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+
+            <Grid container item direction="row">
+                <Grid item xs={1}>
+                    <Checkbox
+                        checked={checked1}
+                        onChange={(event) => { setChecked1(event.target.checked) }}
+                        inputProps={{ 'aria-label': 'primary checkbox' }} />
+                </Grid>
+                <Grid item xs={11}>
+                    <Accordion disabled={!checked1} style={{ marginBottom: "5px" }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label="Expand"
+                            aria-controls="additional-actions1-content"
+                            id="additional-actions1-header"
+                        >
+                            <Typography>Item receive</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography color="textSecondary">
+                                The click event of the nested action will propagate up and expand the accordion unless
+                                you explicitly stop it.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+
+            <Grid container item direction="row">
+                <Grid item xs={1}>
+                    <Checkbox
+                        checked={checked2}
+                        onChange={(event) => { setChecked2(event.target.checked) }}
+                        inputProps={{ 'aria-label': 'primary checkbox' }} />
+                </Grid>
+                <Grid item xs={11}>
+                    <Accordion disabled={!checked2} style={{ marginBottom: "5px" }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label="Expand"
+                            aria-controls="additional-actions1-content"
+                            id="additional-actions1-header"
+                        >
+                            <Typography>Passage activation</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography color="textSecondary">
+                                The click event of the nested action will propagate up and expand the accordion unless
+                                you explicitly stop it.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+        </div>
+    )
+}
+
+function ConseqAccordionLose(props) {
+
+    const [checked, setChecked] = React.useState(false);
+    const [checked1, setChecked1] = React.useState(false);
+
+    return (
+        <div>
+            <Grid container item direction="row">
+                <Grid item xs={1}>
+                    <Checkbox
+                        checked={checked}
+                        onChange={(event) => { setChecked(event.target.checked) }}
+                        inputProps={{ 'aria-label': 'primary checkbox' }} />
+                </Grid>
+                <Grid item xs={11}>
+                    <Accordion disabled={!checked} style={{ marginBottom: "5px" }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label="Expand"
+                            aria-controls="additional-actions1-content"
+                            id="additional-actions1-header"
+                        >
+                            <Typography>Item lost</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography color="textSecondary">
+                                The click event of the nested action will propagate up and expand the accordion unless
+                                you explicitly stop it.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+
+            <Grid container item direction="row">
+                <Grid item xs={1}>
+                    <Checkbox
+                        checked={checked1}
+                        onChange={(event) => { setChecked1(event.target.checked) }}
+                        inputProps={{ 'aria-label': 'primary checkbox' }} />
+                </Grid>
+                <Grid item xs={11}>
+                    <Accordion disabled={!checked1} style={{ marginBottom: "5px" }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-label="Expand"
+                            aria-controls="additional-actions1-content"
+                            id="additional-actions1-header"
+                        >
+                            <Typography>Game over</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography color="textSecondary">
+                                The click event of the nested action will propagate up and expand the accordion unless
+                                you explicitly stop it.
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+        </div>
+    )
+}
 
 class ParticularEnemyEdit extends Component {
     
@@ -190,6 +353,29 @@ class ParticularEnemyEdit extends Component {
                             </Accordion>
                         </Box>
                     </Grid>
+
+                    
+                    <Box m={1} boxShadow={3}>
+                        <Typography style={{ margin: "10px" }}>Consequencies</Typography>
+
+                        <Grid container item direction="row">
+                            <Grid container item xs={6}>
+                                <Box m={1} boxShadow={3}>
+                                    <Typography style={{ margin: "10px" }}>Win</Typography>
+                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setEnemyReward={this.props.setEnemyReward} />
+                                </Box>
+                            </Grid>
+
+                            <Grid container item xs={6}>
+                                <Box m={1} boxShadow={3}>
+                                    <Typography style={{ margin: "10px" }}>Lose</Typography>
+                                    <ConseqAccordionLose />
+                                </Box>
+                            </Grid>
+
+                        </Grid>
+                    </Box>
+                    
 
 
 
