@@ -23,8 +23,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
 import { cyan, purple, grey, red } from '@material-ui/core/colors';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import CancelIcon from '@material-ui/icons/Cancel';
 import MapIcon from '@material-ui/icons/Map';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -43,6 +41,8 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import trophyAward from '@iconify/icons-mdi/trophy-award';
+
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -85,11 +85,11 @@ function ConseqAccordionWin(props) {
                     <Checkbox
                         name="checkbox"
                         checked={props.enemies[props.enemyIndex].hpGainReward || checked}
-                        onChange={(event) => { setChecked(event.target.checked); props.setEnemyReward(props.enemies[props.enemyIndex], event); }}
+                        onChange={(event) => { setChecked(event.target.checked); props.setHpRewardEnemy(props.enemies[props.enemyIndex], event); }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!props.enemies[props.enemyIndex].hpGainReward && !checked} style={{marginBottom: "5px"}}>
+                    <Accordion disabled={!props.enemies[props.enemyIndex].hpGainReward && !checked} style={{ marginBottom: "5px" }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-label="Expand"
@@ -106,7 +106,7 @@ function ConseqAccordionWin(props) {
                                 variant="outlined"
                                 defaultValue={props.enemies[props.enemyIndex].hpGainReward}
                                 value={props.enemies[props.enemyIndex].hpGainReward}
-                                onChange={(e) => { props.setEnemyReward( props.enemies[props.enemyIndex], e); }}
+                                onChange={(e) => { props.setHpRewardEnemy( props.enemies[props.enemyIndex], e); }}
                             />
                         </AccordionDetails>
                     </Accordion>
@@ -116,12 +116,13 @@ function ConseqAccordionWin(props) {
             <Grid container item direction="row">
                 <Grid item xs={1}>
                     <Checkbox
-                        checked={checked1}
-                        onChange={(event) => { setChecked1(event.target.checked) }}
+                        name="checkbox"
+                        checked={props.enemies[props.enemyIndex].itemGainReward.length != 0 || checked1}
+                        onChange={(event) => { setChecked1(event.target.checked); props.toggleItemGainRewardForEnemy(props.enemies[props.enemyIndex], null, event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!checked1} style={{ marginBottom: "5px" }}>
+                    <Accordion disabled={!(props.enemies[props.enemyIndex].itemGainReward.length != 0) && !checked1} style={{ marginBottom: "5px" }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-label="Expand"
@@ -131,10 +132,7 @@ function ConseqAccordionWin(props) {
                             <Typography>Item receive</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography color="textSecondary">
-                                The click event of the nested action will propagate up and expand the accordion unless
-                                you explicitly stop it.
-                            </Typography>
+                            <ItemList enemies={props.enemies} enemyIndex={props.enemyIndex} toggleItemGainRewardForEnemy={props.toggleItemGainRewardForEnemy} items={props.items}/>
                         </AccordionDetails>
                     </Accordion>
                 </Grid>
@@ -232,6 +230,137 @@ function ConseqAccordionLose(props) {
             </Grid>
         </div>
     )
+}
+
+function ItemList(props) {
+
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    return (
+        <Grid container direction='column'>
+            <Grid item>
+                <Box m={1}>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Name</StyledTableCell>
+                                    <StyledTableCell align="right">Navigate</StyledTableCell>
+                                    <StyledTableCell align="right">Reward</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {(rowsPerPage > 0
+                                    ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : props.items
+                                ).map((item, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            {item.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} variant="contained">
+                                                <MapIcon style={{ color: cyan[800] }} />
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Checkbox
+                                                checked={props.enemies[props.enemyIndex].itemGainReward == null ? false : props.enemies[props.enemyIndex].itemGainReward.includes(item)}
+                                                onChange={(event) => { props.toggleItemGainRewardForEnemy(props.enemies[props.enemyIndex], item, event); }}
+                                                inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                icon={<Icon icon={trophyAward} color="grey" />}
+                                                checkedIcon={<Icon icon={trophyAward} color="yellow" />}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+
+
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                        colSpan={2}
+                                        count={props.items.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={handleChangePage}
+                                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                                        ActionsComponent={TablePaginationActions}
+                                    />
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            </Grid>
+        </Grid>
+    )
+}
+function TablePaginationActions(props) {
+    const theme = useTheme();
+    const { count, page, rowsPerPage, onChangePage } = props;
+
+    const handleFirstPageButtonClick = (event) => {
+        onChangePage(event, 0);
+    };
+
+    const handleBackButtonClick = (event) => {
+        onChangePage(event, page - 1);
+    };
+
+    const handleNextButtonClick = (event) => {
+        onChangePage(event, page + 1);
+    };
+
+    const handleLastPageButtonClick = (event) => {
+        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    return (
+        <div>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="first page"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="next page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="last page"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </div>
+    );
 }
 
 class ParticularEnemyEdit extends Component {
@@ -362,7 +491,7 @@ class ParticularEnemyEdit extends Component {
                             <Grid container item xs={6}>
                                 <Box m={1} boxShadow={3}>
                                     <Typography style={{ margin: "10px" }}>Win</Typography>
-                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setEnemyReward={this.props.setEnemyReward} />
+                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} items={this.props.items}/>
                                 </Box>
                             </Grid>
 

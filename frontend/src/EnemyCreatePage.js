@@ -239,7 +239,7 @@ class EnemyCreatePage extends Component {
             attack: null,
             fightingType: 'mandatory',
             hpGainReward: null,
-            itemGainReward: null,
+            itemGainReward: [],
             passageActivationReward: null,
             gameOverPenalty: null,
             itemLostPenalty: null
@@ -272,7 +272,7 @@ class EnemyCreatePage extends Component {
                 attack: null,
                 fightingType: 'mandatory',
                 hpGainReward: null,
-                itemGainReward: null,
+                itemGainReward: [],
                 passageActivationReward: null,
                 gameOverPenalty: null,
                 itemLostPenalty: null

@@ -302,7 +302,8 @@ class App extends Component {
         this.setEnemyFightingType = this.setEnemyFightingType.bind(this);
         this.setEnemyDescription = this.setEnemyDescription.bind(this);
         this.setEnemyToRoom = this.setEnemyToRoom.bind(this);
-        this.setEnemyReward = this.setEnemyReward.bind(this);
+        this.setHpRewardEnemy = this.setHpRewardEnemy.bind(this);
+        this.toggleItemGainRewardForEnemy = this.toggleItemGainRewardForEnemy.bind(this);
         this.IsEnemyInRoom = this.IsEnemyInRoom.bind(this);
     }
 
@@ -787,12 +788,34 @@ class App extends Component {
         })
     }
 
-    setEnemyReward = (enemy, event) => { 
+    setHpRewardEnemy = (enemy, event) => { 
 
         if (event.target.name === "checkbox")
             enemy.hpGainReward = "";
         else
             enemy.hpGainReward = event.target.value; //Egyelore csak a hp reward használja
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                enemies: this.state.gameToCreate.enemies
+            }
+        })
+    }
+
+    toggleItemGainRewardForEnemy = (enemy, item, event) => {
+
+        if (event.target.name === "checkbox") {
+            enemy.itemGainReward = [];
+        }
+        else {
+            if (enemy.itemGainReward.includes(item)) {
+                enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(item), 1);
+            }
+            else {
+                enemy.itemGainReward = [...enemy.itemGainReward, item];
+            }
+        }
 
         this.setState({
             gameToCreate: {
@@ -844,7 +867,7 @@ class App extends Component {
                 <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} setItemType={this.setItemType} setPassageActivationToItem={this.setPassageActivationToItem} passages={this.state.gameToCreate.passages} togglePassageActivationByItem={this.togglePassageActivationByItem} deletePassageActivationToItem={this.deletePassageActivationToItem} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
-                <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} setEnemyFightingType={this.setEnemyFightingType} setEnemyProperties={this.setEnemyProperties} setEnemyReward={this.setEnemyReward} />} />
+                <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} setEnemyFightingType={this.setEnemyFightingType} setEnemyProperties={this.setEnemyProperties} setHpRewardEnemy={this.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.toggleItemGainRewardForEnemy} />} />
                 <Route exact path="/create/map" render={(props) => <Map {...props} rooms={this.state.gameToCreate.rooms} passages={this.state.gameToCreate.passages} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} getRoomByName={this.getRoomByName} />} />
             </Router>
         );
