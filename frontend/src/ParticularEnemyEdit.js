@@ -44,7 +44,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import trophyAward from '@iconify/icons-mdi/trophy-award';
 import doorOpen from '@iconify/icons-mdi/door-open';
 import trophyBroken from '@iconify/icons-mdi/trophy-broken';
-
+import ClearIcon from '@material-ui/icons/Clear';
 
 
 
@@ -206,14 +206,14 @@ function ConseqAccordionLose(props) {
             <Grid container item direction="row">
                 <Grid item xs={1}>
                     <Checkbox
-                        checked={checked1}
-                        onChange={(event) => { setChecked1(event.target.checked) }}
+                        checked={props.enemies[props.enemyIndex].gameOverPenalty}
+                        onChange={(event) => { props.toggleGameOverPenaltyForEnemy(props.enemies[props.enemyIndex], event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!checked1} style={{ marginBottom: "5px" }}>
+                    <Accordion disabled={!props.enemies[props.enemyIndex].gameOverPenalty} style={{ marginBottom: "5px" }} expanded={false}>
                         <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
+                            expandIcon={<ClearIcon />}
                             aria-label="Expand"
                             aria-controls="additional-actions1-content"
                             id="additional-actions1-header"
@@ -222,8 +222,7 @@ function ConseqAccordionLose(props) {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography color="textSecondary">
-                                The click event of the nested action will propagate up and expand the accordion unless
-                                you explicitly stop it.
+                                You should never see this.
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -587,7 +586,7 @@ class ParticularEnemyEdit extends Component {
                             <Grid container item xs={6}>
                                 <Box m={1} boxShadow={3}>
                                     <Typography style={{ margin: "10px" }}>Lose</Typography>
-                                    <ConseqAccordionLose enemies={this.props.enemies} enemyIndex={params.enemyIndex} items={this.props.items} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy}/>
+                                    <ConseqAccordionLose enemies={this.props.enemies} enemyIndex={params.enemyIndex} items={this.props.items} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} toggleGameOverPenaltyForEnemy={this.props.toggleGameOverPenaltyForEnemy} />
                                 </Box>
                             </Grid>
 
