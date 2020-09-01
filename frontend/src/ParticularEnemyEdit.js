@@ -42,6 +42,8 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import trophyAward from '@iconify/icons-mdi/trophy-award';
+import doorOpen from '@iconify/icons-mdi/door-open';
+
 
 
 
@@ -141,12 +143,13 @@ function ConseqAccordionWin(props) {
             <Grid container item direction="row">
                 <Grid item xs={1}>
                     <Checkbox
-                        checked={checked2}
-                        onChange={(event) => { setChecked2(event.target.checked) }}
+                        name="checkbox"
+                        checked={props.enemies[props.enemyIndex].passageActivationReward.length != 0 || checked2}
+                        onChange={(event) => { setChecked2(event.target.checked); props.togglePassageActivationRewardForEnemy(props.enemies[props.enemyIndex], null, event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!checked2} style={{ marginBottom: "5px" }}>
+                    <Accordion disabled={!(props.enemies[props.enemyIndex].passageActivationReward.length != 0) && !checked2} style={{ marginBottom: "5px" }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-label="Expand"
@@ -157,8 +160,7 @@ function ConseqAccordionWin(props) {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography color="textSecondary">
-                                The click event of the nested action will propagate up and expand the accordion unless
-                                you explicitly stop it.
+                                <PassageList passages={props.passages} togglePassageActivationRewardForEnemy={props.togglePassageActivationRewardForEnemy} enemies={props.enemies} enemyIndex={props.enemyIndex} />
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -313,6 +315,93 @@ function ItemList(props) {
         </Grid>
     )
 }
+
+function PassageList(props) {
+
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    return (
+        <Grid container direction='column'>
+            <Grid item>
+                <Box m={1}>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>From</StyledTableCell>
+                                    <StyledTableCell>To</StyledTableCell>
+                                    <StyledTableCell align="right">Navigate</StyledTableCell>
+                                    <StyledTableCell align="right">Open</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {(rowsPerPage > 0
+                                    ? props.passages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : props.passages
+                                ).map((passage, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            {passage.from.name}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {passage.to.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton component={Link} to={`/create/passages/${props.passages.indexOf(passage)}`} variant="contained">
+                                                <MapIcon style={{ color: cyan[800] }} />
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Checkbox
+                                                checked={props.enemies[props.enemyIndex].passageActivationReward == null ? false : props.enemies[props.enemyIndex].passageActivationReward.includes(passage)}
+                                                onChange={(event) => { props.togglePassageActivationRewardForEnemy(props.enemies[props.enemyIndex], passage, event); }}
+                                                inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                icon={<Icon icon={doorOpen} color="grey" />}
+                                                checkedIcon={<Icon icon={doorOpen} color="green" />}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+
+
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                        colSpan={2}
+                                        count={props.passages.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        SelectProps={{
+                                            inputProps: { 'aria-label': 'rows per page' },
+                                            native: true,
+                                        }}
+                                        onChangePage={handleChangePage}
+                                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                                        ActionsComponent={TablePaginationActions}
+                                    />
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            </Grid>
+        </Grid>
+    )
+}
+
 function TablePaginationActions(props) {
     const theme = useTheme();
     const { count, page, rowsPerPage, onChangePage } = props;
@@ -491,7 +580,7 @@ class ParticularEnemyEdit extends Component {
                             <Grid container item xs={6}>
                                 <Box m={1} boxShadow={3}>
                                     <Typography style={{ margin: "10px" }}>Win</Typography>
-                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} items={this.props.items}/>
+                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.props.togglePassageActivationRewardForEnemy} items={this.props.items} passages={this.props.passages} />
                                 </Box>
                             </Grid>
 
