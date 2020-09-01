@@ -43,6 +43,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import trophyAward from '@iconify/icons-mdi/trophy-award';
 import doorOpen from '@iconify/icons-mdi/door-open';
+import trophyBroken from '@iconify/icons-mdi/trophy-broken';
 
 
 
@@ -118,7 +119,7 @@ function ConseqAccordionWin(props) {
             <Grid container item direction="row">
                 <Grid item xs={1}>
                     <Checkbox
-                        name="checkbox"
+                        name="checkboxWin"
                         checked={props.enemies[props.enemyIndex].itemGainReward.length != 0 || checked1}
                         onChange={(event) => { setChecked1(event.target.checked); props.toggleItemGainRewardForEnemy(props.enemies[props.enemyIndex], null, event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
@@ -134,7 +135,7 @@ function ConseqAccordionWin(props) {
                             <Typography>Item receive</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <ItemList enemies={props.enemies} enemyIndex={props.enemyIndex} toggleItemGainRewardForEnemy={props.toggleItemGainRewardForEnemy} items={props.items}/>
+                            <ItemList enemies={props.enemies} enemyIndex={props.enemyIndex} toggleItemGainRewardForEnemy={props.toggleItemGainRewardForEnemy} items={props.items} rewardType={"win"} />
                         </AccordionDetails>
                     </Accordion>
                 </Grid>
@@ -180,12 +181,13 @@ function ConseqAccordionLose(props) {
             <Grid container item direction="row">
                 <Grid item xs={1}>
                     <Checkbox
-                        checked={checked}
-                        onChange={(event) => { setChecked(event.target.checked) }}
+                        name="checkboxLose"
+                        checked={props.enemies[props.enemyIndex].itemLosePenalty.length != 0 || checked}
+                        onChange={(event) => { setChecked(event.target.checked); props.toggleItemGainRewardForEnemy(props.enemies[props.enemyIndex], null, event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!checked} style={{ marginBottom: "5px" }}>
+                    <Accordion disabled={!(props.enemies[props.enemyIndex].itemLosePenalty.length != 0) && !checked} style={{ marginBottom: "5px" }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-label="Expand"
@@ -195,10 +197,7 @@ function ConseqAccordionLose(props) {
                             <Typography>Item lost</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography color="textSecondary">
-                                The click event of the nested action will propagate up and expand the accordion unless
-                                you explicitly stop it.
-                            </Typography>
+                            <ItemList enemies={props.enemies} enemyIndex={props.enemyIndex} toggleItemGainRewardForEnemy={props.toggleItemGainRewardForEnemy} items={props.items} rewardType={"lose"}/>
                         </AccordionDetails>
                     </Accordion>
                 </Grid>
@@ -278,12 +277,13 @@ function ItemList(props) {
                                         </TableCell>
                                         <TableCell align="right">
                                             <Checkbox
-                                                checked={props.enemies[props.enemyIndex].itemGainReward == null ? false : props.enemies[props.enemyIndex].itemGainReward.includes(item)}
+                                                name={props.rewardType}
+                                                checked={props.rewardType === "win" ? (props.enemies[props.enemyIndex].itemGainReward == null ? false : props.enemies[props.enemyIndex].itemGainReward.includes(item)) : (props.enemies[props.enemyIndex].itemLosePenalty == null ? false : props.enemies[props.enemyIndex].itemLosePenalty.includes(item))}
                                                 onChange={(event) => { props.toggleItemGainRewardForEnemy(props.enemies[props.enemyIndex], item, event); }}
                                                 inputProps={{ 'aria-label': 'primary checkbox' }}
-                                                icon={<Icon icon={trophyAward} color="grey" />}
-                                                checkedIcon={<Icon icon={trophyAward} color="yellow" />}
-                                            />
+                                                icon={props.rewardType === "win" ? < Icon icon={trophyAward} color="grey" /> : < Icon icon={trophyBroken} color="grey" />}
+                                                checkedIcon={props.rewardType === "win" ? < Icon icon={trophyAward} color="yellow" /> : < Icon icon={trophyBroken} color="red" />}
+                                        />
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -587,7 +587,7 @@ class ParticularEnemyEdit extends Component {
                             <Grid container item xs={6}>
                                 <Box m={1} boxShadow={3}>
                                     <Typography style={{ margin: "10px" }}>Lose</Typography>
-                                    <ConseqAccordionLose />
+                                    <ConseqAccordionLose enemies={this.props.enemies} enemyIndex={params.enemyIndex} items={this.props.items} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy}/>
                                 </Box>
                             </Grid>
 

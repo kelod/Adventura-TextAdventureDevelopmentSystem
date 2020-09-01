@@ -806,15 +806,28 @@ class App extends Component {
 
     toggleItemGainRewardForEnemy = (enemy, item, event) => {
 
-        if (event.target.name === "checkbox") {
-            enemy.itemGainReward = [];
+        if (event.target.name === "checkboxWin" || event.target.name === "checkboxLose") {
+            if (event.target.name === "checkboxWin")
+                enemy.itemGainReward = [];
+            else
+                enemy.itemLosePenalty = [];
         }
         else {
-            if (enemy.itemGainReward.includes(item)) {
-                enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(item), 1);
+            if (event.target.name === "win") {
+                if (enemy.itemGainReward.includes(item)) {
+                    enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(item), 1);
+                }
+                else {
+                    enemy.itemGainReward = [...enemy.itemGainReward, item];
+                }
             }
             else {
-                enemy.itemGainReward = [...enemy.itemGainReward, item];
+                if (enemy.itemLosePenalty.includes(item)) {
+                    enemy.itemLosePenalty.splice(enemy.itemLosePenalty.indexOf(item), 1);
+                }
+                else {
+                    enemy.itemLosePenalty = [...enemy.itemLosePenalty, item];
+                }
             }
         }
 

@@ -242,7 +242,7 @@ class EnemyCreatePage extends Component {
             itemGainReward: [],
             passageActivationReward: [],
             gameOverPenalty: null,
-            itemLostPenalty: null
+            itemLosePenalty: []
         }
     }
 
@@ -275,7 +275,7 @@ class EnemyCreatePage extends Component {
                 itemGainReward: [],
                 passageActivationReward: [],
                 gameOverPenalty: null,
-                itemLostPenalty: null
+                itemLosePenalty: []
             }
         })
     }
