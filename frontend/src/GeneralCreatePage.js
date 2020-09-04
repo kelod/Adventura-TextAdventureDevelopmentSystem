@@ -2,12 +2,22 @@ import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
+import { Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import { cyan, purple } from '@material-ui/core/colors';
+import { withStyles } from '@material-ui/core/styles';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-/*export default function GeneralCreatePage(props) {
-    return (
-        <TextField required id="game-name" label="Name of the game" placeHolder="Type here..." onChange={props.setGameName} value='vmiValue'/>
-    )
-}*/
+const ColorButton = withStyles((theme) => ({
+    root: {
+        color: theme.palette.getContrastText(purple[500]),
+        backgroundColor: cyan[800],
+        '&:hover': {
+            backgroundColor: cyan[900],
+        },
+    },
+}))(Button);
 
 class GeneralCreatePage extends Component {
 
@@ -35,10 +45,18 @@ class GeneralCreatePage extends Component {
                             Here you can add some general data about your game
                         </Box>  
                     </Grid>
-                    <Grid item>
-                        <Box mb={3} ml={1}>
-                            <TextField required id="game-name" name="name" label="Name of the game" defaultValue={this.props.gameToCreate.name} onChange={setGameProperty} />
-                        </Box>
+                    <Grid container item direction="row" justify="space-between">
+                        <Grid item>
+                            <Box mb={3} ml={1}>
+                                <TextField required id="game-name" name="name" label="Name of the game" defaultValue={this.props.gameToCreate.name} onChange={setGameProperty} />
+                            </Box>
+                        </Grid>
+
+                        <Grid item>
+                            <Box m={1}>
+                                <ColorButton component={Link} to={`/create/rooms`} size="small" variant="contained" startIcon={<MeetingRoomIcon />} endIcon={<ChevronRightIcon />}>Rooms</ColorButton>
+                            </Box>
+                        </Grid>
                     </Grid>
                     <Grid item>
                         <Box mb={3} ml={1} mr={1}>

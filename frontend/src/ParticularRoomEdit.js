@@ -424,7 +424,7 @@ class ParticularRoomEdit extends Component {
                                 multiline
                                 rows={14}
                                 variant="outlined"
-                                defaultValue={this.props.rooms[params.roomIndex].description}
+                                value={this.props.rooms[params.roomIndex].description}
                                 onChange={(e) => { this.props.setRoomDescription(params.roomIndex, e) }}
                                 fullWidth/>
                         </Box>

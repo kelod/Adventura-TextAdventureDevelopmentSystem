@@ -456,6 +456,7 @@ class ParticularEnemyEdit extends Component {
 
     render() {
         const { match: { params } } = this.props;
+        console.log(params);
 
         return (
             <div>
@@ -471,7 +472,7 @@ class ParticularEnemyEdit extends Component {
 
                     <Grid item>
                         <Box mb={3} ml={1}>
-                            <TextField required id="enemy-name" name="name" label="Name of the enemy" value={this.props.enemies[params.enemyIndex].name} onChange={(e) => { this.props.setEnemyName(params.enemyIndex, e) }} />
+                            <TextField required id="enemy-name" name="nev" label="Name of the enemy" value={this.props.enemies[params.enemyIndex].name} onChange={(e) => { this.props.setEnemyName(this.props.enemies[params.enemyIndex], e); }} />
                         </Box>
                     </Grid>
 
@@ -555,7 +556,7 @@ class ParticularEnemyEdit extends Component {
                                                 value={this.props.enemies[params.enemyIndex].hp}
                                                 variant="outlined"
                                                 style={{ marginRight: "20px" }}
-                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) /*this.props.setEnemyHp(this.props.enemies[params.enemyIndex], e) */}}
                                             />
                                             <TextField
                                                 id="attack"
@@ -573,24 +574,33 @@ class ParticularEnemyEdit extends Component {
 
                     
                     <Box m={1} boxShadow={3}>
-                        <Typography style={{ margin: "10px" }}>Consequencies</Typography>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>Battle Consequencies</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Grid container item direction="row">
+                                    <Grid container item xs={6}>
+                                        <Box m={1} boxShadow={3}>
+                                            <Typography style={{ margin: "10px" }}>Win</Typography>
+                                            <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.props.togglePassageActivationRewardForEnemy} items={this.props.items} passages={this.props.passages} />
+                                        </Box>
+                                    </Grid>
 
-                        <Grid container item direction="row">
-                            <Grid container item xs={6}>
-                                <Box m={1} boxShadow={3}>
-                                    <Typography style={{ margin: "10px" }}>Win</Typography>
-                                    <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.props.togglePassageActivationRewardForEnemy} items={this.props.items} passages={this.props.passages} />
-                                </Box>
-                            </Grid>
+                                    <Grid container item xs={6}>
+                                        <Box m={1} boxShadow={3}>
+                                            <Typography style={{ margin: "10px" }}>Lose</Typography>
+                                            <ConseqAccordionLose enemies={this.props.enemies} enemyIndex={params.enemyIndex} items={this.props.items} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} toggleGameOverPenaltyForEnemy={this.props.toggleGameOverPenaltyForEnemy} />
+                                        </Box>
+                                    </Grid>
 
-                            <Grid container item xs={6}>
-                                <Box m={1} boxShadow={3}>
-                                    <Typography style={{ margin: "10px" }}>Lose</Typography>
-                                    <ConseqAccordionLose enemies={this.props.enemies} enemyIndex={params.enemyIndex} items={this.props.items} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} toggleGameOverPenaltyForEnemy={this.props.toggleGameOverPenaltyForEnemy} />
-                                </Box>
-                            </Grid>
-
-                        </Grid>
+                                </Grid>
+                            </AccordionDetails>
+                        </Accordion>
                     </Box>
                     
 
