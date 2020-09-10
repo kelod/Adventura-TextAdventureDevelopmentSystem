@@ -13,6 +13,7 @@ import ItemCreatePage from './ItemCreatePage';
 import EnemyCreatePage from './EnemyCreatePage';
 import PassageCreatePage from './PassageCreatePage';
 import ParticularPassageEdit from './ParticularPassageEdit';
+import PlayerCreatePage from './PlayerCreatePage';
 import Map from './Map';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -47,6 +48,7 @@ import { withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import graphqlIcon from '@iconify/icons-mdi/graphql';
 import roadtunnelIcon from '@iconify/icons-whh/roadtunnel';
+import FaceIcon from '@material-ui/icons/Face';
 
 
 
@@ -65,6 +67,7 @@ function CreatePageHeader() {
         "Items",
         "Passages",
         "Enemies",
+        "Player",
         "Map",
         "Etc..."
     ]
@@ -106,6 +109,10 @@ function CreatePageHeader() {
             }
             case "Map": {
                 icon = <Icon icon={graphqlIcon} style={{ fontSize: "29px", color: cyan[900] }} />;
+                break;
+            }
+            case "Player": {
+                icon = <FaceIcon style={{ color: cyan[900] }} />;
                 break;
             }
             default: break;
@@ -265,7 +272,14 @@ class App extends Component {
             rooms: [],
             items: [],
             enemies: [],
-            passages: []
+            passages: [],
+            player: {
+                name: '',
+                hp: null,
+                attack: null,
+                startingRoom: null,
+                startingItems: []
+            }
         }
     }
 
@@ -308,6 +322,9 @@ class App extends Component {
         this.toggleGameOverPenaltyForEnemy = this.toggleGameOverPenaltyForEnemy.bind(this);
         this.IsEnemyInRoom = this.IsEnemyInRoom.bind(this);
         this.setEnemyHp = this.setEnemyHp.bind(this);
+        this.setPlayerProperties = this.setPlayerProperties.bind(this);
+        this.setPlayerStartingRoom = this.setPlayerStartingRoom.bind(this);
+        this.setPlayerStartingItems = this.setPlayerStartingItems.bind(this);
     }
 
     setGameProperty = (event) => {
@@ -916,6 +933,54 @@ class App extends Component {
         })
     }
 
+    setPlayerProperties = (event) => {
+        const { name, value } = event.target;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                player: {
+                    ...this.state.gameToCreate.player,
+                    [name]: value
+                }
+            }
+        })
+    }
+
+    setPlayerStartingRoom = (event) => {
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                player: {
+                    ...this.state.gameToCreate.player,
+                    startingRoom: event.target.value
+                }
+            }
+        })
+    }
+
+    setPlayerStartingItems = (item) => {
+        var _startingItems = this.state.gameToCreate.player.startingItems;
+
+        if (_startingItems.includes(item)) {
+            _startingItems.splice(_startingItems.indexOf(item), 1);
+        }
+        else {
+            _startingItems = [..._startingItems, item];
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                player: {
+                    ...this.state.gameToCreate.player,
+                    startingItems: _startingItems
+                }
+            }
+        })
+    }
+
     render() {
         return (
             <Router>
@@ -933,6 +998,7 @@ class App extends Component {
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
                 <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} passages={this.state.gameToCreate.passages} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} setEnemyFightingType={this.setEnemyFightingType} setEnemyProperties={this.setEnemyProperties} setHpRewardEnemy={this.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.togglePassageActivationRewardForEnemy} toggleGameOverPenaltyForEnemy={this.toggleGameOverPenaltyForEnemy} setEnemyHp={this.setEnemyHp} />} />
+                <Route exact path="/create/player" render={(props) => <PlayerCreatePage {...props} player={this.state.gameToCreate.player} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setPlayerProperties={this.setPlayerProperties} setPlayerStartingRoom={this.setPlayerStartingRoom} setPlayerStartingItems={this.setPlayerStartingItems} />} />
                 <Route exact path="/create/map" render={(props) => <Map {...props} rooms={this.state.gameToCreate.rooms} passages={this.state.gameToCreate.passages} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} getRoomByName={this.getRoomByName} />} />
             </Router>
         );
