@@ -366,8 +366,7 @@ class App extends Component {
         const passageResult = this.hasPassageBetweenRooms(roomFrom, roomTo);
 
         if (passageResult) {
-            _rooms[_rooms.indexOf(roomFrom)].passages.splice(_rooms[_rooms.indexOf(roomFrom)].passages.indexOf(passageResult), 1);
-            _passages.splice(_passages.indexOf(passageResult), 1);
+            this.deletePassage(passageResult);
         }
         else {
             const newPassage = { //Ugyanaz az object kerul a passagesbe es a room passagei koze is
@@ -495,14 +494,35 @@ class App extends Component {
     }
 
     deleteRoom = (room) => {
+
+        if (this.state.gameToCreate.player.startingRoom === room) {
+            this.state.gameToCreate.player.startingRoom = null;
+        }
+
+        for (var passage of this.state.gameToCreate.passages) {
+            if (passage.from === room || passage.to === room) {
+                this.deletePassage(passage);
+            }
+        }
+
+        for (var enemy of room.enemies) {
+            enemy.presentInRoom = null;
+        }
+
+        for (var item of room.items) {
+            item.presentInRoom = null;
+        }
+
         var _rooms = this.state.gameToCreate.rooms;
         _rooms.splice(_rooms.indexOf(room), 1);
-
         
             this.setState({
                 gameToCreate: {
                     ...this.state.gameToCreate,
-                    rooms: _rooms
+                    rooms: _rooms,
+                    passages: this.state.gameToCreate.passages,
+                    enemies: this.state.gameToCreate.enemies,
+                    items: this.state.gameToCreate.items
                 }
             })
         
@@ -521,7 +541,11 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                items: [...this.state.gameToCreate.items, item]
+                items: [...this.state.gameToCreate.items, item],
+                player: {
+                    ...this.state.gameToCreate.player,
+                    startingRoom: this.state.gameToCreate.player.startingRoom
+                }
             }
         });
     }
@@ -530,10 +554,39 @@ class App extends Component {
         var _items = this.state.gameToCreate.items;
         _items.splice(_items.indexOf(item), 1);
 
+        for (var room of this.state.gameToCreate.rooms) {
+            if (room.items.includes(item)) {
+                room.items.splice(room.items.indexOf(item), 1);
+            }
+        }
+
+        for (var enemy of this.state.gameToCreate.enemies) {
+            if (enemy.itemGainReward.includes(item)) {
+                enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(item), 1);
+            }
+            if (enemy.itemLosePenalty.includes(item)) {
+                enemy.itemLosePenalty.splice(enemy.itemLosePenalty.indexOf(item), 1);
+            }
+        }
+
+        for (var passage of this.state.gameToCreate.passages) {
+            if (passage.requestedItems.includes(item)) {
+                passage.requestedItems.splice(passage.requestedItems.indexOf(item), 1);
+            }
+        }
+
+        if (this.state.gameToCreate.player.startingItems.includes(item)) {
+            this.state.gameToCreate.player.startingItems.splice(this.state.gameToCreate.player.startingItems.indexOf(item), 1);
+        }
+
             this.setState({
                 gameToCreate: {
                     ...this.state.gameToCreate,
-                    items: _items
+                    items: _items,
+                    rooms: this.state.gameToCreate.rooms,
+                    enemies: this.state.gameToCreate.enemies,
+                    passages: this.state.gameToCreate.passages,
+                    player: this.state.gameToCreate.player
                 }
             })
         
@@ -910,6 +963,23 @@ class App extends Component {
         var _passages = this.state.gameToCreate.passages;
         var _rooms = this.state.gameToCreate.rooms;
 
+        for (var item of this.state.gameToCreate.items) {
+            for (var passageActivation of item.passageActivations) {
+                if (passageActivation.passage === passage) {
+                    item.passageActivations.splice(item.passageActivations.indexOf(passageActivation), 1);
+                }
+            }
+            if (item.requestedInPassages.includes(passage)) {
+                item.requestedInPassages.splice(item.requestedInPassages.indexOf(passage), 1);
+            }
+        }
+
+        for (var enemy of this.state.gameToCreate.enemies) {
+            if (enemy.passageActivationReward.includes(passage)) {
+                enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passage), 1);
+            }
+        }
+
         _rooms[_rooms.indexOf(passage.from)].passages.splice(_rooms[_rooms.indexOf(passage.from)].passages.indexOf(passage), 1);
         _passages.splice(_passages.indexOf(passage), 1);
 
@@ -917,7 +987,9 @@ class App extends Component {
             gameToCreate: {
                 ...this.state.gameToCreate,
                 rooms: _rooms,
-                passages: _passages
+                passages: _passages,
+                items: this.state.gameToCreate.items,
+                enemies: this.state.gameToCreate.enemies
             }
         })
     }
