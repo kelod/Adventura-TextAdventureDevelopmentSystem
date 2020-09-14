@@ -242,7 +242,11 @@ class EnemyCreatePage extends Component {
             itemGainReward: [],
             passageActivationReward: [],
             gameOverPenalty: false,
-            itemLosePenalty: []
+            itemLosePenalty: [],
+            preBattleDescription: '',
+            postBattleDescriptionWin: '',
+            postBattleDescriptionLose: '',
+            battleEndHp: 0
         }
     }
 
@@ -275,7 +279,11 @@ class EnemyCreatePage extends Component {
                 itemGainReward: [],
                 passageActivationReward: [],
                 gameOverPenalty: false,
-                itemLosePenalty: []
+                itemLosePenalty: [],
+                preBattleDescription: '',
+                postBattleDescriptionWin: '',
+                postBattleDescriptionLose: '',
+                battleEndHp: 0
             }
         })
     }

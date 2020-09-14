@@ -574,6 +574,87 @@ class ParticularEnemyEdit extends Component {
 
                     
                     <Box m={1} boxShadow={3}>
+                            <Accordion>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
+                                    <Typography>Battle process</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Grid container item>
+                                        <Grid item>
+                                            <BigTooltip title="Battle ends if player's HP reaches the given value. By default its 0 so it ends with death" arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                                <InfoIcon style={{ color: red[500], marginBottom: "5px" }} />
+                                            </BigTooltip>
+                                            <Box mb={1}>
+                                                <TextField
+                                                    id="battleEndHp"
+                                                    name="battleEndHp"
+                                                    label="Battle end HP"
+                                                    value={this.props.enemies[params.enemyIndex].battleEndHp}
+                                                    variant="outlined"
+                                                    style={{ marginRight: "20px" }}
+                                                    onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                                />
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <Box mb={1}>
+                                                <TextField
+                                                id="preBattleDescription"
+                                                name="preBattleDescription"
+                                                label="Pre-Battle description"
+                                                value={this.props.enemies[params.enemyIndex].preBattleDescription}
+                                                variant="outlined"
+                                                style={{ marginRight: "20px" }}
+                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                                multiline
+                                                fullWidth
+                                                rows={8}
+                                                />
+                                            </Box>
+                                        </Grid>
+
+                                    <Grid container item direction="row">
+                                                <Grid item xs={6}>
+                                                    <Box mr={1}>
+                                                            <TextField
+                                                                id="postBattleWin"
+                                                                name="postBattleDescriptionWin"
+                                                                label="Post-Battle description win"
+                                                                value={this.props.enemies[params.enemyIndex].postBattleDescriptionWin}
+                                                                variant="outlined"
+                                                                style={{ marginRight: "20px" }}
+                                                                onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                                                multiline
+                                                                fullWidth
+                                                                rows={8}
+                                                             />
+                                                    </Box>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                            id="postBattleWin"
+                                                            name="postBattleDescriptionLose"
+                                                            label="Post-Battle description lose"
+                                                            value={this.props.enemies[params.enemyIndex].postBattleDescriptionLose}
+                                                            variant="outlined"
+                                                            onChange={(e) => { this.props.setEnemyProperties(this.props.enemies[params.enemyIndex], e) }}
+                                                            multiline
+                                                            fullWidth
+                                                            rows={8}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                    </Grid>
+                                </AccordionDetails>
+                            </Accordion>
+                    </Box>
+
+                    <Box m={1} boxShadow={3}>
                         <Accordion>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
