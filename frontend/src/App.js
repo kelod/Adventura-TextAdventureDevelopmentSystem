@@ -758,11 +758,18 @@ class App extends Component {
     deleteEnemy = (enemy) => {
         var _enemies = this.state.gameToCreate.enemies;
         _enemies.splice(_enemies.indexOf(enemy), 1);
+
+        for (var room of this.state.gameToCreate.rooms) {
+            if (room.enemies.includes(enemy)) {
+                room.enemies.splice(room.enemies.indexOf(enemy), 1);
+            }
+        }
         
             this.setState({
                 gameToCreate: {
                     ...this.state.gameToCreate,
-                    enemies: _enemies
+                    enemies: _enemies,
+                    rooms: this.state.gameToCreate.rooms
                 }
             })
         
