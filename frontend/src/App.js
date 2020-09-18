@@ -269,6 +269,10 @@ class App extends Component {
         gameToCreate: {
             name: '',
             description: '',
+            gameGoal: null,
+            goalRoom: null,
+            goalEnemies: [],
+            goalItems: [],
             rooms: [],
             items: [],
             enemies: [],
@@ -286,6 +290,9 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.setGameProperty = this.setGameProperty.bind(this);
+        this.setGameToCreateGoalRoom = this.setGameToCreateGoalRoom.bind(this);
+        this.setGameToCreateGoalItems = this.setGameToCreateGoalItems.bind(this);
+        this.setGameToCreateGoalEnemies = this.setGameToCreateGoalEnemies.bind(this);
         this.submitGame = this.submitGame.bind(this);
         this.addRoom = this.addRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
@@ -333,6 +340,47 @@ class App extends Component {
             gameToCreate: {
                 ...this.state.gameToCreate,
                 [name]: value
+            }
+        })
+    }
+
+    setGameToCreateGoalRoom = (event) => {
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                goalRoom: event.target.value
+            }
+        })
+    }
+
+    setGameToCreateGoalItems = (item) => {
+        if (this.state.gameToCreate.goalItems.includes(item)) {
+            this.state.gameToCreate.goalItems.splice(this.state.gameToCreate.goalItems.indexOf(item), 1);
+        }
+        else {
+            this.state.gameToCreate.goalItems = [...this.state.gameToCreate.goalItems, item];
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                goalItems: this.state.gameToCreate.goalItems
+            }
+        })
+    }
+
+    setGameToCreateGoalEnemies = (enemy) => {
+        if (this.state.gameToCreate.goalEnemies.includes(enemy)) {
+            this.state.gameToCreate.goalEnemies.splice(this.state.gameToCreate.goalEnemies.indexOf(enemy), 1);
+        }
+        else {
+            this.state.gameToCreate.goalEnemies = [...this.state.gameToCreate.goalEnemies, enemy];
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                goalEnemies: this.state.gameToCreate.goalEnemies
             }
         })
     }
@@ -499,6 +547,10 @@ class App extends Component {
             this.state.gameToCreate.player.startingRoom = null;
         }
 
+        if (this.state.gameToCreate.goalRoom === room) {
+            this.state.gameToCreate.goalRoom = null;
+        }
+
         for (var passage of this.state.gameToCreate.passages) {
             if (passage.from === room || passage.to === room) {
                 this.deletePassage(passage);
@@ -519,6 +571,7 @@ class App extends Component {
             this.setState({
                 gameToCreate: {
                     ...this.state.gameToCreate,
+                    goalRoom: this.state.gameToCreate.goalRoom,
                     rooms: _rooms,
                     passages: this.state.gameToCreate.passages,
                     enemies: this.state.gameToCreate.enemies,
@@ -554,6 +607,10 @@ class App extends Component {
         var _items = this.state.gameToCreate.items;
         _items.splice(_items.indexOf(item), 1);
 
+        if (this.state.gameToCreate.goalItems.includes(item)) {
+            this.state.gameToCreate.goalItems.splice(this.state.gameToCreate.goalItems.indexOf(item), 1);
+        }
+
         for (var room of this.state.gameToCreate.rooms) {
             if (room.items.includes(item)) {
                 room.items.splice(room.items.indexOf(item), 1);
@@ -582,6 +639,7 @@ class App extends Component {
             this.setState({
                 gameToCreate: {
                     ...this.state.gameToCreate,
+                    goalItems: this.state.gameToCreate.goalItems,
                     items: _items,
                     rooms: this.state.gameToCreate.rooms,
                     enemies: this.state.gameToCreate.enemies,
@@ -759,6 +817,10 @@ class App extends Component {
         var _enemies = this.state.gameToCreate.enemies;
         _enemies.splice(_enemies.indexOf(enemy), 1);
 
+        if (this.state.gameToCreate.goalEnemies.includes(enemy)) {
+            this.state.gameToCreate.goalEnemies.splice(this.state.gameToCreate.goalEnemies.indexOf(enemy), 1);
+        }
+
         for (var room of this.state.gameToCreate.rooms) {
             if (room.enemies.includes(enemy)) {
                 room.enemies.splice(room.enemies.indexOf(enemy), 1);
@@ -769,7 +831,8 @@ class App extends Component {
                 gameToCreate: {
                     ...this.state.gameToCreate,
                     enemies: _enemies,
-                    rooms: this.state.gameToCreate.rooms
+                    rooms: this.state.gameToCreate.rooms,
+                    goalEnemies: this.state.gameToCreate.goalEnemies
                 }
             })
         
@@ -1074,7 +1137,7 @@ class App extends Component {
                 <Route exact path="/create/passages" render={(props) => <PassageCreatePage {...props} deletePassage={this.deletePassage} passages={this.state.gameToCreate.passages} />} />
                 <Route exact path="/create/passages/:passageIndex" render={(props) => <ParticularPassageEdit {...props} passages={this.state.gameToCreate.passages} items={this.state.gameToCreate.items} setNeccessaryItemToPassage={this.setNeccessaryItemToPassage} setPassageDescription={this.setPassageDescription} togglePassageDefaultEnabled={this.togglePassageDefaultEnabled} />} />
                 <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} setItemType={this.setItemType} setPassageActivationToItem={this.setPassageActivationToItem} passages={this.state.gameToCreate.passages} togglePassageActivationByItem={this.togglePassageActivationByItem} deletePassageActivationToItem={this.deletePassageActivationToItem} />} />
-                <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} />} />
+                <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} setGameToCreateGoalEnemies={this.setGameToCreateGoalEnemies} setGameToCreateGoalItems={this.setGameToCreateGoalItems} setGameToCreateGoalRoom={this.setGameToCreateGoalRoom} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />
                 <Route exact path="/create/enemies/:enemyIndex" render={(props) => <ParticularEnemyEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} passages={this.state.gameToCreate.passages} enemies={this.state.gameToCreate.enemies} setEnemyName={this.setEnemyName} setEnemyDescription={this.setEnemyDescription} setEnemyFightingType={this.setEnemyFightingType} setEnemyProperties={this.setEnemyProperties} setHpRewardEnemy={this.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.togglePassageActivationRewardForEnemy} toggleGameOverPenaltyForEnemy={this.toggleGameOverPenaltyForEnemy} setEnemyHp={this.setEnemyHp} />} />
                 <Route exact path="/create/player" render={(props) => <PlayerCreatePage {...props} player={this.state.gameToCreate.player} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setPlayerProperties={this.setPlayerProperties} setPlayerStartingRoom={this.setPlayerStartingRoom} setPlayerStartingItems={this.setPlayerStartingItems} />} />
