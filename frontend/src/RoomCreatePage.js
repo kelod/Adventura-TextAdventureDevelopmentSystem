@@ -236,7 +236,7 @@ class RoomCreatePage extends Component {
         roomToCreate: {
             name: '',
             description: '',
-            passages: [],
+           // passages: [],
             items: [],
             enemies: []
         }
@@ -263,7 +263,7 @@ class RoomCreatePage extends Component {
             roomToCreate: {
                 name: '',
                 description: '',
-                passages: [],
+               // passages: [],
                 items: [],
                 enemies: []
             }

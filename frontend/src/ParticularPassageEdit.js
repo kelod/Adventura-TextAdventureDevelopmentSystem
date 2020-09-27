@@ -159,7 +159,7 @@ function ItemList(props) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <ColoredSwitch
-                                            checked={props.passages[props.passageIndex].requestedItems.includes(item)}
+                                            checked={item.requestedInPassages.includes(props.passages[props.passageIndex])}
                                             onChange={() => { props.setNeccessaryItemToPassage(props.passages[props.passageIndex], item); }}
                                             name="togglePassage"
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}

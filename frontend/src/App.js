@@ -408,7 +408,7 @@ class App extends Component {
     }
 
     setPassageBetweenRooms = (roomFrom, roomTo) => {
-        var _rooms = this.state.gameToCreate.rooms;
+        //var _rooms = this.state.gameToCreate.rooms;
         var _passages = this.state.gameToCreate.passages;
 
         const passageResult = this.hasPassageBetweenRooms(roomFrom, roomTo);
@@ -422,9 +422,9 @@ class App extends Component {
                 to: roomTo,
                 defaultEnabled: true,
                 description: "",
-                requestedItems: []
+                //requestedItems: []
             }
-            _rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
+            //_rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
             _passages = [..._passages, newPassage];
         }
         
@@ -432,7 +432,7 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: _rooms,
+                //rooms: _rooms,
                 passages: _passages
             }
         })
@@ -452,7 +452,7 @@ class App extends Component {
     }
 
     hasPassageBetweenRooms = (roomFrom, roomTo) => {
-        const _rooms = this.state.gameToCreate.rooms;
+        /*const _rooms = this.state.gameToCreate.rooms;
         const _roomFrom = _rooms[_rooms.indexOf(roomFrom)];
         
         for (var i = 0; i < _roomFrom.passages.length; ++i) {
@@ -460,27 +460,40 @@ class App extends Component {
                 return _roomFrom.passages[i];
             }
         }
+        return null;*/
+
+        var _passages = this.state.gameToCreate.passages;
+
+        for (var i = 0; i < _passages.length; ++i) {
+            if (_passages[i].from === roomFrom && _passages[i].to === roomTo) {
+                return _passages[i];
+            }
+        }
         return null;
     }
 
     setNeccessaryItemToPassage = (passage, item) => {
-        var _passages = this.state.gameToCreate.passages;
-        var _items = this.state.gameToCreate.items;
+        /*var _passages = this.state.gameToCreate.passages;
+        var _items = this.state.gameToCreate.items;*/
 
-        if (_passages[_passages.indexOf(passage)].requestedItems.includes(item)) {
-            _passages[_passages.indexOf(passage)].requestedItems.splice(_passages[_passages.indexOf(passage)].requestedItems.indexOf(item), 1);
-            _items[_items.indexOf(item)].requestedInPassages.splice(_items[_items.indexOf(item)].requestedInPassages.indexOf(passage), 1);
+        if (/*_passages[_passages.indexOf(passage)].requestedItems.includes(item)*/ item.requestedInPassages.includes(passage)) {
+            /*_passages[_passages.indexOf(passage)].requestedItems.splice(_passages[_passages.indexOf(passage)].requestedItems.indexOf(item), 1);
+            _items[_items.indexOf(item)].requestedInPassages.splice(_items[_items.indexOf(item)].requestedInPassages.indexOf(passage), 1);*/
+            item.requestedInPassages.splice(item.requestedInPassages.indexOf(passage), 1);
         }
         else {
-            _passages[_passages.indexOf(passage)].requestedItems = [..._passages[_passages.indexOf(passage)].requestedItems, item];
-            _items[_items.indexOf(item)].requestedInPassages = [..._items[_items.indexOf(item)].requestedInPassages, passage];
+           /* _passages[_passages.indexOf(passage)].requestedItems = [..._passages[_passages.indexOf(passage)].requestedItems, item];
+            _items[_items.indexOf(item)].requestedInPassages = [..._items[_items.indexOf(item)].requestedInPassages, passage];*/
+
+            item.requestedInPassages = [...item.requestedInPassages, passage];
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                passages: _passages,
-                items: _items
+               /* passages: _passages,
+                items: _items*/
+                items: this.state.gameToCreate.items
             }
         })
     }
@@ -519,9 +532,9 @@ class App extends Component {
 
     async submitGame() {
         const response = await axios.post('/create', this.state.gameToCreate);
-        this.setState({
+       /* this.setState({
             createdGameId: response.data.id
-        });
+        });*/
     }
 
     addRoom = (room) => {
@@ -626,11 +639,11 @@ class App extends Component {
             }
         }
 
-        for (var passage of this.state.gameToCreate.passages) {
+        /*for (var passage of this.state.gameToCreate.passages) {
             if (passage.requestedItems.includes(item)) {
                 passage.requestedItems.splice(passage.requestedItems.indexOf(item), 1);
             }
-        }
+        }*/
 
         if (this.state.gameToCreate.player.startingItems.includes(item)) {
             this.state.gameToCreate.player.startingItems.splice(this.state.gameToCreate.player.startingItems.indexOf(item), 1);
@@ -643,7 +656,7 @@ class App extends Component {
                     items: _items,
                     rooms: this.state.gameToCreate.rooms,
                     enemies: this.state.gameToCreate.enemies,
-                    passages: this.state.gameToCreate.passages,
+                    //passages: this.state.gameToCreate.passages,
                     player: this.state.gameToCreate.player
                 }
             })
@@ -1050,7 +1063,7 @@ class App extends Component {
             }
         }
 
-        _rooms[_rooms.indexOf(passage.from)].passages.splice(_rooms[_rooms.indexOf(passage.from)].passages.indexOf(passage), 1);
+        //_rooms[_rooms.indexOf(passage.from)].passages.splice(_rooms[_rooms.indexOf(passage.from)].passages.indexOf(passage), 1);
         _passages.splice(_passages.indexOf(passage), 1);
 
         this.setState({
