@@ -148,10 +148,16 @@ function ItemList(props) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {(rowsPerPage > 0
-                                ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : props.items
-                            ).map((item, index) => (
+                        {(rowsPerPage > 0
+                            ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : props.items
+                        ).map((item, index) => {
+                            for (var room of props.rooms) {
+                                if (room.items.includes(item)) {
+                                    return <div/>
+                                }
+                            }
+                            return(
                                 <TableRow key={index}>
                                     <TableCell component="th" scope="row">
                                         {item.name}
@@ -172,7 +178,8 @@ function ItemList(props) {
                                         />
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                                )
+                            })}
 
 
                         </TableBody>
@@ -244,7 +251,7 @@ function InitAccordion(props) {
                             </Grid>
                         </Grid>
                         <Grid item fullWidth>
-                            <ItemList items={props.items} player={props.player} setPlayerStartingItems={props.setPlayerStartingItems} />
+                            <ItemList items={props.items} rooms={props.rooms} player={props.player} setPlayerStartingItems={props.setPlayerStartingItems} />
                         </Grid>
                     </Grid>
                 </AccordionDetails>

@@ -225,28 +225,33 @@ function ItemList(props) {
                             {(rowsPerPage > 0
                                 ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : props.items
-                            ).map((item, index) => (
-                                <TableRow key={index}>
-                                    <TableCell component="th" scope="row">
-                                        {item.name}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} >
-                                            <MapIcon style={{ color: cyan[900] }} />
-                                        </IconButton>
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <ColoredSwitch
-                                            checked={props.IsItemInRoom(props.rooms[props.roomIndex], item)}
-                                            onChange={() => { props.setItemToRoom(props.rooms[props.roomIndex], item); }}
-                                            name="togglePassage"
-                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                            checkedIcon={<CheckCircleIcon />}
-                                            icon={<CancelIcon />}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            ).map((item, index) => {
+                                if (props.player.startingItems.includes(item)) {
+                                    return <div/>
+                                }
+                                return(
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            {item.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton component={Link} to={`/create/items/${props.items.indexOf(item)}`} >
+                                                <MapIcon style={{ color: cyan[900] }} />
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <ColoredSwitch
+                                                checked={props.IsItemInRoom(props.rooms[props.roomIndex], item)}
+                                                onChange={() => { props.setItemToRoom(props.rooms[props.roomIndex], item); }}
+                                                name="togglePassage"
+                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                checkedIcon={<CheckCircleIcon />}
+                                                icon={<CancelIcon />}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })}
 
 
                         </TableBody>
@@ -446,7 +451,7 @@ class ParticularRoomEdit extends Component {
                             </BigTooltip>
                         </Box>
                     </Grid>
-                    <ItemList items={this.props.items} rooms={this.props.rooms} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
+                    <ItemList items={this.props.items} rooms={this.props.rooms} player={this.props.player} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
 
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
