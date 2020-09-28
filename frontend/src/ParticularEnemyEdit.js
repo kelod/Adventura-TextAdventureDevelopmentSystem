@@ -452,6 +452,15 @@ function TablePaginationActions(props) {
 }
 
 class ParticularEnemyEdit extends Component {
+
+    getRoomWithEnemy = (enemy) => {
+        for (var room of this.props.rooms) {
+            if (room.enemies.includes(enemy)) {
+                return room;
+            }
+        }
+        return null;
+    }
     
 
     render() {
@@ -479,12 +488,12 @@ class ParticularEnemyEdit extends Component {
                     <Grid container item spacing={1} alignItems="flex-end">
                         <Grid item>
                             <Box ml={1}>
-                                <TextField id="input-with-icon-grid" label="This enemy will appear in room:" value={this.props.enemies[params.enemyIndex].presentInRoom.name} variant="outlined" disabled />
+                                <TextField id="input-with-icon-grid" label="This enemy will appear in room:" value={this.getRoomWithEnemy(this.props.enemies[params.enemyIndex]) == null ? null : this.getRoomWithEnemy(this.props.enemies[params.enemyIndex]).name} variant="outlined" disabled />
                             </Box>
                         </Grid>
                         <Grid item>
                             <BigTooltip title="Go to room" arrow TransitionComponent={Zoom} placement="right" justify="right">
-                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.enemies[params.enemyIndex].presentInRoom)}`} disabled={!this.props.enemies[params.enemyIndex].presentInRoom} >
+                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.getRoomWithEnemy(this.props.enemies[params.enemyIndex]))}`} disabled={!this.getRoomWithEnemy(this.props.enemies[params.enemyIndex])} >
                                     <Icon icon={arrowRightCircle} style={{ color: red[600] }} />
                                 </IconButton>
                             </BigTooltip>

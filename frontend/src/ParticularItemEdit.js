@@ -623,6 +623,15 @@ function AccordionList(props) {
 
 class ParticularItemEdit extends Component {
 
+    getRoomWithItem = (item) => {
+        for (var room of this.props.rooms) {
+            if (room.items.includes(item)) {
+                return room;
+            }
+        }
+        return null;
+    }
+
     render() {
         const { match: { params } } = this.props;
 
@@ -647,12 +656,12 @@ class ParticularItemEdit extends Component {
                     <Grid container item spacing={1} alignItems="flex-end">
                         <Grid item>
                             <Box ml={1}>
-                                <TextField id="input-with-icon-grid" label="This item is in room:" value={this.props.items[params.itemIndex].presentInRoom.name} variant="outlined" disabled />
+                                <TextField id="input-with-icon-grid" label="This item is in room:" value={this.getRoomWithItem(this.props.items[params.itemIndex]) == null ? null : this.getRoomWithItem(this.props.items[params.itemIndex]).name} variant="outlined" disabled />
                             </Box>
                         </Grid>
                         <Grid item>
                             <BigTooltip title="Go to room" arrow TransitionComponent={Zoom} placement="right" justify="right">
-                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.props.items[params.itemIndex].presentInRoom)}`} disabled={!this.props.items[params.itemIndex].presentInRoom} >
+                                <IconButton component={Link} to={`/create/rooms/${this.props.rooms.indexOf(this.getRoomWithItem(this.props.items[params.itemIndex]))}`} disabled={!this.getRoomWithItem(this.props.items[params.itemIndex])} >
                                     <Icon icon={arrowRightCircle} style={{ color: cyan[900] }} />
                                 </IconButton>
                             </BigTooltip>

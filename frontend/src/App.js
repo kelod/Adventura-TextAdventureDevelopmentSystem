@@ -755,16 +755,25 @@ class App extends Component {
     }
 
     setItemToRoom = (room, item) => {
-        var _rooms = this.state.gameToCreate.rooms;
-        var _items = this.state.gameToCreate.items;
+        //var _rooms = this.state.gameToCreate.rooms;
+        //var _items = this.state.gameToCreate.items;
 
-        if (!item.presentInRoom) {
+        if (room.items.includes(item)) {
             
-            _items[_items.indexOf(item)].presentInRoom = room;
-            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
+            //_items[_items.indexOf(item)].presentInRoom = room;
+            //_rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
+            room.items.splice(room.items.indexOf(item), 1);
         }
         else {
-            if (_items[_items.indexOf(item)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
+            for (var _room of this.state.gameToCreate.rooms) {
+                if (_room.items.includes(item)) {
+                    _room.items.splice(_room.items.indexOf(item), 1);
+                }
+            }
+
+            room.items = [...room.items, item];
+
+            /*if (_items[_items.indexOf(item)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
                 _rooms[_rooms.indexOf(room)].items.splice(_rooms[_rooms.indexOf(room)].items.indexOf(item), 1);
                 _items[_items.indexOf(item)].presentInRoom = false;
                 this.setState({
@@ -778,14 +787,14 @@ class App extends Component {
             }
             _rooms[_rooms.indexOf(item.presentInRoom)].items.splice(_rooms[_rooms.indexOf(item.presentInRoom)].items.indexOf(item), 1);
             _items[_items.indexOf(item)].presentInRoom = room;
-            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
+            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];*/
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: _rooms,
-                items: _items
+                rooms: this.state.gameToCreate.rooms,
+                //items: _items
             }
         })
     }
@@ -878,37 +887,24 @@ class App extends Component {
     }
 
     setEnemyToRoom = (room, enemy) => {
-        var _rooms = this.state.gameToCreate.rooms;
-        var _enemies = this.state.gameToCreate.enemies;
 
-        if (!enemy.presentInRoom) {
-
-            _enemies[_enemies.indexOf(enemy)].presentInRoom = room;
-            _rooms[_rooms.indexOf(room)].enemies = [..._rooms[_rooms.indexOf(room)].enemies, enemy];
+        if (room.enemies.includes(enemy)) {
+            room.enemies.splice(room.enemies.indexOf(enemy), 1);
         }
         else {
-            if (_enemies[_enemies.indexOf(enemy)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
-                _rooms[_rooms.indexOf(room)].enemies.splice(_rooms[_rooms.indexOf(room)].enemies.indexOf(enemy), 1);
-                _enemies[_enemies.indexOf(enemy)].presentInRoom = false;
-                this.setState({
-                    gameToCreate: {
-                        ...this.state.gameToCreate,
-                        rooms: _rooms,
-                        enemies: _enemies
-                    }
-                });
-                return;
+            for (var _room of this.state.gameToCreate.rooms) {
+                if (_room.enemies.includes(enemy)) {
+                    _room.enemies.splice(_room.enemies.indexOf(enemy), 1);
+                }
             }
-            _rooms[_rooms.indexOf(enemy.presentInRoom)].enemies.splice(_rooms[_rooms.indexOf(enemy.presentInRoom)].enemies.indexOf(enemy), 1);
-            _enemies[_enemies.indexOf(enemy)].presentInRoom = room;
-            _rooms[_rooms.indexOf(room)].enemies = [..._rooms[_rooms.indexOf(room)].enemies, enemy];
+
+            room.enemies = [...room.enemies, enemy];
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: _rooms,
-                enemies: _enemies
+                rooms: this.state.gameToCreate.rooms,
             }
         })
     }
