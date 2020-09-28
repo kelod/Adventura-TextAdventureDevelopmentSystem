@@ -1,15 +1,13 @@
 package hu.elod.Adventura.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -39,26 +37,44 @@ public class Room {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Item> items = new HashSet<>();
+    private Set<Item> items;
 
     @OneToMany(
             mappedBy = "presentInRoom",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Enemy> enemies = new HashSet<>();
+    private Set<Enemy> enemies;
 
     @OneToMany(
             mappedBy = "from",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Passage> roomFromInPassages = new HashSet<>();
+    private Set<Passage> roomFromInPassages;
 
     @OneToMany(
             mappedBy = "to",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Passage> roomToInPassages = new HashSet<>();
+    private Set<Passage> roomToInPassages;
+
+    public void addItem(Item item){
+        if(items == null){
+            items = new HashSet<>();
+        }
+
+        items.add(item);
+        item.setPresentInRoom(this);
+    }
+
+    public void addEnemy(Enemy enemy){
+        if(enemies == null){
+            enemies = new HashSet<>();
+        }
+
+        enemies.add(enemy);
+        enemy.setPresentInRoom(this);
+    }
 }

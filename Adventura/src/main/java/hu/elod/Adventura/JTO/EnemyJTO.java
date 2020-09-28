@@ -31,7 +31,7 @@ public class EnemyJTO {
 
     private String name;
 
-    private List<PassageJTO> passageActivationReward;
+    //private List<PassageJTO> passageActivationReward;
 
     private String postBattleDescriptionLose;
 

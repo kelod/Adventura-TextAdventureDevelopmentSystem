@@ -1,5 +1,6 @@
 package hu.elod.Adventura.JTO;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,4 +19,6 @@ public class PassageJTO {
     private RoomJTO to;
 
     private List<ItemJTO> requestedItems;
+
+    private List<EnemyJTO> activationRewardForEnemies;
 }

@@ -145,12 +145,12 @@ function ConseqAccordionWin(props) {
                 <Grid item xs={1}>
                     <Checkbox
                         name="checkbox"
-                        checked={props.enemies[props.enemyIndex].passageActivationReward.length != 0 || checked2}
+                        checked={props.isEnemyRewardForAnyPassage(props.enemies[props.enemyIndex]) || checked2}
                         onChange={(event) => { setChecked2(event.target.checked); props.togglePassageActivationRewardForEnemy(props.enemies[props.enemyIndex], null, event) }}
                         inputProps={{ 'aria-label': 'primary checkbox' }} />
                 </Grid>
                 <Grid item xs={11}>
-                    <Accordion disabled={!(props.enemies[props.enemyIndex].passageActivationReward.length != 0) && !checked2} style={{ marginBottom: "5px" }}>
+                    <Accordion disabled={!(props.isEnemyRewardForAnyPassage(props.enemies[props.enemyIndex])) && !checked2} style={{ marginBottom: "5px" }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-label="Expand"
@@ -363,7 +363,7 @@ function PassageList(props) {
                                         </TableCell>
                                         <TableCell align="right">
                                             <Checkbox
-                                                checked={props.enemies[props.enemyIndex].passageActivationReward == null ? false : props.enemies[props.enemyIndex].passageActivationReward.includes(passage)}
+                                                checked={passage.activationRewardForEnemies.includes(props.enemies[props.enemyIndex])/*props.enemies[props.enemyIndex].passageActivationReward == null ? false : props.enemies[props.enemyIndex].passageActivationReward.includes(passage)*/}
                                                 onChange={(event) => { props.togglePassageActivationRewardForEnemy(props.enemies[props.enemyIndex], passage, event); }}
                                                 inputProps={{ 'aria-label': 'primary checkbox' }}
                                                 icon={<Icon icon={doorOpen} color="grey" />}
@@ -460,6 +460,15 @@ class ParticularEnemyEdit extends Component {
             }
         }
         return null;
+    }
+
+    isEnemyRewardForAnyPassage = (enemy) => {
+        for (var passage of this.props.passages) {
+            if (passage.activationRewardForEnemies.includes(enemy)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 
@@ -677,7 +686,7 @@ class ParticularEnemyEdit extends Component {
                                     <Grid container item xs={6}>
                                         <Box m={1} boxShadow={3}>
                                             <Typography style={{ margin: "10px" }}>Win</Typography>
-                                            <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.props.togglePassageActivationRewardForEnemy} items={this.props.items} passages={this.props.passages} />
+                                            <ConseqAccordionWin enemies={this.props.enemies} enemyIndex={params.enemyIndex} setHpRewardEnemy={this.props.setHpRewardEnemy} toggleItemGainRewardForEnemy={this.props.toggleItemGainRewardForEnemy} togglePassageActivationRewardForEnemy={this.props.togglePassageActivationRewardForEnemy} items={this.props.items} passages={this.props.passages} isEnemyRewardForAnyPassage={this.isEnemyRewardForAnyPassage} />
                                         </Box>
                                     </Grid>
 

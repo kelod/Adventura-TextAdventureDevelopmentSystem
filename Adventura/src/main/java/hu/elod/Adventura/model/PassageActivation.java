@@ -1,5 +1,6 @@
 package hu.elod.Adventura.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Table(name = "tbl_passage_activations")
 @Getter
 @Setter
+@Builder
 public class PassageActivation {
 
     @EmbeddedId

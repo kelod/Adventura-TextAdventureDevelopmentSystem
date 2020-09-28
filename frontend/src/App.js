@@ -422,6 +422,7 @@ class App extends Component {
                 to: roomTo,
                 defaultEnabled: true,
                 description: "",
+                activationRewardForEnemies: []
                 //requestedItems: []
             }
             //_rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
@@ -1012,12 +1013,18 @@ class App extends Component {
             enemy.passageActivationReward = [];
         }
         else {
-            if (enemy.passageActivationReward.includes(passage)) {
+            if (passage.activationRewardForEnemies.includes(enemy)) {
+                passage.activationRewardForEnemies.splice(passage.activationRewardForEnemies.indexOf(enemy), 1);
+            }
+            else {
+                passage.activationRewardForEnemies = [...passage.activationRewardForEnemies, enemy];
+            }
+            /*if (enemy.passageActivationReward.includes(passage)) {
                 enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passage), 1);
             }
             else {
                 enemy.passageActivationReward = [...enemy.passageActivationReward, passage];
-            }
+            }*/
         }
 
         this.setState({

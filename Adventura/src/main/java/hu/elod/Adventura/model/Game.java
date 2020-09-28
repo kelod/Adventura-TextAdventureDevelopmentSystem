@@ -40,33 +40,134 @@ public class Game {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Room> rooms = new HashSet<>();
+    private Set<Room> rooms;
 
     @OneToMany(
             mappedBy = "goalInGame",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Enemy> goalEnemies = new HashSet<>();
+    private Set<Enemy> goalEnemies;
 
     @OneToMany(
             mappedBy = "goalInGame",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Item> goalItems = new HashSet<>();
+    private Set<Item> goalItems;
 
     @OneToMany(
             mappedBy = "presentInGame",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Item> items = new HashSet<>();
+    private Set<Item> items;
 
     @OneToMany(
             mappedBy = "presentInGame",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Passage> passages = new HashSet<>();
+    private Set<Enemy> enemies;
+
+    @OneToMany(
+            mappedBy = "presentInGame",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<Passage> passages;
+
+
+    public void addItem(Item item){
+        if(items == null){
+            items = new HashSet<>();
+        }
+        items.add(item);
+        item.setPresentInGame(this);
+    }
+
+    public void addRoom(Room room){
+        if(rooms == null){
+            rooms = new HashSet<>();
+        }
+        rooms.add(room);
+        room.setPresentInGame(this);
+    }
+
+    public void addEnemy(Enemy enemy){
+        if(enemies == null){
+            enemies = new HashSet<>();
+        }
+        enemies.add(enemy);
+        enemy.setPresentInGame(this);
+    }
+
+    public void addPassage(Passage passage){
+        if(passages == null){
+            passages = new HashSet<>();
+        }
+        passages.add(passage);
+        passage.setPresentInGame(this);
+    }
+
+    public void addGoalEnemy(Enemy enemy){
+        if(goalEnemies == null){
+            goalEnemies = new HashSet<>();
+        }
+        goalEnemies.add(enemy);
+        enemy.setGoalInGame(this);
+    }
+
+    public void addGoalItem(Item item){
+        if(goalItems == null){
+            goalItems = new HashSet<>();
+        }
+        goalItems.add(item);
+        item.setGoalInGame(this);
+    }
+
+    public Enemy getEnemyByName(String name){
+        if(enemies != null) {
+            for (Enemy enemy : enemies) {
+                if (enemy.getName().equals(name)) {
+                    return enemy;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Item getItemByName(String name){
+        if(items != null) {
+            for (Item item : items) {
+                if (item.getName().equals(name)) {
+                    return item;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Room getRoomByName(String name){
+        if(rooms != null) {
+            for (Room room : rooms) {
+                if (room.getName().equals(name)) {
+                    return room;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public Passage getPassageByRooms(Room roomFrom, Room roomTo){
+        for(Passage passage : passages){
+            if(passage.getFrom() == roomFrom && passage.getTo() == roomTo){
+                return passage;
+            }
+        }
+        return null;
+    }
 }
