@@ -228,14 +228,14 @@ function InitAccordion(props) {
                                         <Select
                                             labelId="demo-simple-select-placeholder-label-label"
                                             id="demo-simple-select-placeholder-label"
-                                            value={props.player.startingRoom}
-                                            onChange={(e) => { props.setPlayerStartingRoom(e) }}
+                                            value={props.player.startingRoom == null? null : props.player.startingRoom.name}
+                                            onChange={(e) => { props.setPlayerStartingRoomByName(e) }}
                                         >
                                             <MenuItem value={null}>
                                                 <em>None</em>
                                             </MenuItem>
                                             {props.rooms.map((room, index) => (
-                                                <MenuItem value={room}>{room.name}</MenuItem>
+                                                <MenuItem value={room.name}>{room.name}</MenuItem>
                                             ))}
                                         </Select>
                                         <FormHelperText>Please select in which room You want to start the game</FormHelperText>
@@ -318,7 +318,7 @@ class PlayerCreatePage extends Component {
                     </Grid>
 
                     <Grid item>
-                        <InitAccordion player={this.props.player} rooms={this.props.rooms} items={this.props.items} setPlayerStartingRoom={this.props.setPlayerStartingRoom} setPlayerStartingItems={this.props.setPlayerStartingItems} />
+                        <InitAccordion player={this.props.player} rooms={this.props.rooms} items={this.props.items} setPlayerStartingRoomByName={this.props.setPlayerStartingRoomByName} setPlayerStartingItems={this.props.setPlayerStartingItems} />
                     </Grid>
 
                 </Grid>

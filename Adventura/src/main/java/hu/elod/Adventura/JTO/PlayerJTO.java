@@ -1,12 +1,14 @@
 package hu.elod.Adventura.JTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerJTO {
 
     private int attack;

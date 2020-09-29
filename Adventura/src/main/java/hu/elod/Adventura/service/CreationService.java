@@ -6,8 +6,7 @@ import hu.elod.Adventura.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CreationService {
@@ -34,10 +33,10 @@ public class CreationService {
     private RoomRepository roomRepository;
 
 
-    public boolean saveGameFromJTO(GameToCreateJTO gameToCreate){
+    public Game saveGameFromJTO(GameToCreateJTO gameToCreate){
 
         //Setting up newGame
-        Game newGame =  Game.builder()
+        final Game newGame =  Game.builder()
                         .name(gameToCreate.getName())
                         .description(gameToCreate.getDescription())
                         .gameGoal(gameToCreate.getGameGoal())
@@ -151,7 +150,7 @@ public class CreationService {
         });
 
         //==================================================================================
-        // Setting up passages - no need for that
+        // Setting up passages
 
         gameToCreate.getPassages().forEach(passageJTO -> {
             Room roomFrom = newGame.getRoomByName(passageJTO.getFrom().getName());
@@ -175,6 +174,7 @@ public class CreationService {
                 passageActivations.add(PassageActivation.builder()
                                         .enable(passageActivationJTO.isEnable())
                                         .passage(newGame.getPassageByRooms(newGame.getRoomByName(passageActivationJTO.getPassage().getFrom().getName()), newGame.getRoomByName(passageActivationJTO.getPassage().getTo().getName())))
+                                        .item(newGame.getItemByName(itemJTO.getName()))
                                         .id(new PassageActivationKey())
                                         .build());
             }
@@ -205,7 +205,7 @@ public class CreationService {
         //==================================================================================
         // Saving to database
 
-        gameRepository.save(newGame);
+        Game savedGame = gameRepository.save(newGame);
         itemRepository.saveAll(newGame.getItems());
         enemyRepository.saveAll(newGame.getEnemies());
         roomRepository.saveAll(newGame.getRooms());
@@ -213,6 +213,177 @@ public class CreationService {
         passageRepository.saveAll(newGame.getPassages());
         playerRepository.save(newGame.getPlayer());
 
-        return true;
+        return savedGame;
+    }
+
+    public GameToCreateJTO getGameDescriptionById(Integer id){
+        Game game = null;
+        Optional<Game> optGame = gameRepository.findById(id);
+        if(optGame.isPresent()){
+            game = optGame.get();
+        }
+        else{
+            return null;
+        }
+
+        GameToCreateJTO gameToCreate = GameToCreateJTO.builder()
+                                        .gameGoal(game.getGameGoal())
+                                        .description(game.getDescription())
+                                        .name(game.getName())
+                                        .enemies(new ArrayList<>())
+                                        .goalEnemies(new ArrayList<>())
+                                        .goalItems(new ArrayList<>())
+                                        //.goalRoom(new RoomJTO())
+                                        .items(new ArrayList<>())
+                                        .passages(new ArrayList<>())
+                                        .player(new PlayerJTO())
+                                        .rooms(new ArrayList<>())
+                                        .build();
+
+        game.getItems().forEach(item -> {
+            gameToCreate.getItems().add(ItemJTO.builder()
+                                        .game(item.getGame())
+                                        .name(item.getName())
+                                        .description(item.getDescription())
+                                        .hp(item.getHp())
+                                        .type(item.getType())
+                                        .usageDescription(item.getUsageDescription())
+                                        .usageType(item.getUsageType())
+                                        .passageActivations(new ArrayList<>())
+                                        .requestedInPassages(new ArrayList<>())
+                                        .build());
+        });
+
+        game.getEnemies().forEach(enemy -> {
+            gameToCreate.getEnemies().add(EnemyJTO.builder()
+                                            .name(enemy.getName())
+                                            .fightingType(enemy.getFightingType())
+                                            .postBattleDescriptionLose(enemy.getPostBattleDescriptionLose())
+                                            .attack(enemy.getAttack())
+                                            .battleEndHp(enemy.getBattleEndHp())
+                                            .description(enemy.getDescription())
+                                            .gameOverPenalty(enemy.isGameOverPenalty())
+                                            .hp(enemy.getHp())
+                                            .hpGainReward(enemy.getHpGainReward())
+                                            .postBattleDescriptionWin(enemy.getPostBattleDescriptionWin())
+                                            .preBattleDescription(enemy.getPreBattleDescription())
+                                            .itemGainReward(new ArrayList<>())
+                                            .itemLosePenalty(new ArrayList<>())
+                                            .build());
+        });
+
+        game.getRooms().forEach(room -> {
+            gameToCreate.getRooms().add(RoomJTO.builder()
+                                        .description(room.getDescription())
+                                        .name(room.getName())
+                                        .enemies(new ArrayList<>())
+                                        .items(new ArrayList<>())
+                                        .build());
+        });
+
+        game.getPassages().forEach(passage -> {
+            PassageJTO passageToAdd = PassageJTO.builder()
+                    .defaultEnabled(passage.isDefaultEnabled())
+                    .description(passage.getDescription())
+                    .activationRewardForEnemies(new ArrayList<>())
+                    .build();
+
+            passageToAdd.setFrom(gameToCreate.getRoomByName(passage.getFrom().getName()));
+            passageToAdd.setTo(gameToCreate.getRoomByName(passage.getTo().getName()));
+
+            gameToCreate.getPassages().add(passageToAdd);
+        });
+
+        game.getGoalEnemies().forEach(enemy -> {
+            gameToCreate.getGoalEnemies().add(gameToCreate.getEnemyByName(enemy.getName()));
+        });
+
+        game.getGoalItems().forEach(item -> {
+            gameToCreate.getGoalItems().add(gameToCreate.getItemByName(item.getName()));
+        });
+
+        if(game.getGoalRoom() != null) {
+            gameToCreate.setGoalRoom(gameToCreate.getRoomByName(game.getGoalRoom().getName()));
+        }
+
+        gameToCreate.setPlayer(PlayerJTO.builder()
+                                .attack(game.getPlayer().getAttack())
+                                .hp(game.getPlayer().getHp())
+                                .name(game.getPlayer().getName())
+                                .startingItems(new ArrayList<>())
+                                .build());
+
+        //==================================================================================
+        // Setting up enemies
+
+        game.getEnemies().forEach(enemy -> {
+            EnemyJTO enemyJTO = gameToCreate.getEnemyByName(enemy.getName());
+            for(Item item : enemy.getItemGainReward()){
+                enemyJTO.getItemGainReward().add(gameToCreate.getItemByName(item.getName()));
+            }
+
+            for(Item item : enemy.getItemLosePenalty()){
+                enemyJTO.getItemLosePenalty().add(gameToCreate.getItemByName(item.getName()));
+            }
+        });
+
+        //==================================================================================
+        // Setting up items
+
+        game.getItems().forEach(item -> {
+            ItemJTO itemJTO = gameToCreate.getItemByName(item.getName());
+            for(Passage passage : item.getRequestedInPassages()){
+                itemJTO.getRequestedInPassages().add(gameToCreate.getPassageByRooms(gameToCreate.getRoomByName(passage.getFrom().getName()),gameToCreate.getRoomByName(passage.getFrom().getName())));
+            }
+
+            List<PassageActivation> passageActivations = passageActivationRepository.findByItemId(item.getId());
+            for(PassageActivation passageActivation : passageActivations){
+                itemJTO.getPassageActivations().add(PassageActivationJTO.builder()
+                                                    .passage(gameToCreate.getPassageByRooms(gameToCreate.getRoomByName(passageActivation.getPassage().getFrom().getName()),
+                                                            gameToCreate.getRoomByName(passageActivation.getPassage().getTo().getName())))
+                                                    .enable(passageActivation.isEnable())
+                                                    .build());
+            }
+        });
+
+        //==================================================================================
+        // Setting up passages
+
+        game.getPassages().forEach(passage -> {
+            RoomJTO roomFrom = gameToCreate.getRoomByName(passage.getFrom().getName());
+            RoomJTO roomTo = gameToCreate.getRoomByName(passage.getTo().getName());
+            PassageJTO passageJTO = gameToCreate.getPassageByRooms(roomFrom, roomTo);
+
+            for(Enemy enemy : passage.getActivationRewardForEnemies()){
+                passageJTO.getActivationRewardForEnemies().add(gameToCreate.getEnemyByName(enemy.getName()));
+            }
+
+        });
+
+        //==================================================================================
+        // Setting up player
+
+        gameToCreate.getPlayer().setStartingRoom(gameToCreate.getRoomByName(game.getPlayer().getStartingRoom().getName()));
+
+        game.getPlayer().getStartingItems().forEach(item -> {
+            gameToCreate.getPlayer().getStartingItems().add(gameToCreate.getItemByName(item.getName()));
+        });
+
+        //==================================================================================
+        // Setting up rooms
+
+        game.getRooms().forEach(room -> {
+            RoomJTO roomJTO = gameToCreate.getRoomByName(room.getName());
+
+            for(Enemy enemy : room.getEnemies()) {
+                roomJTO.getEnemies().add(gameToCreate.getEnemyByName(enemy.getName()));
+            }
+
+            for(Item item : room.getItems()) {
+                roomJTO.getItems().add(gameToCreate.getItemByName(item.getName()));
+            }
+        });
+
+        return gameToCreate;
     }
 }

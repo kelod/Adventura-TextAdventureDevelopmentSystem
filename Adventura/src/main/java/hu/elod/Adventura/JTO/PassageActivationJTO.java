@@ -1,13 +1,12 @@
 package hu.elod.Adventura.JTO;
 
-import hu.elod.Adventura.model.Enemy;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
+@Builder
 public class PassageActivationJTO {
 
     private boolean enable;
