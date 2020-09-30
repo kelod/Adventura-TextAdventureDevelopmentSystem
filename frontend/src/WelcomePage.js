@@ -49,7 +49,6 @@ class WelcomePage extends Component {
 
     async queryGame(id){
         const response = await axios.get(`/create/postman/${id}`);
-
         this.props.setGameState(response.data);
         this.props.history.push('/create');
     }

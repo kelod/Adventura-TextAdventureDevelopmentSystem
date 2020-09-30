@@ -56,7 +56,7 @@ public class CreationController {
     public ResponseEntity<GameToCreateJTO> foo(@PathVariable Integer id){
 
         GameToCreateJTO gameToCreateJTO = creationService.getGameDescriptionById(id);
-        
+
         return ResponseEntity.ok().body(gameToCreateJTO);
         //Optional<Game> result = gameRepository.findById(id);
 

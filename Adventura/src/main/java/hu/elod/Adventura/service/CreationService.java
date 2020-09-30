@@ -133,9 +133,13 @@ public class CreationService {
             for(ItemJTO itemPenalty : enemyJTO.getItemLosePenalty()) {
                 newGame.getEnemyByName(enemyJTO.getName()).addItemLosePenalty(newGame.getItemByName(itemPenalty.getName()));
             }
-           /* for(PassageJTO passageReward : enemyJTO.getPassageActivationReward()) {
+
+            if(enemyJTO.getPresentInRoom() != null) {
+                newGame.getEnemyByName(enemyJTO.getName()).addPresentInRoom(newGame.getRoomByName(enemyJTO.getPresentInRoom().getName()));
+            }
+             for(PassageJTO passageReward : enemyJTO.getPassageActivationReward()) {
                 newGame.getEnemyByName(enemyJTO.getName()).addPassageActivationReward(newGame.getPassageByRooms(newGame.getRoomByName(passageReward.getFrom().getName()), newGame.getRoomByName(passageReward.getTo().getName())));
-            }*/
+            }
         });
 
         //==================================================================================
@@ -147,12 +151,16 @@ public class CreationService {
                 Room roomTo = newGame.getRoomByName(requested.getTo().getName());
                 newGame.getItemByName(itemJTO.getName()).addRequestedInPassage(newGame.getPassageByRooms(roomFrom, roomTo));
             }
+            if(itemJTO.getPresentInRoom() != null) {
+                newGame.getItemByName(itemJTO.getName()).addPresentInRoom(newGame.getRoomByName(itemJTO.getPresentInRoom().getName()));
+            }
+
         });
 
         //==================================================================================
-        // Setting up passages
+        // Setting up passages - no need for that
 
-        gameToCreate.getPassages().forEach(passageJTO -> {
+        /*gameToCreate.getPassages().forEach(passageJTO -> {
             Room roomFrom = newGame.getRoomByName(passageJTO.getFrom().getName());
             Room roomTo = newGame.getRoomByName(passageJTO.getTo().getName());
             Passage passage = newGame.getPassageByRooms(roomFrom, roomTo);
@@ -162,7 +170,7 @@ public class CreationService {
             for(EnemyJTO enemyJTO : passageJTO.getActivationRewardForEnemies()) {
                 newGame.getPassageByRooms(roomFrom, roomTo).addActivationRewardForEnemies(newGame.getEnemyByName(enemyJTO.getName()));
             }
-        });
+        });*/
 
         //==================================================================================
         // Setting up passage activations
@@ -187,12 +195,13 @@ public class CreationService {
             newGame.getPlayer().addStartingItem(newGame.getItemByName(itemJTO.getName()));
         });
 
-        newGame.getPlayer().setStartingRoom(newGame.getRoomByName(gameToCreate.getPlayer().getStartingRoom().getName()));
-
+        if(gameToCreate.getPlayer().getStartingRoom() != null) {
+            newGame.getPlayer().setStartingRoom(newGame.getRoomByName(gameToCreate.getPlayer().getStartingRoom().getName()));
+        }
         //==================================================================================
-        // Setting up rooms
+        // Setting up rooms - no need for that
 
-        gameToCreate.getRooms().forEach(roomJTO -> {
+        /*gameToCreate.getRooms().forEach(roomJTO -> {
             for(ItemJTO itemJTO : roomJTO.getItems()) {
                 newGame.getRoomByName(roomJTO.getName()).addItem(newGame.getItemByName(itemJTO.getName()));
             }
@@ -200,7 +209,7 @@ public class CreationService {
             for(EnemyJTO enemyJTO : roomJTO.getEnemies()) {
                 newGame.getRoomByName(roomJTO.getName()).addEnemy(newGame.getEnemyByName(enemyJTO.getName()));
             }
-        });
+        });*/
 
         //==================================================================================
         // Saving to database
@@ -269,6 +278,7 @@ public class CreationService {
                                             .preBattleDescription(enemy.getPreBattleDescription())
                                             .itemGainReward(new ArrayList<>())
                                             .itemLosePenalty(new ArrayList<>())
+                                            .passageActivationReward(new ArrayList<>())
                                             .build());
         });
 
@@ -276,8 +286,8 @@ public class CreationService {
             gameToCreate.getRooms().add(RoomJTO.builder()
                                         .description(room.getDescription())
                                         .name(room.getName())
-                                        .enemies(new ArrayList<>())
-                                        .items(new ArrayList<>())
+                                        //.enemies(new ArrayList<>())
+                                        //.items(new ArrayList<>())
                                         .build());
         });
 
@@ -285,7 +295,6 @@ public class CreationService {
             PassageJTO passageToAdd = PassageJTO.builder()
                     .defaultEnabled(passage.isDefaultEnabled())
                     .description(passage.getDescription())
-                    .activationRewardForEnemies(new ArrayList<>())
                     .build();
 
             passageToAdd.setFrom(gameToCreate.getRoomByName(passage.getFrom().getName()));
@@ -325,6 +334,14 @@ public class CreationService {
             for(Item item : enemy.getItemLosePenalty()){
                 enemyJTO.getItemLosePenalty().add(gameToCreate.getItemByName(item.getName()));
             }
+
+            for(Passage passage : enemy.getPassageActivationReward()){
+                enemyJTO.getPassageActivationReward().add(gameToCreate.getPassageByRooms(gameToCreate.getRoomByName(passage.getFrom().getName()),gameToCreate.getRoomByName(passage.getTo().getName())));
+            }
+
+            if(enemy.getPresentInRoom() != null) {
+                enemyJTO.setPresentInRoom(gameToCreate.getRoomByName(enemy.getPresentInRoom().getName()));
+            }
         });
 
         //==================================================================================
@@ -333,7 +350,7 @@ public class CreationService {
         game.getItems().forEach(item -> {
             ItemJTO itemJTO = gameToCreate.getItemByName(item.getName());
             for(Passage passage : item.getRequestedInPassages()){
-                itemJTO.getRequestedInPassages().add(gameToCreate.getPassageByRooms(gameToCreate.getRoomByName(passage.getFrom().getName()),gameToCreate.getRoomByName(passage.getFrom().getName())));
+                itemJTO.getRequestedInPassages().add(gameToCreate.getPassageByRooms(gameToCreate.getRoomByName(passage.getFrom().getName()),gameToCreate.getRoomByName(passage.getTo().getName())));
             }
 
             List<PassageActivation> passageActivations = passageActivationRepository.findByItemId(item.getId());
@@ -344,12 +361,16 @@ public class CreationService {
                                                     .enable(passageActivation.isEnable())
                                                     .build());
             }
+
+            if(item.getPresentInRoom() != null) {
+                itemJTO.setPresentInRoom(gameToCreate.getRoomByName(item.getPresentInRoom().getName()));
+            }
         });
 
         //==================================================================================
-        // Setting up passages
+        // Setting up passages - no need for that
 
-        game.getPassages().forEach(passage -> {
+        /*game.getPassages().forEach(passage -> {
             RoomJTO roomFrom = gameToCreate.getRoomByName(passage.getFrom().getName());
             RoomJTO roomTo = gameToCreate.getRoomByName(passage.getTo().getName());
             PassageJTO passageJTO = gameToCreate.getPassageByRooms(roomFrom, roomTo);
@@ -358,21 +379,22 @@ public class CreationService {
                 passageJTO.getActivationRewardForEnemies().add(gameToCreate.getEnemyByName(enemy.getName()));
             }
 
-        });
+        });*/
 
         //==================================================================================
         // Setting up player
-
-        gameToCreate.getPlayer().setStartingRoom(gameToCreate.getRoomByName(game.getPlayer().getStartingRoom().getName()));
+        if(game.getPlayer().getStartingRoom() != null) {
+            gameToCreate.getPlayer().setStartingRoom(gameToCreate.getRoomByName(game.getPlayer().getStartingRoom().getName()));
+        }
 
         game.getPlayer().getStartingItems().forEach(item -> {
             gameToCreate.getPlayer().getStartingItems().add(gameToCreate.getItemByName(item.getName()));
         });
 
         //==================================================================================
-        // Setting up rooms
+        // Setting up rooms - no need for that
 
-        game.getRooms().forEach(room -> {
+        /*game.getRooms().forEach(room -> {
             RoomJTO roomJTO = gameToCreate.getRoomByName(room.getName());
 
             for(Enemy enemy : room.getEnemies()) {
@@ -382,7 +404,7 @@ public class CreationService {
             for(Item item : room.getItems()) {
                 roomJTO.getItems().add(gameToCreate.getItemByName(item.getName()));
             }
-        });
+        });*/
 
         return gameToCreate;
     }

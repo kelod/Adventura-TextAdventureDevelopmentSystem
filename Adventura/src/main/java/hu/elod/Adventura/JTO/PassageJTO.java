@@ -22,5 +22,5 @@ public class PassageJTO {
 
     //private List<ItemJTO> requestedItems;
 
-    private List<EnemyJTO> activationRewardForEnemies;
+    //private List<EnemyJTO> activationRewardForEnemies;
 }

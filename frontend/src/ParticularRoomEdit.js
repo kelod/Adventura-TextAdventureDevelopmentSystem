@@ -209,6 +209,8 @@ function ItemList(props) {
         setPage(0);
     };
 
+    var itemsNameInRoom = props.getItemsInRoom(props.rooms[props.roomIndex]);
+
     return (
         <Grid item>
             <Box mb={3} ml={1} mr={1}>
@@ -241,7 +243,7 @@ function ItemList(props) {
                                         </TableCell>
                                         <TableCell align="right">
                                             <ColoredSwitch
-                                                checked={props.IsItemInRoom(props.rooms[props.roomIndex], item)}
+                                                checked={/*props.IsItemInRoom(props.rooms[props.roomIndex], item)*/ itemsNameInRoom.includes(item.name)}
                                                 onChange={() => { props.setItemToRoom(props.rooms[props.roomIndex], item); }}
                                                 name="togglePassage"
                                                 inputProps={{ 'aria-label': 'secondary checkbox' }}
@@ -318,6 +320,9 @@ function EnemyList(props) {
         setPage(0);
     };
 
+    var enemiesNameInRoom = props.getEnemiesInRoom(props.rooms[props.roomIndex]);
+    console.log(enemiesNameInRoom);
+
     return (
         <Grid item>
             <Box mb={3} ml={1} mr={1}>
@@ -346,7 +351,7 @@ function EnemyList(props) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <RedSwitch
-                                            checked={props.IsEnemyInRoom(props.rooms[props.roomIndex], enemy)}
+                                            checked={/*props.IsEnemyInRoom(props.rooms[props.roomIndex], enemy)*/ enemiesNameInRoom.includes(enemy.name)}
                                             onChange={() => { props.setEnemyToRoom(props.rooms[props.roomIndex], enemy); }}
                                             name="toggleEnemy"
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
@@ -451,7 +456,7 @@ class ParticularRoomEdit extends Component {
                             </BigTooltip>
                         </Box>
                     </Grid>
-                    <ItemList items={this.props.items} rooms={this.props.rooms} player={this.props.player} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} />
+                    <ItemList items={this.props.items} rooms={this.props.rooms} player={this.props.player} roomIndex={params.roomIndex} setItemToRoom={this.props.setItemToRoom} IsItemInRoom={this.props.IsItemInRoom} getItemsInRoom={this.props.getItemsInRoom} />
 
                     <Grid container item justify="flex-end">
                         <Box mr={1}>
@@ -460,7 +465,7 @@ class ParticularRoomEdit extends Component {
                             </BigTooltip>
                         </Box>
                     </Grid>
-                    <EnemyList enemies={this.props.enemies} rooms={this.props.rooms} roomIndex={params.roomIndex} setEnemyToRoom={this.props.setEnemyToRoom} IsEnemyInRoom={this.props.IsEnemyInRoom} />
+                    <EnemyList enemies={this.props.enemies} rooms={this.props.rooms} roomIndex={params.roomIndex} setEnemyToRoom={this.props.setEnemyToRoom} IsEnemyInRoom={this.props.IsEnemyInRoom} getEnemiesInRoom={this.props.getEnemiesInRoom} />
 
                 </Grid>
             </div>

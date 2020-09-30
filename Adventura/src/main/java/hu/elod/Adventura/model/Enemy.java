@@ -87,4 +87,17 @@ public class Enemy {
         itemLosePenalty.add(item);
         item.getLosePenaltyForEnemies().add(this);
     }
+
+    public void addPresentInRoom(Room room){
+        presentInRoom = room;
+        room.getEnemies().add(this);
+    }
+
+    public void addPassageActivationReward(Passage passage){
+        if(passageActivationReward == null){
+            passageActivationReward = new HashSet<>();
+        }
+        passageActivationReward.add(passage);
+        passage.getActivationRewardForEnemies().add(this);
+    }
 }

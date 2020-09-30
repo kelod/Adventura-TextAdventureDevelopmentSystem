@@ -308,6 +308,8 @@ class App extends Component {
         this.setNeccessaryItemToPassage = this.setNeccessaryItemToPassage.bind(this);
         this.togglePassageActivationByItem = this.togglePassageActivationByItem.bind(this);
         this.getRoomByName = this.getRoomByName.bind(this);
+        this.getItemsInRoom = this.getItemsInRoom.bind(this);
+        this.getEnemiesInRoom = this.getEnemiesInRoom.bind(this);
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
         this.setItemDescription = this.setItemDescription.bind(this);
@@ -336,10 +338,140 @@ class App extends Component {
     }
 
     setGameState = (gameToCrt) => {
-        console.log(gameToCrt);
         this.setState({
             createdGameId: '',
             gameToCreate: gameToCrt
+        })
+        // same obejcts should be same references also
+        var _items = this.state.gameToCreate.items;
+        var _rooms = this.state.gameToCreate.rooms;
+        var _enemies = this.state.gameToCreate.enemies;
+        var _passages = this.state.gameToCreate.passages;
+        var _player = this.state.gameToCreate.player;
+        var _goalItems = this.state.gameToCreate.goalItems;
+        var _goalEnemies = this.state.gameToCreate.goalEnemies;
+
+        for (var item of _items) { // for items
+            for (var enemy of _enemies) {
+                for (var _item of enemy.itemGainReward) {
+                    if (item.name === _item.name) {
+                        enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(_item), 1);
+                        enemy.itemGainReward = [...enemy.itemGainReward, item];
+                    }
+                }
+                for (var _item of enemy.itemLosePenalty) {
+                    if (item.name === _item.name) {
+                        enemy.itemLosePenalty.splice(enemy.itemLosePenalty.indexOf(_item), 1);
+                        enemy.itemLosePenalty = [...enemy.itemLosePenalty, item];
+                    }
+                }
+            }
+
+            if (_player.startingItems != null) {
+                for (var _item of _player.startingItems) {
+                    if (item.name === _item.name) {
+                        _player.startingItems.splice(_player.startingItems.indexOf(_item), 1);
+                        _player.startingItems = [..._player.startingItems, item];
+                    }
+                }
+            }
+
+            for (var goalItem of _goalItems) {
+                if (goalItem.name === item.name) {
+                    _goalItems.splice(_goalItems.indexOf(goalItem), 1);
+                    _goalItems = [..._goalItems, item];
+                }
+            }
+        }
+
+        for (var room of _rooms) { // for rooms
+            for (var item of _items) {
+                if (item.presentInRoom != null && item.presentInRoom.name === room.name) {
+                    item.presentInRoom = room;
+                }
+            }
+            for (var enemy of _enemies) {
+                if (enemy.presentInRoom != null && enemy.presentInRoom.name === room.name) {
+                    enemy.presentInRoom = room;
+                }
+            }
+
+            for (var passage of _passages) {
+                if (passage.from.name === room.name) {
+                    passage.from = room;
+                }
+                if (passage.to.name === room.name) {
+                    passage.to = room;
+                }
+            }
+
+            if (_player.startingRoom != null) {
+                if (_player.startingRoom.name === room.name) {
+                    _player.startingRoom = room;
+                }
+            }
+
+            if (this.state.gameToCreate.goalRoom != null && this.state.gameToCreate.goalRoom.name === room.name) {
+                this.setState({
+                    gameToCreate: {
+                        ...this.state.gameToCreate,
+                        goalRoom: room
+                    }
+                })
+            }
+        }
+
+        for (var passage of _passages) { // for passages
+            for (var enemy of _enemies) {
+                for (var passageActivation of enemy.passageActivationReward) {
+                    if (passageActivation.from.name === passage.from.name && passageActivation.to.name === passage.to.name) {
+                        enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passageActivation), 1);
+                        enemy.passageActivationReward = [...enemy.passageActivationReward, passage];
+                    }
+                }
+            }
+
+            for (var item of _items) {
+                for (var passageActivation of item.passageActivations) {
+                    if (passageActivation.passage.from.name === passage.from.name && passageActivation.passage.to.name === passage.to.name) {
+                        item.passageActivations.splice(item.passageActivations.indexOf(passageActivation), 1);
+                        const newActivation = {
+                            enable: passageActivation.enable,
+                            passage: passage
+                        }
+                        item.passageActivations = [...item.passageActivations, newActivation];
+                    }
+                }
+
+                for (var _passage of item.requestedInPassages) {
+                    if (_passage != null && _passage.from.name === passage.from.name && _passage.to.name === passage.to.name) {
+                        item.requestedInPassages.splice(item.requestedInPassages.indexOf(_passage), 1);
+                        item.requestedInPassages = [...item.requestedInPassages, passage];
+                    }
+                }
+            }
+        }
+
+        for (var enemy of _enemies) { // for enemies
+            for (var goalEnemy of _goalEnemies) {
+                if (goalEnemy.name === enemy.name) {
+                    _goalEnemies.splice(_goalEnemies.indexOf(goalEnemy), 1);
+                    _goalEnemies = [..._goalEnemies, enemy];
+                }
+            }
+        }
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                items: _items,
+                rooms: _rooms,
+                enemies: _enemies,
+                passages: _passages,
+                player: _player,
+                goalEnemies: _goalEnemies,
+                goalItems: _goalItems
+            }
         })
     }
 
@@ -431,7 +563,7 @@ class App extends Component {
                 to: roomTo,
                 defaultEnabled: true,
                 description: "",
-                activationRewardForEnemies: []
+                //activationRewardForEnemies: []
                 //requestedItems: []
             }
             //_rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
@@ -475,7 +607,7 @@ class App extends Component {
         var _passages = this.state.gameToCreate.passages;
 
         for (var i = 0; i < _passages.length; ++i) {
-            if (_passages[i].from === roomFrom && _passages[i].to === roomTo) {
+            if (_passages[i].from.name === roomFrom.name && _passages[i].to.name === roomTo.name) {
                 return _passages[i];
             }
         }
@@ -705,6 +837,34 @@ class App extends Component {
         })
     }
 
+    getItemsInRoom = (room) => {
+        var result = [];
+
+        for (var item of this.state.gameToCreate.items) {
+            if (item.presentInRoom != null) {
+                if (item.presentInRoom.name == room.name) {
+                    result = [...result, item.name];
+                }
+            }
+        }
+
+        return result;
+    }
+
+    getEnemiesInRoom = (room) => {
+        var result = [];
+
+        for (var enemy of this.state.gameToCreate.enemies) {
+            if (enemy.presentInRoom != null) {
+                if (enemy.presentInRoom.name == room.name) {
+                    result = [...result, enemy.name];
+                }
+            }
+        }
+
+        return result;
+    }
+
     setPassageActivationToItem = (passage, item) => {
         var _items = this.state.gameToCreate.items;
 
@@ -768,20 +928,23 @@ class App extends Component {
         //var _rooms = this.state.gameToCreate.rooms;
         //var _items = this.state.gameToCreate.items;
 
-        if (room.items.includes(item)) {
+        if (/*room.items.includes(item)*/ item.presentInRoom == room) {
             
             //_items[_items.indexOf(item)].presentInRoom = room;
             //_rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
-            room.items.splice(room.items.indexOf(item), 1);
+            //room.items.splice(room.items.indexOf(item), 1);
+            item.presentInRoom = null;
         }
         else {
-            for (var _room of this.state.gameToCreate.rooms) {
+            /*for (var _room of this.state.gameToCreate.rooms) {
                 if (_room.items.includes(item)) {
                     _room.items.splice(_room.items.indexOf(item), 1);
                 }
             }
 
-            room.items = [...room.items, item];
+            room.items = [...room.items, item];*/
+
+            item.presentInRoom = room;
 
             /*if (_items[_items.indexOf(item)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
                 _rooms[_rooms.indexOf(room)].items.splice(_rooms[_rooms.indexOf(room)].items.indexOf(item), 1);
@@ -803,8 +966,8 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: this.state.gameToCreate.rooms,
-                //items: _items
+                //rooms: this.state.gameToCreate.rooms,
+                items: this.state.gameToCreate.items
             }
         })
     }
@@ -898,23 +1061,27 @@ class App extends Component {
 
     setEnemyToRoom = (room, enemy) => {
 
-        if (room.enemies.includes(enemy)) {
-            room.enemies.splice(room.enemies.indexOf(enemy), 1);
+        if (/*room.enemies.includes(enemy)*/ enemy.presentInRoom == room) {
+            //room.enemies.splice(room.enemies.indexOf(enemy), 1);
+            enemy.presentInRoom = null;
         }
         else {
-            for (var _room of this.state.gameToCreate.rooms) {
+            /*for (var _room of this.state.gameToCreate.rooms) {
                 if (_room.enemies.includes(enemy)) {
                     _room.enemies.splice(_room.enemies.indexOf(enemy), 1);
                 }
             }
 
-            room.enemies = [...room.enemies, enemy];
+            room.enemies = [...room.enemies, enemy];*/
+
+            enemy.presentInRoom = room;
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                rooms: this.state.gameToCreate.rooms,
+                //rooms: this.state.gameToCreate.rooms,
+                enemies: this.state.gameToCreate.enemies
             }
         })
     }
@@ -1022,24 +1189,25 @@ class App extends Component {
             enemy.passageActivationReward = [];
         }
         else {
-            if (passage.activationRewardForEnemies.includes(enemy)) {
+            /*if (passage.activationRewardForEnemies.includes(enemy)) {
                 passage.activationRewardForEnemies.splice(passage.activationRewardForEnemies.indexOf(enemy), 1);
             }
             else {
                 passage.activationRewardForEnemies = [...passage.activationRewardForEnemies, enemy];
-            }
-            /*if (enemy.passageActivationReward.includes(passage)) {
+            }*/
+            if (enemy.passageActivationReward.includes(passage)) {
                 enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passage), 1);
             }
             else {
                 enemy.passageActivationReward = [...enemy.passageActivationReward, passage];
-            }*/
+            }
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                passages: this.state.gameToCreate.passages
+                //passages: this.state.gameToCreate.passages
+                enemies: this.state.gameToCreate.enemies
             }
         })
     }
@@ -1172,7 +1340,7 @@ class App extends Component {
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
-                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} />} />
+                <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />
                 <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
                 <Route exact path="/create/passages" render={(props) => <PassageCreatePage {...props} deletePassage={this.deletePassage} passages={this.state.gameToCreate.passages} />} />
                 <Route exact path="/create/passages/:passageIndex" render={(props) => <ParticularPassageEdit {...props} passages={this.state.gameToCreate.passages} items={this.state.gameToCreate.items} setNeccessaryItemToPassage={this.setNeccessaryItemToPassage} setPassageDescription={this.setPassageDescription} togglePassageDefaultEnabled={this.togglePassageDefaultEnabled} />} />

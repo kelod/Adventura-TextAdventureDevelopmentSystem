@@ -86,7 +86,8 @@ class CreatePage extends Component {
 
     async handleSubmit() {
         const { game } = this.state;
-        const res =  await axios.post('/create/', game);
+        const res = await axios.post('/create/', game);
+        console.log(res.data);
         this.setState({
             gameId: res.data.id
         })

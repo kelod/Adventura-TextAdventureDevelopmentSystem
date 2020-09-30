@@ -60,11 +60,11 @@ public class Passage {
         item.getRequestedInPassages().add(this);
     }
 
-    public void addActivationRewardForEnemies(Enemy enemy){
+    /*public void addActivationRewardForEnemies(Enemy enemy){
         if(activationRewardForEnemies == null){
             activationRewardForEnemies = new HashSet<>();
         }
         activationRewardForEnemies.add(enemy);
         enemy.getPassageActivationReward().add(this);
-    }
+    }*/
 }

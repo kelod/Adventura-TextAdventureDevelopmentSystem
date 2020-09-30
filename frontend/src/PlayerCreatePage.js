@@ -152,11 +152,9 @@ function ItemList(props) {
                             ? props.items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : props.items
                         ).map((item, index) => {
-                            for (var room of props.rooms) {
-                                if (room.items.includes(item)) {
+                                if (item.presentInRoom) {
                                     return <div/>
                                 }
-                            }
                             return(
                                 <TableRow key={index}>
                                     <TableCell component="th" scope="row">

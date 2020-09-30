@@ -61,4 +61,9 @@ public class Item {
         requestedInPassages.add(passage);
         passage.getRequestedItems().add(this);
     }
+
+    public void addPresentInRoom(Room room){
+        presentInRoom = room;
+        room.getItems().add(this);
+    }
 }

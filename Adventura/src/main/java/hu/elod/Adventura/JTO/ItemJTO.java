@@ -30,4 +30,6 @@ public class ItemJTO {
     private String usageDescription;
 
     private String usageType;
+
+    private RoomJTO presentInRoom;
 }

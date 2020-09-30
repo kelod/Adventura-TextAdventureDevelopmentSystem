@@ -13,9 +13,9 @@ public class RoomJTO {
 
     private String description;
 
-    private List<EnemyJTO> enemies;
+    //private List<EnemyJTO> enemies;
 
-    private List<ItemJTO> items;
+    //private List<ItemJTO> items;
 
     private String name;
 }
