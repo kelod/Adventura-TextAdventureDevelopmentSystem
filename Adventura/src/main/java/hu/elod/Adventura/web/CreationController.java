@@ -1,6 +1,7 @@
 package hu.elod.Adventura.web;
 
 import hu.elod.Adventura.JTO.GameToCreateJTO;
+import hu.elod.Adventura.exception.GameNotFoundExeption;
 import hu.elod.Adventura.model.Game;
 import hu.elod.Adventura.model.Item;
 import hu.elod.Adventura.model.Room;
@@ -56,6 +57,10 @@ public class CreationController {
     public ResponseEntity<GameToCreateJTO> foo(@PathVariable Integer id){
 
         GameToCreateJTO gameToCreateJTO = creationService.getGameDescriptionById(id);
+
+        if(gameToCreateJTO == null){
+            throw new GameNotFoundExeption("Student not found with ID: " + id);
+        }
 
         return ResponseEntity.ok().body(gameToCreateJTO);
         //Optional<Game> result = gameRepository.findById(id);

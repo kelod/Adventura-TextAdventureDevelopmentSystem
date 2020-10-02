@@ -48,9 +48,26 @@ class WelcomePage extends Component {
     }
 
     async queryGame(id){
-        const response = await axios.get(`/create/postman/${id}`);
-        this.props.setGameState(response.data);
-        this.props.history.push('/create');
+       /* const response = await axios.get(`/create/postman/${id}`);
+        if (response.status == 200) {
+            this.props.setGameState(response.data);
+            this.props.history.push('/create');
+        }
+        else {
+            console.log(response);
+            console.log("hahoo");
+            window.alert(response.data.message);
+        }*/
+
+        axios.get(`/create/postman/${id}`)
+            .then((response) => {
+                this.props.setGameState(response.data);
+                this.props.history.push('/create'); })
+            .catch(function (error) {
+                if (error.response) {
+                    window.alert('Error ' + error.response.data.status + '! ' + error.response.data.message);
+                }
+            });
     }
 
     render() {
