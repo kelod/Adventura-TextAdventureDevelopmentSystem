@@ -11,6 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PlayerJTO {
 
+    private Integer id;
+
     private int attack;
 
     private int hp;

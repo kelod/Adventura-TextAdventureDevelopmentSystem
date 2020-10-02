@@ -232,6 +232,7 @@ class ItemCreatePage extends Component {
 
     state = {
         itemToCreate: {
+            id: null,
             name: '',
             description: '',
             usageDescription: '',
@@ -264,6 +265,7 @@ class ItemCreatePage extends Component {
     resetItemToCreate = () => {
         this.setState({
             itemToCreate: {
+                id: null,
                 name: '',
                 description: '',
                 usageDescription: '',

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CreationExceptionHandler {
 
-    @ExceptionHandler
+   /* @ExceptionHandler
     public ResponseEntity<GameErrorResponse> handleGameNotFound(GameNotFoundExeption ex){
         return new ResponseEntity<>(GameErrorResponse.builder()
                 .message(ex.getMessage())
@@ -24,5 +24,5 @@ public class CreationExceptionHandler {
                 .timeStamp(System.currentTimeMillis())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .build(), HttpStatus.BAD_REQUEST) ;
-    }
+    }*/
 }

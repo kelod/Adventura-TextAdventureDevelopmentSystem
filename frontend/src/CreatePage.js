@@ -11,6 +11,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { green, purple } from '@material-ui/core/colors';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
+import UpdateIcon from '@material-ui/icons/Update';
 
 
 const ColorButton = withStyles((theme) => ({
@@ -37,6 +38,7 @@ function PageBody(props) {
                         <Grid item>
                         <CardActions>
                             <ColorButton component={Link} to={`/created`} startIcon={<SaveIcon />} variant="contained" size="small" onClick={props.submitGame}>Finish game!</ColorButton>
+                            <Button component={Link} to={`/created`} startIcon={<UpdateIcon />} variant="contained" size="small" disabled={!props.gameToCreate.id} onClick={props.updateGame} color="primary">Update game</Button>
                             <Button component={Link} to={`/`} startIcon={<DeleteIcon />} variant="contained" size="small" color="secondary">Back to main page</Button>
                              </CardActions>
                         </Grid>
@@ -101,7 +103,7 @@ class CreatePage extends Component {
     render() {
         return (
             <div>
-                <PageBody submitGame={this.props.submitGame} />
+                <PageBody submitGame={this.props.submitGame} updateGame={this.props.updateGame} gameToCreate={this.props.gameToCreate} />
             </div>
         )
     }

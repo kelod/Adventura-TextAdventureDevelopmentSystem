@@ -9,6 +9,7 @@ import hu.elod.Adventura.repository.GameRepository;
 import hu.elod.Adventura.repository.ItemRepository;
 import hu.elod.Adventura.service.CreationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +71,13 @@ public class CreationController {
             return ResponseEntity.ok().body(response);
         }).orElse(ResponseEntity.notFound().build());*/
 
+    }
+
+    @PutMapping("")
+    public ResponseEntity<GameToCreateJTO> updateGameToCreate(@RequestBody GameToCreateJTO gameToCreate){
+        creationService.updateGameFromJTO(gameToCreate);
+
+        return new ResponseEntity<>(gameToCreate, HttpStatus.OK);
     }
 
 }

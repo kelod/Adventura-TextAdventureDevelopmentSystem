@@ -11,6 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class RoomJTO {
 
+    private Integer id;
+
     private String description;
 
     //private List<EnemyJTO> enemies;

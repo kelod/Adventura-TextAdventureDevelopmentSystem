@@ -267,6 +267,7 @@ class App extends Component {
     state = {
         createdGameId: '',
         gameToCreate: {
+            id: null,
             name: '',
             description: '',
             gameGoal: null,
@@ -278,6 +279,7 @@ class App extends Component {
             enemies: [],
             passages: [],
             player: {
+                id: null,
                 name: '',
                 hp: null,
                 attack: null,
@@ -294,6 +296,7 @@ class App extends Component {
         this.setGameToCreateGoalItems = this.setGameToCreateGoalItems.bind(this);
         this.setGameToCreateGoalEnemies = this.setGameToCreateGoalEnemies.bind(this);
         this.submitGame = this.submitGame.bind(this);
+        this.updateGame = this.updateGame.bind(this);
         this.addRoom = this.addRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
         this.deletePassage = this.deletePassage.bind(this);
@@ -559,6 +562,7 @@ class App extends Component {
         }
         else {
             const newPassage = { //Ugyanaz az object kerul a passagesbe es a room passagei koze is
+                id: null,
                 from: roomFrom,
                 to: roomTo,
                 defaultEnabled: true,
@@ -679,6 +683,13 @@ class App extends Component {
         });
     }
 
+    async updateGame() {
+        const response = await axios.put('/create', this.state.gameToCreate);
+        this.setState({
+            createdGameId: response.data.id
+        });
+    }
+
     addRoom = (room) => {
 
         for (var i = 0; i < this.state.gameToCreate.rooms.length; ++i) {
@@ -712,13 +723,13 @@ class App extends Component {
             }
         }
 
-        for (var enemy of room.enemies) {
+        /*for (var enemy of room.enemies) {
             enemy.presentInRoom = null;
         }
 
         for (var item of room.items) {
             item.presentInRoom = null;
-        }
+        }*/
 
         var _rooms = this.state.gameToCreate.rooms;
         _rooms.splice(_rooms.indexOf(room), 1);
@@ -766,11 +777,11 @@ class App extends Component {
             this.state.gameToCreate.goalItems.splice(this.state.gameToCreate.goalItems.indexOf(item), 1);
         }
 
-        for (var room of this.state.gameToCreate.rooms) {
+        /*for (var room of this.state.gameToCreate.rooms) {
             if (room.items.includes(item)) {
                 room.items.splice(room.items.indexOf(item), 1);
             }
-        }
+        }*/
 
         for (var enemy of this.state.gameToCreate.enemies) {
             if (enemy.itemGainReward.includes(item)) {
@@ -1016,11 +1027,11 @@ class App extends Component {
             this.state.gameToCreate.goalEnemies.splice(this.state.gameToCreate.goalEnemies.indexOf(enemy), 1);
         }
 
-        for (var room of this.state.gameToCreate.rooms) {
+        /*for (var room of this.state.gameToCreate.rooms) {
             if (room.enemies.includes(enemy)) {
                 room.enemies.splice(room.enemies.indexOf(enemy), 1);
             }
-        }
+        }*/
         
             this.setState({
                 gameToCreate: {
@@ -1336,7 +1347,7 @@ class App extends Component {
             <Router>
                 <Route exact path="/" render={(props) => <WelcomePage {...props} setGameState={this.setGameState} />} />
                 <Route path="/create" component={CreatePageHeader} />
-                <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} />} />
+                <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" component={PlayPage} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />

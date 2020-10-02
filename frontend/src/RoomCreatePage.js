@@ -234,6 +234,7 @@ class RoomCreatePage extends Component {
 
     state = {
         roomToCreate: {
+            id: null,
             name: '',
             description: '',
            // passages: [],
@@ -261,6 +262,7 @@ class RoomCreatePage extends Component {
     resetRoomToCreate = () => {
         this.setState({
             roomToCreate: {
+                id: null,
                 name: '',
                 description: '',
                // passages: [],

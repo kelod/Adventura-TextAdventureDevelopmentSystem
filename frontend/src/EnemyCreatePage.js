@@ -232,6 +232,7 @@ class EnemyCreatePage extends Component {
 
     state = {
         enemyToCreate: {
+            id: null,
             name: '',
             description: '',
             presentInRoom: null,
@@ -269,6 +270,7 @@ class EnemyCreatePage extends Component {
     resetEnemyToCreate = () => {
         this.setState({
             enemyToCreate: {
+                id: null,
                 name: '',
                 description: '',
                 presentInRoom: null,

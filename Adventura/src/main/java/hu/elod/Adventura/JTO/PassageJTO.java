@@ -12,6 +12,8 @@ import java.util.List;
 @Builder
 public class PassageJTO {
 
+    private Integer id;
+
     private boolean defaultEnabled;
 
     private String description;

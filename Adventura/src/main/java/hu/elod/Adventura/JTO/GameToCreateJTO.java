@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 public class GameToCreateJTO {
 
+    private Integer id;
+
     private String name;
 
     private String description;

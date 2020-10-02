@@ -13,6 +13,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EnemyJTO {
 
+    private Integer id;
+
     private int attack;
 
     private int battleEndHp;
