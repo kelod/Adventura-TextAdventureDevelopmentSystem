@@ -33,30 +33,24 @@ public class Room {
     private Game presentInGame;
 
     @OneToMany(
-            mappedBy = "presentInRoom",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            mappedBy = "presentInRoom"
     )
     private Set<Item> items;
 
     @OneToMany(
-            mappedBy = "presentInRoom",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            mappedBy = "presentInRoom"
     )
     private Set<Enemy> enemies;
 
     @OneToMany(
             mappedBy = "from",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     private Set<Passage> roomFromInPassages;
 
     @OneToMany(
             mappedBy = "to",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     private Set<Passage> roomToInPassages;
 

@@ -484,7 +484,9 @@ public class CreationService {
                 passageActivationRepository.deleteAll(passageActivationRepository.findByPassageId(potentialDirtyPassage.getId()));
             }
         });
+
         Game savedGame = gameRepository.save(newGame);
+
         // Setting up passage activations
 
         Set<PassageActivation> passageActivations = new HashSet<>();

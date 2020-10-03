@@ -709,6 +709,8 @@ class App extends Component {
 
     deleteRoom = (room) => {
 
+        var _passages = this.state.gameToCreate.passages;
+
         if (this.state.gameToCreate.player.startingRoom === room) {
             this.state.gameToCreate.player.startingRoom = null;
         }
@@ -717,19 +719,30 @@ class App extends Component {
             this.state.gameToCreate.goalRoom = null;
         }
 
-        for (var passage of this.state.gameToCreate.passages) {
-            if (passage.from === room || passage.to === room) {
-                this.deletePassage(passage);
+
+        var passages_to_delete = []
+        for (var i = 0; i < _passages.length; ++i) {
+            if (_passages[i].from === room || _passages[i].to === room) {
+                passages_to_delete = [...passages_to_delete, _passages[i]];
+            }
+        }
+        for (var p of passages_to_delete) {
+            this.deletePassage(p);
+        }
+
+
+
+        for (var enemy of this.state.gameToCreate.enemies) {
+            if (enemy.presentInRoom === room) {
+                enemy.presentInRoom = null;
             }
         }
 
-        /*for (var enemy of room.enemies) {
-            enemy.presentInRoom = null;
+        for (var item of this.state.gameToCreate.items) {
+            if (item.presentInRoom === room) {
+                item.presentInRoom = null;
+            }
         }
-
-        for (var item of room.items) {
-            item.presentInRoom = null;
-        }*/
 
         var _rooms = this.state.gameToCreate.rooms;
         _rooms.splice(_rooms.indexOf(room), 1);
@@ -739,9 +752,10 @@ class App extends Component {
                     ...this.state.gameToCreate,
                     goalRoom: this.state.gameToCreate.goalRoom,
                     rooms: _rooms,
-                    passages: this.state.gameToCreate.passages,
+                    passages: _passages,
                     enemies: this.state.gameToCreate.enemies,
-                    items: this.state.gameToCreate.items
+                    items: this.state.gameToCreate.items,
+                    player: this.state.gameToCreate.player
                 }
             })
         
