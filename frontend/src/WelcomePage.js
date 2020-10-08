@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import { withStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { green, purple, blue } from '@material-ui/core/colors';
+import { Link } from 'react-router-dom';
 import { spacing } from '@material-ui/system';
 import { sizing } from '@material-ui/system';
 
@@ -31,7 +32,8 @@ class WelcomePage extends Component {
 
     state = {
         gameId: '',
-        gameCreationId: ''
+        gameCreationId: '',
+        gameToPlayId: ''
     }
 
     constructor(props) {
@@ -47,6 +49,12 @@ class WelcomePage extends Component {
         })
     }
 
+    setGameToPlayId = (event) => {
+        this.setState({
+            gameToPlayId: event.target.value
+        })
+    }
+
     async queryGame(id){
        /* const response = await axios.get(`/create/postman/${id}`);
         if (response.status == 200) {
@@ -59,7 +67,7 @@ class WelcomePage extends Component {
             window.alert(response.data.message);
         }*/
 
-        axios.get(`/create/postman/${id}`)
+        axios.get(`/create/${id}`)
             .then((response) => {
                 this.props.setGameState(response.data);
                 this.props.history.push('/create'); })
@@ -68,6 +76,11 @@ class WelcomePage extends Component {
                     window.alert('Error ' + error.response.data.status + '! ' + error.response.data.message);
                 }
             });
+    }
+
+    async startNewGame(id) {
+        const res = await axios.post(`/play/new/${id}`);
+        this.props.setGameToPlay(res.data);
     }
 
     render() {
@@ -125,12 +138,13 @@ class WelcomePage extends Component {
                                             label="Required"
                                             placeHolder="Enter game code here..."
                                             variant="outlined"
-                                            onChange={this.handleChange}
+                                            onChange={this.setGameToPlayId}
                                         />
                                     </Box>
                                 </CardContent>
                                 <CardActions>
-                                    <Button variant="contained" color="primary" size="small">Start!</Button>
+                                    <Button component={Link} to={`/play`} variant="contained" color="primary" size="small" onClick={() => { this.startNewGame(this.state.gameToPlayId) }}>Start new!</Button>
+                                    <Button variant="contained" color="primary" size="small">Load</Button>
                                 </CardActions>
                             </Card>
                         </Grid>

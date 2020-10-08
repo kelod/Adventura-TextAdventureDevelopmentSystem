@@ -1,25 +1,29 @@
 package hu.elod.Adventura.model;
 
+
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "tbl_games")
-public class Game {
+@Entity
+@Table(name="tbl_game_sessions")
+public class GameSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    private boolean finished;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Game gameDefinition;
 
     private String name;
 
@@ -29,113 +33,105 @@ public class Game {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="goal_room_id", referencedColumnName = "id")
-    private Room goalRoom;
+    private RoomIG goalRoom;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="player_id", referencedColumnName = "id")
-    private Player player;
+    private PlayerIG player;
 
     @OneToMany(
-            mappedBy = "presentInGame",
+            mappedBy = "presentInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Room> rooms;
+    private Set<RoomIG> rooms;
 
     @OneToMany(
-            mappedBy = "goalInGame",
+            mappedBy = "goalInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Enemy> goalEnemies;
+    private Set<EnemyIG> goalEnemies;
 
     @OneToMany(
-            mappedBy = "goalInGame",
+            mappedBy = "goalInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Item> goalItems;
+    private Set<ItemIG> goalItems;
 
     @OneToMany(
-            mappedBy = "presentInGame",
+            mappedBy = "presentInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Item> items;
+    private Set<ItemIG> items;
 
     @OneToMany(
-            mappedBy = "presentInGame",
+            mappedBy = "presentInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Enemy> enemies;
+    private Set<EnemyIG> enemies;
 
     @OneToMany(
-            mappedBy = "presentInGame",
+            mappedBy = "presentInGameSession",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Passage> passages;
+    private Set<PassageIG> passages;
 
-    @OneToMany(
-            mappedBy = "gameDefinition",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Set<GameSession> gameSessions;
-
-
-    public void addItem(Item item){
+    public void addItem(ItemIG item){
         if(items == null){
             items = new HashSet<>();
         }
         items.add(item);
-        item.setPresentInGame(this);
+        item.setPresentInGameSession(this);
     }
 
-    public void addRoom(Room room){
+    public void addRoom(RoomIG room){
         if(rooms == null){
             rooms = new HashSet<>();
         }
         rooms.add(room);
-        room.setPresentInGame(this);
+        room.setPresentInGameSession(this);
     }
 
-    public void addEnemy(Enemy enemy){
+    public void addEnemy(EnemyIG enemy){
         if(enemies == null){
             enemies = new HashSet<>();
         }
         enemies.add(enemy);
-        enemy.setPresentInGame(this);
+        enemy.setPresentInGameSession(this);
     }
 
-    public void addPassage(Passage passage){
+    public void addPassage(PassageIG passage){
         if(passages == null){
             passages = new HashSet<>();
         }
         passages.add(passage);
-        passage.setPresentInGame(this);
+        passage.setPresentInGameSession(this);
     }
 
-    public void addGoalEnemy(Enemy enemy){
+    public void addGoalEnemy(EnemyIG enemy){
         if(goalEnemies == null){
             goalEnemies = new HashSet<>();
         }
         goalEnemies.add(enemy);
-        enemy.setGoalInGame(this);
+        enemy.setGoalInGameSession(this);
     }
 
-    public void addGoalItem(Item item){
+    public void addGoalItem(ItemIG item){
         if(goalItems == null){
             goalItems = new HashSet<>();
         }
         goalItems.add(item);
-        item.setGoalInGame(this);
+        item.setGoalInGameSession(this);
     }
 
-    public Enemy getEnemyByName(String name){
+    public EnemyIG getEnemyByName(String name){
         if(enemies != null) {
-            for (Enemy enemy : enemies) {
+            for (EnemyIG enemy : enemies) {
                 if (enemy.getName().equals(name)) {
                     return enemy;
                 }
@@ -145,9 +141,9 @@ public class Game {
         return null;
     }
 
-    public Item getItemByName(String name){
+    public ItemIG getItemByName(String name){
         if(items != null) {
-            for (Item item : items) {
+            for (ItemIG item : items) {
                 if (item.getName().equals(name)) {
                     return item;
                 }
@@ -157,9 +153,9 @@ public class Game {
         return null;
     }
 
-    public Room getRoomByName(String name){
+    public RoomIG getRoomByName(String name){
         if(rooms != null) {
-            for (Room room : rooms) {
+            for (RoomIG room : rooms) {
                 if (room.getName().equals(name)) {
                     return room;
                 }
@@ -169,12 +165,23 @@ public class Game {
         return null;
     }
 
-    public Passage getPassageByRooms(Room roomFrom, Room roomTo){
-        for(Passage passage : passages){
+    public PassageIG getPassageByRooms(RoomIG roomFrom, RoomIG roomTo){
+        for(PassageIG passage : passages){
             if(passage.getFrom() == roomFrom && passage.getTo() == roomTo){
                 return passage;
             }
         }
         return null;
     }
+
+    public void setGameDefinition(Game gameDefinition){
+        this.gameDefinition = gameDefinition;
+        gameDefinition.getGameSessions().add(this);
+    }
+
+    public void setGoalRoom(RoomIG goalRoom){
+        this.goalRoom = goalRoom;
+        goalRoom.setGoalInGameSession(this);
+    }
+
 }

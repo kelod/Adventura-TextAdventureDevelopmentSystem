@@ -1,28 +1,30 @@
 package hu.elod.Adventura.web;
 
-import hu.elod.Adventura.model.Game;
-import hu.elod.Adventura.repository.GameRepository;
+import hu.elod.Adventura.JTO.GameSessionJTO;
+import hu.elod.Adventura.model.GameSession;
+import hu.elod.Adventura.service.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/games")
+@RequestMapping("/play")
 public class GameController {
 
     @Autowired
-    GameRepository gameRepository;
+    PlayService playService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findGameById(@PathVariable Integer id) {
-        Optional<Game> result = gameRepository.findById(id);
-        return result.map(response -> {
-            return ResponseEntity.ok().body(response);
-        }).orElse(ResponseEntity.notFound().build());
+    @PostMapping("/new/{id}")
+    public ResponseEntity<GameSessionJTO> startNewGame(@PathVariable Integer id){
+        GameSessionJTO gameSessionJTO = playService.createGameFromDescription(id);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }
+    {
+
+    }
+
 }

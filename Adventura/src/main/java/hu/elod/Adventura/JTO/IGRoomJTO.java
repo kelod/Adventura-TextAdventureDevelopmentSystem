@@ -5,17 +5,11 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class RoomJTO {
+public class IGRoomJTO {
 
     private Integer id;
 
     private String description;
-
-    //private List<EnemyJTO> enemies;
-
-    //private List<ItemJTO> items;
 
     private String name;
 }

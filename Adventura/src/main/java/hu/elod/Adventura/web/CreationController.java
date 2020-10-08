@@ -28,17 +28,6 @@ public class CreationController {
     @Autowired
     GameRepository gameRepository;
 
-    /*
-    @Autowired
-    GameRepository gameRepository;
-
-    @PostMapping("")
-    public ResponseEntity<Game> createNewGame(@RequestBody Game game) throws URISyntaxException {
-        Game result = gameRepository.save(game);
-        return ResponseEntity.created(new URI("/games/" + result.getId())).body(result);
-    }
-    */
-
     @PostMapping("")
     public ResponseEntity<Integer> createNewGame(@RequestBody GameToCreateJTO gameToCreate) throws URISyntaxException {
 
@@ -49,13 +38,6 @@ public class CreationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GameToCreateJTO> getGameDescription(@PathVariable Integer id){
-        GameToCreateJTO gameToCreate = creationService.getGameDescriptionById(id);
-
-        return null;
-    }
-
-    @GetMapping("/postman/{id}")
-    public ResponseEntity<GameToCreateJTO> foo(@PathVariable Integer id){
 
         GameToCreateJTO gameToCreateJTO = creationService.getGameDescriptionById(id);
 

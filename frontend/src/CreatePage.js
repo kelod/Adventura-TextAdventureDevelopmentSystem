@@ -83,13 +83,11 @@ class CreatePage extends Component {
                 name: value
             }
         })
-        console.log('set Game name meghivodik');
     }
 
     async handleSubmit() {
         const { game } = this.state;
         const res = await axios.post('/create/', game);
-        console.log(res.data);
         this.setState({
             gameId: res.data.id
         })

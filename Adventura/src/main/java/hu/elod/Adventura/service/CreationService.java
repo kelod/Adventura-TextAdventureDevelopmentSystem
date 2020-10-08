@@ -45,6 +45,7 @@ public class CreationService {
                 .items(new HashSet<>())
                 .passages(new HashSet<>())
                 .rooms(new HashSet<>())
+                .gameSessions(new HashSet<>())
                 .build();
 
         gameToCreate.getItems().forEach(itemJTO -> {
@@ -324,8 +325,6 @@ public class CreationService {
                                         .id(room.getId())
                                         .description(room.getDescription())
                                         .name(room.getName())
-                                        //.enemies(new ArrayList<>())
-                                        //.items(new ArrayList<>())
                                         .build());
         });
 
