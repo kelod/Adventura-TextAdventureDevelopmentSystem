@@ -485,6 +485,138 @@ class App extends Component {
             gameToPlay: data
         })
 
+        // same obejcts should be same references also
+        var _items = this.state.gameToPlay.items;
+        var _rooms = this.state.gameToPlay.rooms;
+        var _enemies = this.state.gameToPlay.enemies;
+        var _passages = this.state.gameToPlay.passages;
+        var _player = this.state.gameToPlay.player;
+        var _goalItems = this.state.gameToPlay.goalItems;
+        var _goalEnemies = this.state.gameToPlay.goalEnemies;
+
+        for (var item of _items) { // for items
+            for (var enemy of _enemies) {
+                for (var _item of enemy.itemGainReward) {
+                    if (item.name === _item.name) {
+                        enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(_item), 1);
+                        enemy.itemGainReward = [...enemy.itemGainReward, item];
+                    }
+                }
+                for (var _item of enemy.itemLosePenalty) {
+                    if (item.name === _item.name) {
+                        enemy.itemLosePenalty.splice(enemy.itemLosePenalty.indexOf(_item), 1);
+                        enemy.itemLosePenalty = [...enemy.itemLosePenalty, item];
+                    }
+                }
+            }
+
+            if (_player.inventory != null) {
+                for (var _item of _player.inventory) {
+                    if (item.name === _item.name) {
+                        _player.inventory.splice(_player.inventory.indexOf(_item), 1);
+                        _player.inventory = [..._player.inventory, item];
+                    }
+                }
+            }
+
+            for (var goalItem of _goalItems) {
+                if (goalItem.name === item.name) {
+                    _goalItems.splice(_goalItems.indexOf(goalItem), 1);
+                    _goalItems = [..._goalItems, item];
+                }
+            }
+        }
+
+        for (var room of _rooms) { // for rooms
+            for (var item of _items) {
+                if (item.presentInRoom != null && item.presentInRoom.name === room.name) {
+                    item.presentInRoom = room;
+                }
+            }
+            for (var enemy of _enemies) {
+                if (enemy.presentInRoom != null && enemy.presentInRoom.name === room.name) {
+                    enemy.presentInRoom = room;
+                }
+            }
+
+            for (var passage of _passages) {
+                if (passage.from.name === room.name) {
+                    passage.from = room;
+                }
+                if (passage.to.name === room.name) {
+                    passage.to = room;
+                }
+            }
+
+            if (_player.inRoom != null) {
+                if (_player.inRoom.name === room.name) {
+                    _player.inRoom = room;
+                }
+            }
+
+            if (this.state.gameToCreate.goalRoom != null && this.state.gameToCreate.goalRoom.name === room.name) {
+                this.setState({
+                    gameToCreate: {
+                        ...this.state.gameToCreate,
+                        goalRoom: room
+                    }
+                })
+            }
+        }
+
+        for (var passage of _passages) { // for passages
+            for (var enemy of _enemies) {
+                for (var passageActivation of enemy.passageActivationReward) {
+                    if (passageActivation.from.name === passage.from.name && passageActivation.to.name === passage.to.name) {
+                        enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passageActivation), 1);
+                        enemy.passageActivationReward = [...enemy.passageActivationReward, passage];
+                    }
+                }
+            }
+
+            for (var item of _items) {
+                for (var passageActivation of item.passageActivations) {
+                    if (passageActivation.passage.from.name === passage.from.name && passageActivation.passage.to.name === passage.to.name) {
+                        item.passageActivations.splice(item.passageActivations.indexOf(passageActivation), 1);
+                        const newActivation = {
+                            enable: passageActivation.enable,
+                            passage: passage
+                        }
+                        item.passageActivations = [...item.passageActivations, newActivation];
+                    }
+                }
+
+                for (var _passage of item.requestedInPassages) {
+                    if (_passage != null && _passage.from.name === passage.from.name && _passage.to.name === passage.to.name) {
+                        item.requestedInPassages.splice(item.requestedInPassages.indexOf(_passage), 1);
+                        item.requestedInPassages = [...item.requestedInPassages, passage];
+                    }
+                }
+            }
+        }
+
+        for (var enemy of _enemies) { // for enemies
+            for (var goalEnemy of _goalEnemies) {
+                if (goalEnemy.name === enemy.name) {
+                    _goalEnemies.splice(_goalEnemies.indexOf(goalEnemy), 1);
+                    _goalEnemies = [..._goalEnemies, enemy];
+                }
+            }
+        }
+
+        this.setState({
+            gameToPlay: {
+                ...this.state.gameToPlay,
+                items: _items,
+                rooms: _rooms,
+                enemies: _enemies,
+                passages: _passages,
+                player: _player,
+                goalEnemies: _goalEnemies,
+                goalItems: _goalItems
+            }
+        })
+
     }
 
     setGameProperty = (event) => {
