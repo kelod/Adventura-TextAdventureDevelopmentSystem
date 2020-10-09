@@ -13,6 +13,10 @@ public class GameToCreateJTO {
 
     private Integer id;
 
+    private boolean anySessionStarted;
+
+    private boolean deployed;
+
     private String name;
 
     private String description;

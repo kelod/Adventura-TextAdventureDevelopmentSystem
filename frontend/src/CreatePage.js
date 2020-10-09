@@ -12,6 +12,9 @@ import { green, purple } from '@material-ui/core/colors';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Checkbox from '@material-ui/core/Checkbox';
 
 
 const ColorButton = withStyles((theme) => ({
@@ -23,6 +26,8 @@ const ColorButton = withStyles((theme) => ({
         },
     },
 }))(Button);
+
+
 
 function PageBody(props) {
  
@@ -37,8 +42,15 @@ function PageBody(props) {
                   <Grid container justify="center">
                         <Grid item>
                         <CardActions>
-                            <ColorButton component={Link} to={`/created`} startIcon={<SaveIcon />} variant="contained" size="small" onClick={props.submitGame}>Finish game!</ColorButton>
-                            <Button component={Link} to={`/created`} startIcon={<UpdateIcon />} variant="contained" size="small" disabled={!props.gameToCreate.id} onClick={props.updateGame} color="primary">Update game</Button>
+                            <FormControl component="fieldset">
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={props.gameToCreate.deployed} onChange={props.setGameToCreateDeployed}/>}
+                                    label="Deploy"
+                                    labelPlacement="start"
+                                />
+                            </FormControl>
+                            <ColorButton /*component={Link} to={`/created`}*/ startIcon={<SaveIcon />} variant="contained" size="small" onClick={props.createNewGame/*props.submitGame*/}>Finish game!</ColorButton>
+                            <Button /*component={Link} to={`/created`}*/ startIcon={<UpdateIcon />} variant="contained" size="small" disabled={!props.gameToCreate.id || props.gameToCreate.anySessionStarted} onClick={props.updateGame} color="primary">Update game</Button>
                             <Button component={Link} to={`/`} startIcon={<DeleteIcon />} variant="contained" size="small" color="secondary">Back to main page</Button>
                              </CardActions>
                         </Grid>
@@ -60,7 +72,8 @@ class CreatePage extends Component {
 
     constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.createNewGame = this.createNewGame.bind(this);
+        this.updateGame = this.updateGame.bind(this);
     }
 
     componentDidMount() {
@@ -85,23 +98,47 @@ class CreatePage extends Component {
         })
     }
 
-    async handleSubmit() {
-        const { game } = this.state;
-        const res = await axios.post('/create/', game);
-        this.setState({
-            gameId: res.data.id
-        })
-        
+    createNewGame = () => {
+        if (this.props.gameToCreate.deployed) {
+            const valid = this.props.validateGame(this.props.gameToCreate);
 
+            if (valid) {
+                this.props.submitGame();
+                this.props.history.push("/created");
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            this.props.submitGame();
+            this.props.history.push("/created");
+        }
     }
 
-    
+    updateGame = () => {
+        if (this.props.gameToCreate.deployed) {
+            const valid = this.props.validateGame(this.props.gameToCreate);
+
+            if (valid) {
+                this.props.updateGame();
+                this.props.history.push("/created");
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            this.props.updateGame();
+            this.props.history.push("/created");
+        }
+    }
 
 
     render() {
         return (
             <div>
-                <PageBody submitGame={this.props.submitGame} updateGame={this.props.updateGame} gameToCreate={this.props.gameToCreate} />
+                <PageBody submitGame={this.props.submitGame} updateGame={this.updateGame} gameToCreate={this.props.gameToCreate} validateGame={this.props.validateGame} createNewGame={this.createNewGame} setGameToCreateDeployed={this.props.setGameToCreateDeployed} />
             </div>
         )
     }

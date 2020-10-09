@@ -49,7 +49,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import graphqlIcon from '@iconify/icons-mdi/graphql';
 import roadtunnelIcon from '@iconify/icons-whh/roadtunnel';
 import FaceIcon from '@material-ui/icons/Face';
-
+import { Redirect } from "react-router-dom";
 
 
 const BigTooltip = withStyles({
@@ -268,6 +268,8 @@ class App extends Component {
         createdGameId: '',
         gameToCreate: {
             id: null,
+            anySessionStarted: false,
+            deployed: false,
             name: '',
             description: '',
             gameGoal: null,
@@ -299,6 +301,8 @@ class App extends Component {
         this.setGameToPlay = this.setGameToPlay.bind(this);
         this.submitGame = this.submitGame.bind(this);
         this.updateGame = this.updateGame.bind(this);
+        this.validateGame = this.validateGame.bind(this);
+        this.setGameToCreateDeployed = this.setGameToCreateDeployed.bind(this);
         this.addRoom = this.addRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
         this.deletePassage = this.deletePassage.bind(this);
@@ -629,6 +633,15 @@ class App extends Component {
         })
     }
 
+    setGameToCreateDeployed = (event) => {
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                deployed: event.target.checked
+            }
+        })
+    }
+
     setGameToCreateGoalRoom = (event) => {
         this.setState({
             gameToCreate: {
@@ -818,10 +831,42 @@ class App extends Component {
     }
 
     async submitGame() {
-        const response = await axios.post('/create', this.state.gameToCreate);
-        this.setState({
-            createdGameId: response.data
-        });
+            const response = await axios.post('/create', this.state.gameToCreate);
+            this.setState({
+                createdGameId: response.data
+            });
+    }
+
+    validateGame = (gameToCreate) => {
+        // Has player starting room
+        if (this.state.gameToCreate.player.startingRoom === null) {
+            window.alert('Please set a starting room for the Player!');
+            return false;
+        }
+
+        // Every enemy rendered to rooms
+        var enemiesWithoutRoom = [];
+        for (var enemy of this.state.gameToCreate.enemies) {
+            if (enemy.presentInRoom === null) {
+                enemiesWithoutRoom = [...enemiesWithoutRoom, enemy];
+            }
+        }
+        if (enemiesWithoutRoom.length != 0) {
+            var message = "The following enemies are not in any room: ";
+            for (var enemy of enemiesWithoutRoom) {
+                message = message + "   " + enemy.name;
+            }
+            window.alert(message);
+            return false;
+        }
+
+        // Game Goal Detail
+        if (this.state.gameToCreate.gameGoal !== null && this.state.gameToCreate.goalRoom === null && this.state.gameToCreate.goalItems.length === 0 && this.state.gameToCreate.goalEnemies.length === 0) {
+            window.alert("You have a set a general game goal, but not any particular detail about it!");
+            return false;
+        }
+
+        return true;
     }
 
     async updateGame() {
@@ -1502,7 +1547,7 @@ class App extends Component {
             <Router>
                 <Route exact path="/" render={(props) => <WelcomePage {...props} setGameState={this.setGameState} setGameToPlay={this.setGameToPlay} />} />
                 <Route path="/create" component={CreatePageHeader} />
-                <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} />} />
+                <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} validateGame={this.validateGame} setGameToCreateDeployed={this.setGameToCreateDeployed} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
                 <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} />} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />

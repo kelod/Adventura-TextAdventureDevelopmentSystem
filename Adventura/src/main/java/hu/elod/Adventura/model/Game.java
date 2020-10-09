@@ -21,6 +21,10 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private boolean anySessionStarted;
+
+    private boolean deployed;
+
     private String name;
 
     private String description;

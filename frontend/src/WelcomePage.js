@@ -79,8 +79,19 @@ class WelcomePage extends Component {
     }
 
     async startNewGame(id) {
-        const res = await axios.post(`/play/new/${id}`);
-        this.props.setGameToPlay(res.data);
+        /*const res = await axios.post(`/play/new/${id}`);
+        this.props.setGameToPlay(res.data);*/
+
+        axios.post(`/play/new/${id}`)
+            .then((response) => {
+                this.props.setGameToPlay(response.data);
+                this.props.history.push('/play');
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    window.alert('Error ' + error.response.data.status + '! ' + 'Game cannot be played! Maybe its not deployed yet, please contact the creator!');
+                }
+            });
     }
 
     render() {
@@ -143,7 +154,7 @@ class WelcomePage extends Component {
                                     </Box>
                                 </CardContent>
                                 <CardActions>
-                                    <Button component={Link} to={`/play`} variant="contained" color="primary" size="small" onClick={() => { this.startNewGame(this.state.gameToPlayId) }}>Start new!</Button>
+                                    <Button /*component={Link} to={`/play`}*/ variant="contained" color="primary" size="small" onClick={() => { this.startNewGame(this.state.gameToPlayId) }}>Start new!</Button>
                                     <Button variant="contained" color="primary" size="small">Load</Button>
                                 </CardActions>
                             </Card>

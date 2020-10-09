@@ -18,13 +18,10 @@ public class GameController {
     PlayService playService;
 
     @PostMapping("/new/{id}")
-    public ResponseEntity<GameSessionJTO> startNewGame(@PathVariable Integer id){
+    public ResponseEntity<GameSessionJTO> startNewGame(@PathVariable Integer id) throws Exception{
         GameSessionJTO gameSessionJTO = playService.createGameFromDescription(id);
 
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
-    }
-    {
-
     }
 
 }

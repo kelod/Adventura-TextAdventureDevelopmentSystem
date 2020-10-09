@@ -41,8 +41,11 @@ public class PlayService {
     @Autowired
     RoomIGRepository roomIGRepository;
 
-    public GameSessionJTO createGameFromDescription(Integer id){
+    public GameSessionJTO createGameFromDescription(Integer id) throws Exception {
         Game gameDefinition = gameRepository.findById(id).get();
+        if(!gameDefinition.isDeployed()){
+            throw new Exception("Game is not deployed");
+        }
 
         // Creating a new game session and saving it to database
         GameSession gameSession =   GameSession.builder()
@@ -390,6 +393,10 @@ public class PlayService {
 
         //==================================================================================
         // Setting up rooms - no need for that
+
+        // Setting session started
+        gameDefinition.setAnySessionStarted(true);
+        gameRepository.save(gameDefinition);
 
         return gameSessionJTO;
     }
