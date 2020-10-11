@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import { cyan, purple } from '@material-ui/core/colors';
+import { cyan, red, teal } from '@material-ui/core/colors';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoIcon from '@material-ui/icons/Info';
 import PanToolIcon from '@material-ui/icons/PanTool';
@@ -28,6 +28,8 @@ import { useTheme } from '@material-ui/core/styles';
 import Zoom from '@material-ui/core/Zoom';
 import doorOpen from '@iconify/icons-mdi/door-open';
 import { Icon } from '@iconify/react';
+import LocalMallIcon from '@material-ui/icons/LocalMall';
+import swordCross from '@iconify/icons-mdi/sword-cross';
 
 
 
@@ -230,6 +232,187 @@ function PassageList(props) {
     )
 }
 
+function ItemList(props) {
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    var inventoryItems = [];
+    var usableItems = [];
+    for (var item of props.gameToPlay.items) {
+        if (item.presentInRoom === props.gameToPlay.player.inRoom && item.type === "inventory") {
+            inventoryItems = [...inventoryItems, item];
+        }
+        else {
+            if (item.presentInRoom === props.gameToPlay.player.inRoom) {
+                usableItems = [...usableItems, item];
+            }
+        }
+    }
+
+    return (
+        <TableContainer component={Paper} style={{ margin: "24px" }}>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <StyledTableCell>Items</StyledTableCell>
+                        <StyledTableCell align="right">Info</StyledTableCell>
+                        <StyledTableCell align="right">Use/Inventory</StyledTableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {(rowsPerPage > 0
+                        ? inventoryItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        : inventoryItems
+                    ).map((item, index) => (
+                        <TableRow key={index}>
+                            <TableCell component="th" scope="row">
+                                {item.name}
+                            </TableCell>
+                            <TableCell align="right">
+                                <BigTooltip title={item.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                    <InfoIcon style={{ color: cyan[900] }} />
+                                </BigTooltip>
+                            </TableCell>
+                            <TableCell align="right">
+                                <IconButton color={cyan[900]} onClick={() => { props.putItemToInventory(item) }}>
+                                    <LocalMallIcon style={{ color: teal[900] }} />
+                                </IconButton>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+
+                    {(rowsPerPage > 0
+                        ? usableItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        : usableItems
+                    ).map((item, index) => (
+                        <TableRow key={index}>
+                            <TableCell component="th" scope="row">
+                                {item.name}
+                            </TableCell>
+                            <TableCell align="right">
+                                <BigTooltip title={item.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                    <InfoIcon style={{ color: cyan[900] }} />
+                                </BigTooltip>
+                            </TableCell>
+                            <TableCell align="right">
+                                <IconButton onClick={() => { props.putItemToInventory(item) }}>
+                                    <PanToolIcon style={{ color: teal[900] }} />
+                                </IconButton>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+
+
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                            colSpan={2}
+                            count={inventoryItems.length + usableItems.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            SelectProps={{
+                                inputProps: { 'aria-label': 'rows per page' },
+                                native: true,
+                            }}
+                            onChangePage={handleChangePage}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                            ActionsComponent={TablePaginationActions}
+                        />
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </TableContainer>
+    )
+}
+
+function EnemyList(props) {
+    //Pageable List
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    var optionalEnemiesInRoom = [];
+    for (var enemy of props.gameToPlay.enemies) {
+        if (enemy.presentInRoom === props.gameToPlay.player.inRoom && enemy.fightingType === "optional") {
+            optionalEnemiesInRoom = [...optionalEnemiesInRoom, enemy];
+        }
+    }
+
+    return (
+        <TableContainer component={Paper} style={{ margin: "24px" }}>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <RedTableCell>Enemies</RedTableCell>
+                        <RedTableCell align="right">Info</RedTableCell>
+                        <RedTableCell align="right">Fight</RedTableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {(rowsPerPage > 0
+                        ? optionalEnemiesInRoom.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        : optionalEnemiesInRoom
+                    ).map((enemy, index) => (
+                        <TableRow key={index}>
+                            <TableCell component="th" scope="row">
+                                {enemy.name}
+                            </TableCell>
+                            <TableCell align="right">
+                                <BigTooltip title={enemy.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                    <InfoIcon style={{ color: red[600] }} />
+                                </BigTooltip>
+                            </TableCell>
+                            <TableCell align="right">
+                                <IconButton onClick={() => { props.fightEnemy(enemy) }}>
+                                    <Icon icon={swordCross} style={{ color: red[600] }}/>
+                                </IconButton>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                            colSpan={2}
+                            count={optionalEnemiesInRoom.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            SelectProps={{
+                                inputProps: { 'aria-label': 'rows per page' },
+                                native: true,
+                            }}
+                            onChangePage={handleChangePage}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                            ActionsComponent={TablePaginationActions}
+                        />
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </TableContainer>
+    )
+}
+
 const BigTooltip = withStyles({
     tooltip: {
         fontSize: "12px",
@@ -240,6 +423,16 @@ const BigTooltip = withStyles({
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: cyan[900],
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+
+const RedTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: red[600],
         color: theme.palette.common.white,
     },
     body: {
@@ -313,6 +506,14 @@ class PlayPage extends Component {
 
                     <Grid container item justify="center">
                         <PassageList gameToPlay={this.props.gameToPlay} />
+                    </Grid>
+
+                    <Grid container item justify="center">
+                        <ItemList gameToPlay={this.props.gameToPlay} />
+                    </Grid>
+
+                    <Grid container item justify="center">
+                        <EnemyList gameToPlay={this.props.gameToPlay} />
                     </Grid>
                                       
                 </Grid>
