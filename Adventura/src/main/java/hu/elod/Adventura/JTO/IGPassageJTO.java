@@ -13,6 +13,8 @@ public class IGPassageJTO {
 
     private boolean enabled;
 
+    private String preDescription;
+
     private String description;
 
     private IGRoomJTO from;

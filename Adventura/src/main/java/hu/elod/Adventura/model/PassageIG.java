@@ -21,6 +21,8 @@ public class PassageIG {
 
     private boolean enabled;
 
+    private String preDescription;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

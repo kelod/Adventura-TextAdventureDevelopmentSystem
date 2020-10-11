@@ -103,6 +103,7 @@ public class CreationService {
                     .id(passageJTO.getId())
                     .defaultEnabled(passageJTO.isDefaultEnabled())
                     .description(passageJTO.getDescription())
+                    .preDescription(passageJTO.getPreDescription())
                     .activationRewardForEnemies(new HashSet<>())
                     .requestedItems(new HashSet<>())
                     .build();
@@ -255,6 +256,7 @@ public class CreationService {
                     .description(passageJTO.getDescription())
                     .activationRewardForEnemies(new HashSet<>())
                     .requestedItems(new HashSet<>())
+                    .preDescription(passageJTO.getPreDescription())
                     .build();
             passageToAdd.setFrom(newGame.getRoomByName(passageJTO.getFrom().getName()));
             passageToAdd.setTo(newGame.getRoomByName(passageJTO.getTo().getName()));
@@ -447,6 +449,7 @@ public class CreationService {
                     .id(passage.getId())
                     .defaultEnabled(passage.isDefaultEnabled())
                     .description(passage.getDescription())
+                    .preDescription(passage.getPreDescription())
                     .build();
 
             passageToAdd.setFrom(gameToCreate.getRoomByName(passage.getFrom().getName()));

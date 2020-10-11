@@ -21,6 +21,8 @@ public class Passage {
 
     private boolean defaultEnabled;
 
+    private String preDescription;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

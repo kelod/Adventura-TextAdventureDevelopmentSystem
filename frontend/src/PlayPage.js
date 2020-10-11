@@ -193,7 +193,7 @@ function PassageList(props) {
                                 {index}
                             </TableCell>
                             <TableCell align="right">
-                                <BigTooltip title={passage.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                <BigTooltip title={passage.preDescription} arrow TransitionComponent={Zoom} placement="right" justify="left">
                                     <InfoIcon style={{ color: cyan[800] }} />
                                 </BigTooltip>
                             </TableCell>

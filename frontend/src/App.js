@@ -312,6 +312,7 @@ class App extends Component {
         this.setPassageBetweenRooms = this.setPassageBetweenRooms.bind(this);
         this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
         this.setPassageDescription = this.setPassageDescription.bind(this);
+        this.setPassagePreDescription = this.setPassagePreDescription.bind(this);
         this.togglePassageDefaultEnabled = this.togglePassageDefaultEnabled.bind(this);
         this.setPassageActivationToItem = this.setPassageActivationToItem.bind(this);
         this.deletePassageActivationToItem = this.deletePassageActivationToItem.bind(this);
@@ -721,7 +722,8 @@ class App extends Component {
                 from: roomFrom,
                 to: roomTo,
                 defaultEnabled: true,
-                description: "",
+                preDescription: "",
+                description: ""
                 //activationRewardForEnemies: []
                 //requestedItems: []
             }
@@ -743,6 +745,19 @@ class App extends Component {
         const { value } = event.target;
         var _passages = this.state.gameToCreate.passages;
         _passages[index].description = value;
+
+        this.setState({
+            gameToCreate: {
+                ...this.state.gameToCreate,
+                passages: _passages
+            }
+        })
+    }
+
+    setPassagePreDescription = (index, event) => {
+        const { value } = event.target;
+        var _passages = this.state.gameToCreate.passages;
+        _passages[index].preDescription = value;
 
         this.setState({
             gameToCreate: {
@@ -1556,7 +1571,7 @@ class App extends Component {
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />
                 <Route exact path="/create/items" render={(props) => <ItemCreatePage {...props} addItem={this.addItem} deleteItem={this.deleteItem} items={this.state.gameToCreate.items} />} />
                 <Route exact path="/create/passages" render={(props) => <PassageCreatePage {...props} deletePassage={this.deletePassage} passages={this.state.gameToCreate.passages} />} />
-                <Route exact path="/create/passages/:passageIndex" render={(props) => <ParticularPassageEdit {...props} passages={this.state.gameToCreate.passages} items={this.state.gameToCreate.items} setNeccessaryItemToPassage={this.setNeccessaryItemToPassage} setPassageDescription={this.setPassageDescription} togglePassageDefaultEnabled={this.togglePassageDefaultEnabled} />} />
+                <Route exact path="/create/passages/:passageIndex" render={(props) => <ParticularPassageEdit {...props} passages={this.state.gameToCreate.passages} items={this.state.gameToCreate.items} setNeccessaryItemToPassage={this.setNeccessaryItemToPassage} setPassageDescription={this.setPassageDescription} togglePassageDefaultEnabled={this.togglePassageDefaultEnabled} setPassagePreDescription={this.setPassagePreDescription} />} />
                 <Route exact path="/create/items/:itemIndex" render={(props) => <ParticularItemEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} setItemName={this.setItemName} setItemDescription={this.setItemDescription} renderItemToRoom={this.renderItemToRoom} setItemType={this.setItemType} setPassageActivationToItem={this.setPassageActivationToItem} passages={this.state.gameToCreate.passages} togglePassageActivationByItem={this.togglePassageActivationByItem} deletePassageActivationToItem={this.deletePassageActivationToItem} />} />
                 <Route exact path="/create/general" render={(props) => <GeneralCreatePage {...props} setGameProperty={this.setGameProperty} gameToCreate={this.state.gameToCreate} setGameToCreateGoalEnemies={this.setGameToCreateGoalEnemies} setGameToCreateGoalItems={this.setGameToCreateGoalItems} setGameToCreateGoalRoom={this.setGameToCreateGoalRoom} />} />
                 <Route exact path="/create/enemies" render={(props) => <EnemyCreatePage {...props} addEnemy={this.addEnemy} deleteEnemy={this.deleteEnemy} enemies={this.state.gameToCreate.enemies} />} />

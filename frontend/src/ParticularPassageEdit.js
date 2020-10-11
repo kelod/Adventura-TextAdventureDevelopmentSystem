@@ -267,6 +267,28 @@ class ParticularPassageEdit extends Component {
                         <Box mb={3} ml={1} mr={1}>
                             <TextField
                                 id="passage-description"
+                                name="preDescription"
+                                label="Pre Description"
+                                multiline
+                                rows={5}
+                                variant="outlined"
+                                defaultValue={this.props.passages[params.passageIndex].preDescription}
+                                onChange={(e) => { this.props.setPassagePreDescription(params.passageIndex, e) }}
+                                fullWidth />
+                        </Box>
+                    </Grid>
+
+                    <Grid container item justify="flex-end">
+                        <Box mr={1}>
+                            <BigTooltip title="This description will appear after using the passage" arrow TransitionComponent={Zoom} placement="left">
+                                <InfoIcon style={{ color: cyan[800] }} />
+                            </BigTooltip>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Box mb={3} ml={1} mr={1}>
+                            <TextField
+                                id="passage-description"
                                 name="description"
                                 label="Description"
                                 multiline

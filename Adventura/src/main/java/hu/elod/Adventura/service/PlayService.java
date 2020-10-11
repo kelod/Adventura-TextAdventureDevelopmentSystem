@@ -113,6 +113,7 @@ public class PlayService {
         gameDefinition.getPassages().forEach(passage -> {
             PassageIG passageToAdd = PassageIG.builder()
                                             .description(passage.getDescription())
+                                            .preDescription(passage.getPreDescription())
                                             .enabled(passage.isDefaultEnabled())
                                             .activationRewardForEnemies(new HashSet<>())
                                             .requestedItems(new HashSet<>())
@@ -300,6 +301,7 @@ public class PlayService {
         savedSession.getPassages().forEach(passageIG -> {
             IGPassageJTO passageToAdd = IGPassageJTO.builder()
                                         .description(passageIG.getDescription())
+                                        .preDescription(passageIG.getPreDescription())
                                         .enabled(passageIG.isEnabled())
                                         .id(passageIG.getId())
                                         .build();

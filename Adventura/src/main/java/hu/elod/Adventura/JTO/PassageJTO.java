@@ -15,6 +15,8 @@ public class PassageJTO {
 
     private boolean defaultEnabled;
 
+    private String preDescription;
+
     private String description;
 
     private RoomJTO from;
