@@ -85,7 +85,7 @@ class WelcomePage extends Component {
         axios.post(`/play/new/${id}`)
             .then((response) => {
                 this.props.setGameToPlay(response.data);
-                this.props.history.push('/play');
+                this.props.history.push('/play/welcome');
             })
             .catch(function (error) {
                 if (error.response) {

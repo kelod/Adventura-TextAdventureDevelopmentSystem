@@ -23,7 +23,7 @@ class GameCreated extends Component {
                             </Typography>
                        </Grid>
                     </Toolbar>
-                    </AppBar>
+                </AppBar>
                 <Grid container direction="column" fullWidth>
                     <Grid container item justify="center">
                         <Box m={4} fontWeight="fontWeightMedium" fontFamily="Monospace" fontSize="h6.fontSize">

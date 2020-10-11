@@ -21,6 +21,8 @@ public class RoomIG {
 
     private String name;
 
+    @Lob
+    @Column(name="description", length=1024)
     private String description;
 
     @OneToOne(mappedBy = "goalRoom")
