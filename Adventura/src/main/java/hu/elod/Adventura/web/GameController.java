@@ -17,6 +17,13 @@ public class GameController {
     @Autowired
     PlayService playService;
 
+    @PutMapping("/player")
+    public ResponseEntity<GameSessionJTO> updatePlayerState(@RequestBody GameSessionJTO gameSessionJTO){
+        playService.updatePlayerState(gameSessionJTO);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
     @PostMapping("/new/{id}")
     public ResponseEntity<GameSessionJTO> startNewGame(@PathVariable Integer id) throws Exception{
         GameSessionJTO gameSessionJTO = playService.createGameFromDescription(id);

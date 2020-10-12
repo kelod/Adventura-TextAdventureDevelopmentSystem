@@ -313,6 +313,7 @@ class App extends Component {
         this.hasPassageBetweenRooms = this.hasPassageBetweenRooms.bind(this);
         this.setPassageDescription = this.setPassageDescription.bind(this);
         this.setPassagePreDescription = this.setPassagePreDescription.bind(this);
+        this.usePassage = this.usePassage.bind(this);
         this.togglePassageDefaultEnabled = this.togglePassageDefaultEnabled.bind(this);
         this.setPassageActivationToItem = this.setPassageActivationToItem.bind(this);
         this.deletePassageActivationToItem = this.deletePassageActivationToItem.bind(this);
@@ -321,11 +322,13 @@ class App extends Component {
         this.getRoomByName = this.getRoomByName.bind(this);
         this.getItemsInRoom = this.getItemsInRoom.bind(this);
         this.getEnemiesInRoom = this.getEnemiesInRoom.bind(this);
+        this.putItemToInventory = this.putItemToInventory.bind(this);
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
         this.setItemDescription = this.setItemDescription.bind(this);
         this.setItemType = this.setItemType.bind(this);
         this.setItemName = this.setItemName.bind(this);
+        this.useInventoryItem = this.useInventoryItem.bind(this);
         this.renderItemToRoom = this.renderItemToRoom.bind(this);
         this.setItemToRoom = this.setItemToRoom.bind(this);
         this.IsItemInRoom = this.IsItemInRoom.bind(this);
@@ -788,6 +791,24 @@ class App extends Component {
         return null;
     }
 
+    async usePassage(passage) {
+        var _player = this.state.gameToPlay.player;
+        _player.inRoom = passage.to;
+        this.setPlayer(_player);
+
+        const response = await axios.put(`/play/player`, this.state.gameToPlay);
+
+    }
+
+    setPlayer = (_player) => {
+        this.setState({
+            gameToPlay: {
+                ...this.state.gameToPlay,
+                player: _player
+            }
+        })
+    }
+
     setNeccessaryItemToPassage = (passage, item) => {
         /*var _passages = this.state.gameToCreate.passages;
         var _items = this.state.gameToCreate.items;*/
@@ -811,6 +832,24 @@ class App extends Component {
                 items: _items*/
                 items: this.state.gameToCreate.items
             }
+        })
+    }
+
+    async putItemToInventory(item){
+        var _player = this.state.gameToPlay.player;
+        var _items = this.state.gameToPlay.items;
+        _player.inventory = [..._player.inventory, item];
+        item.presentInRoom = null;
+
+        this.setPlayer(_player);
+        this.setItems(_items);
+
+        const response = await axios.put(`/play/player`, this.state.gameToPlay);
+    }
+
+    setItems = (_items) => {
+        this.setState({
+            items: _items
         })
     }
 
@@ -1226,6 +1265,15 @@ class App extends Component {
         })
     }
 
+    async useInventoryItem(item){ //Egyelore teszt celzattal torli az itemet, ez kesobb persze modosul
+        var _player = this.state.gameToPlay.player;
+        if (_player.inventory.includes(item)) {
+            _player.inventory.splice(_player.inventory.indexOf(item), 1);
+        }
+        this.setPlayer(_player);
+        const response = await axios.put(`/play/player`, this.state.gameToPlay);
+    }
+
     addEnemy = (enemy) => {
         this.setState({
             gameToCreate: {
@@ -1565,7 +1613,7 @@ class App extends Component {
                 <Route path="/create" component={CreatePageHeader} />
                 <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} validateGame={this.validateGame} setGameToCreateDeployed={this.setGameToCreateDeployed} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
-                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} />} />
+                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} />} />
                 <Route exact path="/play/welcome" render={(props) => <PlayPageWelcome {...props} gameToPlay={this.state.gameToPlay} />} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />

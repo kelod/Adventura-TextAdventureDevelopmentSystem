@@ -402,4 +402,40 @@ public class PlayService {
 
         return gameSessionJTO;
     }
+
+    public void updatePlayerState(GameSessionJTO gameSessionJTO){
+        PlayerIG playerIG = playerIGRepository.findById(gameSessionJTO.getPlayer().getId()).get();
+        List<ItemIG> items = itemIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
+
+        playerIG.getInventory().clear();
+        gameSessionJTO.getPlayer().getInventory().forEach(igItemJTO -> {
+            for(ItemIG itemIG : items){
+                if(itemIG.getId().equals(igItemJTO.getId())){
+                    playerIG.addItemToInventory(itemIG);
+                    itemIG.setPresentInRoom(null);
+                }
+            }
+
+        });
+
+        List<ItemIG> potentialUsedItems = itemIGRepository.findByInPlayersInventoryId(gameSessionJTO.getPlayer().getId());
+        potentialUsedItems.forEach(itemIG -> {
+            boolean found = false;
+            for(ItemIG inventoryItem : playerIG.getInventory()){
+                if(inventoryItem.getId().equals(itemIG.getId())){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                itemIG.setUsed(true);
+                itemIG.setInPlayersInventory(null);
+            }
+        });
+
+        playerIG.setInRoom(roomIGRepository.findById(gameSessionJTO.getPlayer().getInRoom().getId()).get());
+
+        playerIGRepository.save(playerIG);
+
+    }
 }

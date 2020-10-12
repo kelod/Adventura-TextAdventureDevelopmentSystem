@@ -168,10 +168,10 @@ function PassageList(props) {
         setPage(0);
     };
 
-    var passagesFromRoom = [];
+    var enabledPassagesFromRoom = [];
     for (var passage of props.gameToPlay.passages) {
-        if (passage.from === props.gameToPlay.player.inRoom) {
-            passagesFromRoom = [...passagesFromRoom, passage];
+        if (passage.from === props.gameToPlay.player.inRoom && passage.enabled) {
+            enabledPassagesFromRoom = [...enabledPassagesFromRoom, passage];
         }
     }
 
@@ -187,12 +187,12 @@ function PassageList(props) {
                 </TableHead>
                 <TableBody>
                     {(rowsPerPage > 0
-                        ? passagesFromRoom.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        : passagesFromRoom
+                        ? enabledPassagesFromRoom.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        : enabledPassagesFromRoom
                     ).map((passage, index) => (
                         <TableRow key={index}>
                             <TableCell component="th" scope="row">
-                                {index}
+                                {passage.to.name}
                             </TableCell>
                             <TableCell align="right">
                                 <BigTooltip title={passage.preDescription} arrow TransitionComponent={Zoom} placement="right" justify="left">
@@ -214,7 +214,7 @@ function PassageList(props) {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                             colSpan={2}
-                            count={passagesFromRoom.length}
+                            count={enabledPassagesFromRoom.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{
@@ -441,6 +441,49 @@ const RedTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 class PlayPage extends Component {
+
+    state = {
+        descriptionText: this.props.gameToPlay.player.inRoom.description
+    }
+
+    constructor(props) {
+        super(props);
+        this.usePassage = this.usePassage.bind(this);
+
+    }
+
+    usePassage = (passage) => {
+        var requestedItems = [];
+        for (var item of this.props.gameToPlay.items) {
+            if (item.requestedInPassages.includes(passage)) {
+                requestedItems = [...requestedItems, item];
+            }
+        }
+
+        var allowed = true;
+        var neededItems = [];
+        for (var item of requestedItems) {
+            if (!this.props.gameToPlay.player.inventory.includes(item)) {
+                neededItems = [...neededItems, item];
+                allowed = false;
+            }
+        }
+
+        if (allowed) {
+            this.props.usePassage(passage);
+            this.setState({
+                descriptionText: passage.description + passage.to.description
+            })
+        }
+        else {
+            var message = "You need to have to following items to use passage: ";
+            for (var item of neededItems) {
+                message = message + item.name;
+            }
+            window.alert(message);
+        }
+    }
+
     render() {
         return (
             <div>
@@ -492,7 +535,7 @@ class PlayPage extends Component {
                                 multiline
                                 rows={14}
                                 variant="outlined"
-                                value={this.props.gameToPlay.player.inRoom.description}
+                                value={this.state.descriptionText}
                                 disabled
                                 fullWidth
                                 style={{margin: "24px"}}
@@ -501,15 +544,15 @@ class PlayPage extends Component {
                     </Grid>
 
                     <Grid container item justify="center">
-                        <InventoryList gameToPlay={this.props.gameToPlay} />
+                        <InventoryList gameToPlay={this.props.gameToPlay} useInventoryItem={this.props.useInventoryItem} />
                     </Grid>
 
                     <Grid container item justify="center">
-                        <PassageList gameToPlay={this.props.gameToPlay} />
+                        <PassageList gameToPlay={this.props.gameToPlay} usePassage={this.usePassage} />
                     </Grid>
 
                     <Grid container item justify="center">
-                        <ItemList gameToPlay={this.props.gameToPlay} />
+                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.props.putItemToInventory} />
                     </Grid>
 
                     <Grid container item justify="center">
