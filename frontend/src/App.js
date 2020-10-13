@@ -853,6 +853,12 @@ class App extends Component {
         })
     }
 
+    setPassages = (_passages) => {
+        this.setState({
+            passages: _passages
+        })
+    }
+
     setRoomDescription = (index, event) => {
 
         const { value } = event.target;
@@ -1265,13 +1271,49 @@ class App extends Component {
         })
     }
 
-    async useInventoryItem(item){ //Egyelore teszt celzattal torli az itemet, ez kesobb persze modosul
+    async useInventoryItem(item) { //Egyelore teszt celzattal torli az itemet, ez kesobb persze modosul
         var _player = this.state.gameToPlay.player;
+        var _items = this.state.gameToCreate.items;
+        var _passages = this.state.gameToCreate.passages;
         if (_player.inventory.includes(item)) {
             _player.inventory.splice(_player.inventory.indexOf(item), 1);
         }
+
+        switch (item.usageType) {
+            case "game": {
+                //TODO
+                break;
+            }
+            case "hp": {
+                _player.hp = _player.hp + item.hp;
+                break;
+            }
+            case "passage": {
+                var currentPassageActivations = [];
+                for (var pa of item.passageActivations) {
+                    if (this.state.gameToPlay.player.inRoom === pa.passage.from) {
+                        currentPassageActivations = [...currentPassageActivations, pa];
+                    }
+                }
+                for (var pa of currentPassageActivations) {
+                    pa.passage.enabled = pa.enable;
+                }
+            }
+        }
+        item.used = true;
+
+        
+        
         this.setPlayer(_player);
+        this.setItems(_items);
+        this.setPassages(_passages);
+
         const response = await axios.put(`/play/player`, this.state.gameToPlay);
+        this.updatePassages();
+    }
+
+    async updatePassages() {
+        const response = await axios.put(`/play/passages`, this.state.gameToPlay);
     }
 
     addEnemy = (enemy) => {

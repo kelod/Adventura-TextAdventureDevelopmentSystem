@@ -484,6 +484,14 @@ class PlayPage extends Component {
         }
     }
 
+    useInventoryItem = (item) => {
+        this.props.useInventoryItem(item);
+
+        this.setState({
+            descriptionText: this.state.descriptionText + item.usageDescription
+        })
+    }
+
     render() {
         return (
             <div>
@@ -544,7 +552,7 @@ class PlayPage extends Component {
                     </Grid>
 
                     <Grid container item justify="center">
-                        <InventoryList gameToPlay={this.props.gameToPlay} useInventoryItem={this.props.useInventoryItem} />
+                        <InventoryList gameToPlay={this.props.gameToPlay} useInventoryItem={this.useInventoryItem} />
                     </Grid>
 
                     <Grid container item justify="center">

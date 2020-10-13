@@ -403,6 +403,171 @@ public class PlayService {
         return gameSessionJTO;
     }
 
+    public GameSessionJTO loadGameFromDescription(Integer id){
+        GameSession savedSession = gameSessionRepository.findById(id).get();
+
+        // Creating JTO-s to send to React App
+        GameSessionJTO gameSessionJTO = GameSessionJTO.builder()
+                .gameGoal(savedSession.getGameGoal())
+                .description(savedSession.getDescription())
+                .id(savedSession.getId())
+                .name(savedSession.getName())
+                .enemies(new ArrayList<>())
+                .goalEnemies(new ArrayList<>())
+                .goalItems(new ArrayList<>())
+                .items(new ArrayList<>())
+                .passages(new ArrayList<>())
+                .rooms(new ArrayList<>())
+                .player(new IGPlayerJTO())
+                .build();
+
+        savedSession.getItems().forEach(itemIG -> {
+            gameSessionJTO.getItems().add(IGItemJTO.builder()
+                    .id(itemIG.getId())
+                    .description(itemIG.getDescription())
+                    .game(itemIG.getGame())
+                    .hp(itemIG.getHp())
+                    .name(itemIG.getName())
+                    .type(itemIG.getType())
+                    .usageDescription(itemIG.getUsageDescription())
+                    .usageType(itemIG.getUsageType())
+                    .used(itemIG.isUsed())
+                    .passageActivations(new ArrayList<>())
+                    .requestedInPassages(new ArrayList<>())
+                    .build());
+        });
+
+        savedSession.getEnemies().forEach(enemyIG -> {
+            gameSessionJTO.getEnemies().add(IGEnemyJTO.builder()
+                    .alive(enemyIG.isAlive())
+                    .attack(enemyIG.getAttack())
+                    .battleEndHp(enemyIG.getBattleEndHp())
+                    .description(enemyIG.getDescription())
+                    .fightingType(enemyIG.getFightingType())
+                    .gameOverPenalty(enemyIG.isGameOverPenalty())
+                    .hp(enemyIG.getHp())
+                    .hpGainReward(enemyIG.getHpGainReward())
+                    .id(enemyIG.getId())
+                    .name(enemyIG.getName())
+                    .postBattleDescriptionLose(enemyIG.getPostBattleDescriptionLose())
+                    .postBattleDescriptionWin(enemyIG.getPostBattleDescriptionWin())
+                    .preBattleDescription(enemyIG.getPreBattleDescription())
+                    .itemGainReward(new ArrayList<>())
+                    .itemLosePenalty(new ArrayList<>())
+                    .passageActivationReward(new ArrayList<>())
+                    .build());
+        });
+
+        savedSession.getRooms().forEach(roomIG -> {
+            gameSessionJTO.getRooms().add(IGRoomJTO.builder()
+                    .description(roomIG.getDescription())
+                    .id(roomIG.getId())
+                    .name(roomIG.getName())
+                    .build());
+        });
+
+        savedSession.getPassages().forEach(passageIG -> {
+            IGPassageJTO passageToAdd = IGPassageJTO.builder()
+                    .description(passageIG.getDescription())
+                    .preDescription(passageIG.getPreDescription())
+                    .enabled(passageIG.isEnabled())
+                    .id(passageIG.getId())
+                    .build();
+
+            passageToAdd.setFrom(gameSessionJTO.getRoomByName(passageIG.getFrom().getName()));
+            passageToAdd.setTo(gameSessionJTO.getRoomByName(passageIG.getTo().getName()));
+
+            gameSessionJTO.getPassages().add(passageToAdd);
+        });
+
+        savedSession.getGoalEnemies().forEach(enemyIG -> {
+            gameSessionJTO.getGoalEnemies().add(gameSessionJTO.getEnemyByName(enemyIG.getName()));
+        });
+
+        savedSession.getGoalItems().forEach(itemIG -> {
+            gameSessionJTO.getGoalItems().add(gameSessionJTO.getItemByName(itemIG.getName()));
+        });
+
+        if(savedSession.getGoalRoom() != null){
+            gameSessionJTO.setGoalRoom(gameSessionJTO.getRoomByName(savedSession.getGoalRoom().getName()));
+        }
+
+        gameSessionJTO.setPlayer(IGPlayerJTO.builder()
+                .attack(savedSession.getPlayer().getAttack())
+                .hp(savedSession.getPlayer().getHp())
+                .id(savedSession.getPlayer().getId())
+                .name(savedSession.getPlayer().getName())
+                .inventory(new ArrayList<>())
+                .build());
+
+        //==================================================================================
+        // Setting up enemies
+
+        savedSession.getEnemies().forEach(enemyIG -> {
+            IGEnemyJTO enemyJTO = gameSessionJTO.getEnemyByName(enemyIG.getName());
+
+            for(ItemIG itemIG : enemyIG.getItemGainReward()){
+                enemyJTO.getItemGainReward().add(gameSessionJTO.getItemByName(itemIG.getName()));
+            }
+
+            for(ItemIG itemIG : enemyIG.getItemLosePenalty()){
+                enemyJTO.getItemLosePenalty().add(gameSessionJTO.getItemByName(itemIG.getName()));
+            }
+
+            for(PassageIG passageIG : enemyIG.getPassageActivationReward()){
+                enemyJTO.getPassageActivationReward().add(gameSessionJTO.getPassageByRooms(gameSessionJTO.getRoomByName(passageIG.getFrom().getName()),
+                        gameSessionJTO.getRoomByName(passageIG.getTo().getName())));
+            }
+
+            if(enemyIG.getPresentInRoom() != null){
+                enemyJTO.setPresentInRoom(gameSessionJTO.getRoomByName(enemyIG.getPresentInRoom().getName()));
+            }
+        });
+
+        //==================================================================================
+        // Setting up items
+
+        savedSession.getItems().forEach(itemIG -> {
+            IGItemJTO itemJTO = gameSessionJTO.getItemByName(itemIG.getName());
+
+            for(PassageIG p : itemIG.getRequestedInPassages()){
+                itemJTO.getRequestedInPassages().add(gameSessionJTO.getPassageByRooms(gameSessionJTO.getRoomByName(p.getFrom().getName()),
+                        gameSessionJTO.getRoomByName(p.getTo().getName())));
+            }
+
+            List<PassageActivationIG> passageActivationIGs = passageActivationIGRepository.findByItemId(itemIG.getId());
+            for(PassageActivationIG pa : passageActivationIGs){
+                itemJTO.getPassageActivations().add(IGPassageActivationJTO.builder()
+                        .enable(pa.isEnable())
+                        .passage(gameSessionJTO.getPassageByRooms(gameSessionJTO.getRoomByName(pa.getPassage().getFrom().getName()),
+                                gameSessionJTO.getRoomByName(pa.getPassage().getTo().getName()))).build());
+            }
+
+            if(itemIG.getPresentInRoom() != null){
+                itemJTO.setPresentInRoom(gameSessionJTO.getRoomByName(itemIG.getPresentInRoom().getName()));
+            }
+        });
+
+        //==================================================================================
+        // Setting up passages - no need for that
+
+
+        //==================================================================================
+        // Setting up player
+
+        gameSessionJTO.getPlayer().setInRoom(gameSessionJTO.getRoomByName(savedSession.getPlayer().getInRoom().getName()));
+
+        savedSession.getPlayer().getInventory().forEach(itemIG -> {
+            gameSessionJTO.getPlayer().getInventory().add(gameSessionJTO.getItemByName(itemIG.getName()));
+        });
+
+        //==================================================================================
+        // Setting up rooms - no need for that
+
+
+        return gameSessionJTO;
+    }
+
     public void updatePlayerState(GameSessionJTO gameSessionJTO){
         PlayerIG playerIG = playerIGRepository.findById(gameSessionJTO.getPlayer().getId()).get();
         List<ItemIG> items = itemIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
@@ -434,8 +599,24 @@ public class PlayService {
         });
 
         playerIG.setInRoom(roomIGRepository.findById(gameSessionJTO.getPlayer().getInRoom().getId()).get());
+        playerIG.setHp(gameSessionJTO.getPlayer().getHp());
 
         playerIGRepository.save(playerIG);
 
+    }
+
+    public void updatePassages(GameSessionJTO gameSessionJTO){
+        //TODO: Egyelore csak az enabled attributum valtozik/update-elodik
+        List<PassageIG> passages = passageIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
+
+        gameSessionJTO.getPassages().forEach(igPassageJTO -> {
+            for(PassageIG passageIG : passages){
+                if(passageIG.getId().equals(igPassageJTO.getId())){
+                    passageIG.setEnabled(igPassageJTO.isEnabled());
+                }
+            }
+        });
+
+        passageIGRepository.saveAll(passages);
     }
 }

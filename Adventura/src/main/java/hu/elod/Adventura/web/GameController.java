@@ -24,9 +24,24 @@ public class GameController {
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }
 
+    @PutMapping("/passages")
+    public ResponseEntity<GameSessionJTO> updatePassages(@RequestBody GameSessionJTO gameSessionJTO){
+        System.out.println("bejovok");
+        playService.updatePassages(gameSessionJTO);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
     @PostMapping("/new/{id}")
     public ResponseEntity<GameSessionJTO> startNewGame(@PathVariable Integer id) throws Exception{
         GameSessionJTO gameSessionJTO = playService.createGameFromDescription(id);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GameSessionJTO> loadGame(@PathVariable Integer id) throws Exception{
+        GameSessionJTO gameSessionJTO = playService.loadGameFromDescription(id);
 
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }
