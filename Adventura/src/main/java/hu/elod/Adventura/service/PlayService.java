@@ -647,4 +647,49 @@ public class PlayService {
 
         return null;
     }
+
+    public void battleLost(GameSessionJTO gameSessionJTO, Integer id){
+        // Check if penalties are executed
+        EnemyIG enemyIG = enemyIGRepository.findById(id).get();
+        PlayerIG playerIG = playerIGRepository.findById(gameSessionJTO.getPlayer().getId()).get();
+
+        enemyIG.setAlive(false);
+        enemyIG.setPresentInRoom(null); // Enemy disappears
+
+        playerIG.setHp(gameSessionJTO.getPlayer().getHp());
+
+        enemyIGRepository.save(enemyIG);
+        playerIGRepository.save(playerIG);
+    }
+
+    public void battleWon(GameSessionJTO gameSessionJTO, Integer id){
+        // TODO: Jutalmak meg nincsenek benne
+        EnemyIG enemyIG = enemyIGRepository.findById(id).get();
+        PlayerIG playerIG = playerIGRepository.findById(gameSessionJTO.getPlayer().getId()).get();
+        List<ItemIG> items = itemIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
+        List<PassageIG> passages = passageIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
+
+        enemyIG.setAlive(false);
+
+        playerIG.setHp(gameSessionJTO.getPlayer().getHp());
+
+        gameSessionJTO.getPlayer().getInventory().forEach(igItemJTO -> {
+            for(ItemIG item : items){
+                if(item.getId().equals(igItemJTO.getId())){
+                    item.setInPlayersInventory(playerIG);
+                }
+            }
+        });
+
+        gameSessionJTO.getPassages().forEach(igPassageJTO -> {
+            for(PassageIG passageIG : passages){
+                if(passageIG.getId().equals(igPassageJTO.getId())){
+                    passageIG.setEnabled(igPassageJTO.isEnabled());
+                }
+            }
+        });
+
+        enemyIGRepository.save(enemyIG);
+        playerIGRepository.save(playerIG);
+    }
 }

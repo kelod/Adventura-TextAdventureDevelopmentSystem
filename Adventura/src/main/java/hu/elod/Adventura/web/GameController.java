@@ -1,6 +1,7 @@
 package hu.elod.Adventura.web;
 
 import hu.elod.Adventura.JTO.GameSessionJTO;
+import hu.elod.Adventura.JTO.IGEnemyJTO;
 import hu.elod.Adventura.model.GameSession;
 import hu.elod.Adventura.service.PlayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,20 @@ public class GameController {
     @PutMapping("/game/over/{id}")
     public ResponseEntity<GameSessionJTO> gameOver(@PathVariable Integer id){
         GameSessionJTO gameSessionJTO = playService.gameOver(id);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/battle/lost/{id}")
+    public ResponseEntity<GameSessionJTO> battleLost(@RequestBody GameSessionJTO gameSessionJTO, @PathVariable Integer id){
+        playService.battleLost(gameSessionJTO, id);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/battle/won/{id}")
+    public ResponseEntity<GameSessionJTO> battleWon(@RequestBody GameSessionJTO gameSessionJTO, @PathVariable Integer id){
+        playService.battleWon(gameSessionJTO, id);
 
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }

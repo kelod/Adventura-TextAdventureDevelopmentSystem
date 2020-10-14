@@ -322,6 +322,7 @@ class App extends Component {
         this.getRoomByName = this.getRoomByName.bind(this);
         this.getItemsInRoom = this.getItemsInRoom.bind(this);
         this.getEnemiesInRoom = this.getEnemiesInRoom.bind(this);
+        this.causeDamages = this.causeDamages.bind(this);
         this.putItemToInventory = this.putItemToInventory.bind(this);
         this.addItem = this.addItem.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
@@ -1138,6 +1139,80 @@ class App extends Component {
         return result;
     }
 
+    async causeDamages(pDamage, eDamage, enemy){
+        var _player = this.state.gameToPlay.player;
+        var _enemies = this.state.gameToPlay.enemies;
+        var _passages = this.state.gameToPlay.passages;
+
+        _player.hp = _player.hp - eDamage; // Death checked in child
+        _enemies[_enemies.indexOf(enemy)].hp -= pDamage;
+
+        if (_player.hp <= enemy.battleEndHp) { // Enemy "routes"
+            enemy.alive = false;
+            enemy.presentInRoom = null;
+
+            if (enemy.gameOverPenalty) {
+                await axios.put(`/play/game/over/${this.state.gameToPlay.id}`, this.state.gameToPlay);
+                return false;
+            }
+            if (enemy.itemLosePenalty.length != 0) {
+                for (var item of enemy.itemLosePenalty) {
+                    if (this.state.gameToPlay.player.inventory.includes(item)) {
+                        _player.inventory.splice(_player.inventory.indexOf(item), 1);
+                    }
+                }
+                
+            }
+        }
+
+        if (enemy.hp <= 0) { // enemy dies
+            enemy.alive = false;
+            if (enemy.hpGainReward !== "" && enemy.hpGainReward > 0) {
+                _player.hp += enemy.hpGainReward;
+            }
+            if (enemy.itemGainReward.length != 0) {
+                for (var item of enemy.itemGainReward) {
+                    if (!_player.inventory.includes(item) && item.presentInRoom === null) {
+                        _player.inventory = [..._player.inventory, item];
+                    }
+                }
+            }
+            if (enemy.passageActivationReward.length != 0) {
+                for (var passage of enemy.passageActivationReward) {
+                    passage.enabled = true;
+                }
+            }
+        }
+
+        this.setPlayer(_player);
+        this.setEnemies(_enemies);
+        this.setPassages(_passages)
+
+        if (_player.hp <= enemy.battleEndHp) {
+            await axios.put(`/play/battle/lost/${enemy.id}`, this.state.gameToPlay);
+            await axios.put(`/play/player`, this.state.gameToPlay);
+            window.alert(enemy.postBattleDescriptionLose);
+            return false;
+        }
+
+        if (enemy.hp <= 0) {
+            await axios.put(`/play/battle/won/${enemy.id}`, this.state.gameToPlay);
+            window.alert(enemy.postBattleDescriptionWin);
+            return false;
+        }
+
+        return true;
+    }
+
+    setEnemies = (_enemies) => {
+        this.setState({
+            gameToPlay: {
+                ...this.state.gameToPlay,
+                enemies: _enemies
+            }
+        })
+    }
+
     setPassageActivationToItem = (passage, item) => {
         var _items = this.state.gameToCreate.items;
 
@@ -1701,7 +1776,7 @@ class App extends Component {
                 <Route path="/create" component={CreatePageHeader} />
                 <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} validateGame={this.validateGame} setGameToCreateDeployed={this.setGameToCreateDeployed} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
-                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} useUsableItem={this.useUsableItem} />} />
+                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} useUsableItem={this.useUsableItem} causeDamages={this.causeDamages} />} />
                 <Route exact path="/play/welcome" render={(props) => <PlayPageWelcome {...props} gameToPlay={this.state.gameToPlay} />} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />

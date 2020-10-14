@@ -31,6 +31,12 @@ import { Icon } from '@iconify/react';
 import LocalMallIcon from '@material-ui/icons/LocalMall';
 import swordCross from '@iconify/icons-mdi/sword-cross';
 import axios from 'axios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
 
 
@@ -373,6 +379,33 @@ function EnemyList(props) {
         setPage(0);
     };
 
+    // Dialog
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const [enemyToFight, setEnemyToFight] = React.useState(null);
+    const setEnemy = (enemy) => {
+        setEnemyToFight(enemy);
+    }
+
+    const [playerDamage, setPlayerDamage] = React.useState(0);
+    const setPDamage = (damage) => {
+        setPlayerDamage(damage);
+    }
+
+    const [enemyDamage, setEnemyDamage] = React.useState(0);
+    const setEDamage = (damage) => {
+        setEnemyDamage(damage);
+    }
+
+
     var optionalEnemiesInRoom = [];
     for (var enemy of props.gameToPlay.enemies) {
         if (enemy.presentInRoom === props.gameToPlay.player.inRoom && enemy.fightingType === "optional") {
@@ -381,57 +414,112 @@ function EnemyList(props) {
     }
 
     return (
-        <TableContainer component={Paper} style={{ margin: "24px" }}>
-            <Table aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <RedTableCell>Enemies</RedTableCell>
-                        <RedTableCell align="right">Info</RedTableCell>
-                        <RedTableCell align="right">Fight</RedTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {(rowsPerPage > 0
-                        ? optionalEnemiesInRoom.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        : optionalEnemiesInRoom
-                    ).map((enemy, index) => (
-                        <TableRow key={index}>
-                            <TableCell component="th" scope="row">
-                                {enemy.name}
-                            </TableCell>
-                            <TableCell align="right">
-                                <BigTooltip title={enemy.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
-                                    <InfoIcon style={{ color: red[600] }} />
-                                </BigTooltip>
-                            </TableCell>
-                            <TableCell align="right">
-                                <IconButton onClick={() => { props.fightEnemy(enemy) }}>
-                                    <Icon icon={swordCross} style={{ color: red[600] }}/>
-                                </IconButton>
-                            </TableCell>
+        <div>
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Battle {props.gameToPlay.player.name} vs {enemyToFight===null ? "" :enemyToFight.name}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {props.gameToPlay.player.name}'s HP: {props.gameToPlay.player.hp}
+                    </DialogContentText>
+                    <DialogContentText>
+                        {enemyToFight === null ? "" : enemyToFight.name}'s HP: {enemyToFight === null ? "" : enemyToFight.hp}
+                    </DialogContentText>
+                    <DialogContentText>
+                        Your damage caused to enemy: {playerDamage}
+                    </DialogContentText>
+                    <DialogContentText>
+                        Enemy damage caused to You: {enemyDamage}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button disabled={props.battleOver} onClick={() => {
+                        const eDamage = Math.random() * enemyToFight.attack * 2 + 1;
+                        const pDamage = Math.random() * props.gameToPlay.player.attack * 2 + 1;
+                        setEDamage(eDamage);
+                        setPDamage(pDamage);
+                        props.causeDamages(pDamage, eDamage, enemyToFight);
+                    }} color="primary">
+                        Fight!
+                    </Button>
+                    <Button disabled={!props.battleOver} onClick={() => { handleClose(); setEDamage(0); setPDamage(0); props.setBattleOver(false); }} color="primary">
+                        Finish Battle
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <TableContainer component={Paper} style={{ margin: "24px" }}>
+                <Table aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <RedTableCell>Enemies</RedTableCell>
+                            <RedTableCell align="right">Info</RedTableCell>
+                            <RedTableCell align="right">Fight</RedTableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                            colSpan={2}
-                            count={optionalEnemiesInRoom.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            SelectProps={{
-                                inputProps: { 'aria-label': 'rows per page' },
-                                native: true,
-                            }}
-                            onChangePage={handleChangePage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
-                            ActionsComponent={TablePaginationActions}
-                        />
-                    </TableRow>
-                </TableFooter>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {(rowsPerPage > 0
+                            ? optionalEnemiesInRoom.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : optionalEnemiesInRoom
+                        ).map((enemy, index) => {
+                            if (enemy.alive) {
+                                return (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            {enemy.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <BigTooltip title={enemy.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                                <InfoIcon style={{ color: red[600] }} />
+                                            </BigTooltip>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton onClick={() => { handleClickOpen(); setEnemy(enemy) }}>
+                                                <Icon icon={swordCross} style={{ color: red[600] }} />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>)
+                            }
+                            else {
+                                return (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            {enemy.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <BigTooltip title={enemy.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                                <InfoIcon style={{ color: red[600] }} />
+                                            </BigTooltip>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton disabled>
+                                                <Icon icon={swordCross} style={{ color: grey[400] }} />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>)
+                            }
+                            
+                        })}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                colSpan={2}
+                                count={optionalEnemiesInRoom.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                SelectProps={{
+                                    inputProps: { 'aria-label': 'rows per page' },
+                                    native: true,
+                                }}
+                                onChangePage={handleChangePage}
+                                onChangeRowsPerPage={handleChangeRowsPerPage}
+                                ActionsComponent={TablePaginationActions}
+                            />
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </TableContainer>
+        </div>
     )
 }
 
@@ -465,7 +553,8 @@ const RedTableCell = withStyles((theme) => ({
 class PlayPage extends Component {
 
     state = {
-        descriptionText: this.props.gameToPlay.player.inRoom.description
+        descriptionText: this.props.gameToPlay.player.inRoom.description,
+        battleOver: false
     }
 
     constructor(props) {
@@ -473,7 +562,8 @@ class PlayPage extends Component {
         this.usePassage = this.usePassage.bind(this);
         this.useInventoryItem = this.useInventoryItem.bind(this);
         this.useUsableItem = this.useUsableItem.bind(this);
-
+        this.causeDamages = this.causeDamages.bind(this);
+        this.setBattleOver = this.setBattleOver.bind(this);
     }
 
     usePassage = (passage) => {
@@ -566,6 +656,36 @@ class PlayPage extends Component {
         }
     }
 
+    async causeDamages(pDamage, eDamage, enemyToFight) {
+        this.setState({
+            battleInProcess: true
+        })
+        if (this.props.gameToPlay.player.hp - eDamage <= 0) {
+            window.alert(enemyToFight.postBattleDescriptionLose);
+            await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+            this.props.history.push("/play/over");
+            return;
+        }
+        
+
+        const cont = await this.props.causeDamages(pDamage, eDamage, enemyToFight);
+        if (!cont) {
+            if (enemyToFight.gameOverPenalty) {
+                this.props.history.push("/play/over");
+            }
+            
+            this.setState({
+                battleOver: true
+            })
+        }
+    }
+
+    setBattleOver = (bool) => {
+        this.setState({
+            battleOver: bool
+        })
+    }
+
     render() {
         return (
             <div>
@@ -638,7 +758,7 @@ class PlayPage extends Component {
                     </Grid>
 
                     <Grid container item justify="center">
-                        <EnemyList gameToPlay={this.props.gameToPlay} />
+                        <EnemyList gameToPlay={this.props.gameToPlay} causeDamages={this.causeDamages} battleOver={this.state.battleOver} setBattleOver={this.setBattleOver} />
                     </Grid>
                                       
                 </Grid>
