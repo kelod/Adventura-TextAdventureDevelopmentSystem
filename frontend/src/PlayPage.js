@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import { cyan, red, teal } from '@material-ui/core/colors';
+import { cyan, red, teal, grey } from '@material-ui/core/colors';
 import Tooltip from '@material-ui/core/Tooltip';
 import InfoIcon from '@material-ui/icons/Info';
 import PanToolIcon from '@material-ui/icons/PanTool';
@@ -30,6 +30,7 @@ import doorOpen from '@iconify/icons-mdi/door-open';
 import { Icon } from '@iconify/react';
 import LocalMallIcon from '@material-ui/icons/LocalMall';
 import swordCross from '@iconify/icons-mdi/sword-cross';
+import axios from 'axios';
 
 
 
@@ -294,23 +295,44 @@ function ItemList(props) {
                     {(rowsPerPage > 0
                         ? usableItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : usableItems
-                    ).map((item, index) => (
-                        <TableRow key={index}>
-                            <TableCell component="th" scope="row">
-                                {item.name}
-                            </TableCell>
-                            <TableCell align="right">
-                                <BigTooltip title={item.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
-                                    <InfoIcon style={{ color: cyan[900] }} />
-                                </BigTooltip>
-                            </TableCell>
-                            <TableCell align="right">
-                                <IconButton onClick={() => { props.putItemToInventory(item) }}>
-                                    <PanToolIcon style={{ color: teal[900] }} />
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    ).map((item, index) => {
+                        if(!item.used)
+                        return (
+                            <TableRow key={index}>
+                                <TableCell component="th" scope="row">
+                                    {item.name}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <BigTooltip title={item.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                        <InfoIcon style={{ color: cyan[900] }} />
+                                    </BigTooltip>
+                                </TableCell>
+                                <TableCell align="right">
+                                    <IconButton onClick={() => { props.useUsableItem(item) }}>
+                                        <PanToolIcon style={{ color: teal[900] }} />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                            )
+                        else
+                            return (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row">
+                                        {item.name}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <BigTooltip title={item.description} arrow TransitionComponent={Zoom} placement="right" justify="left">
+                                            <InfoIcon style={{ color: cyan[900] }} />
+                                        </BigTooltip>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton onClick={() => { props.useUsableItem(item) }} disabled>
+                                            <PanToolIcon style={{ color: grey[500] }} />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                    })}
 
 
                 </TableBody>
@@ -449,6 +471,8 @@ class PlayPage extends Component {
     constructor(props) {
         super(props);
         this.usePassage = this.usePassage.bind(this);
+        this.useInventoryItem = this.useInventoryItem.bind(this);
+        this.useUsableItem = this.useUsableItem.bind(this);
 
     }
 
@@ -484,12 +508,62 @@ class PlayPage extends Component {
         }
     }
 
-    useInventoryItem = (item) => {
-        this.props.useInventoryItem(item);
+    async useInventoryItem(item){ // game and hp usage types handled here because they need redirection
+        if (item.usageType === "game") {
+            if (item.game === "win") {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+            }
+            else {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+            }
+            this.props.history.push("/play/over");
+        }
+        else { // usage type is not game winning/losing
+            if (item.usageType === "hp") {
+                var _player = this.props.gameToPlay.player;
+                _player.hp = _player.hp + item.hp;
+                if (_player.hp <= 0) {
+                    window.alert("You lost the game! Your character is dead!");
+                    await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                    this.props.history.push("/play/over");
+                }
+            }
+            // usage type is passage
+            this.props.useInventoryItem(item);
 
-        this.setState({
-            descriptionText: this.state.descriptionText + item.usageDescription
-        })
+            this.setState({
+                descriptionText: this.state.descriptionText + item.usageDescription
+            })
+        }
+    }
+
+    async useUsableItem(item) { // game and hp usage types handled here because they need redirection
+        if (item.usageType === "game") {
+            if (item.game === "win") {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+            }
+            else {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+            }
+            this.props.history.push("/play/over");
+        }
+        else { // usage type is not game winning/losing
+            if (item.usageType === "hp") {
+                var _player = this.props.gameToPlay.player;
+                _player.hp = _player.hp + item.hp;
+                if (_player.hp <= 0) {
+                    window.alert("You lost the game! Your character is dead!");
+                    await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                    this.props.history.push("/play/over");
+                }
+            }
+            // usage type is passage
+            this.props.useUsableItem(item);
+
+            this.setState({
+                descriptionText: this.state.descriptionText + item.usageDescription
+            })
+        }
     }
 
     render() {
@@ -560,7 +634,7 @@ class PlayPage extends Component {
                     </Grid>
 
                     <Grid container item justify="center">
-                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.props.putItemToInventory} />
+                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.props.putItemToInventory} useUsableItem={this.useUsableItem} />
                     </Grid>
 
                     <Grid container item justify="center">

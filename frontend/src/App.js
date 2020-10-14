@@ -329,6 +329,7 @@ class App extends Component {
         this.setItemType = this.setItemType.bind(this);
         this.setItemName = this.setItemName.bind(this);
         this.useInventoryItem = this.useInventoryItem.bind(this);
+        this.useUsableItem = this.useUsableItem.bind(this);
         this.renderItemToRoom = this.renderItemToRoom.bind(this);
         this.setItemToRoom = this.setItemToRoom.bind(this);
         this.IsItemInRoom = this.IsItemInRoom.bind(this);
@@ -1271,7 +1272,7 @@ class App extends Component {
         })
     }
 
-    async useInventoryItem(item) { //Egyelore teszt celzattal torli az itemet, ez kesobb persze modosul
+    async useInventoryItem(item) {
         var _player = this.state.gameToPlay.player;
         var _items = this.state.gameToCreate.items;
         var _passages = this.state.gameToCreate.passages;
@@ -1281,11 +1282,12 @@ class App extends Component {
 
         switch (item.usageType) {
             case "game": {
-                //TODO
+                // handled in child
+                
                 break;
             }
             case "hp": {
-                _player.hp = _player.hp + item.hp;
+                // handled in child
                 break;
             }
             case "passage": {
@@ -1312,8 +1314,52 @@ class App extends Component {
         this.updatePassages();
     }
 
+    async useUsableItem(item) {
+        var _player = this.state.gameToPlay.player;
+        var _items = this.state.gameToCreate.items;
+        var _passages = this.state.gameToCreate.passages;
+
+        switch (item.usageType) {
+            case "game": {
+                // handled in child
+
+                break;
+            }
+            case "hp": {
+                // handled in child
+                break;
+            }
+            case "passage": {
+                var currentPassageActivations = [];
+                for (var pa of item.passageActivations) {
+                    if (this.state.gameToPlay.player.inRoom === pa.passage.from) {
+                        currentPassageActivations = [...currentPassageActivations, pa];
+                    }
+                }
+                for (var pa of currentPassageActivations) {
+                    pa.passage.enabled = pa.enable;
+                }
+            }
+        }
+        item.used = true;
+
+
+
+        this.setPlayer(_player);
+        this.setItems(_items);
+        this.setPassages(_passages);
+
+        const response = await axios.put(`/play/player`, this.state.gameToPlay);
+        this.updatePassages();
+        this.updateItems();
+    }
+
     async updatePassages() {
         const response = await axios.put(`/play/passages`, this.state.gameToPlay);
+    }
+
+    async updateItems() {
+        const response = await axios.put(`/play/items`, this.state.gameToPlay);
     }
 
     addEnemy = (enemy) => {
@@ -1655,7 +1701,7 @@ class App extends Component {
                 <Route path="/create" component={CreatePageHeader} />
                 <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} validateGame={this.validateGame} setGameToCreateDeployed={this.setGameToCreateDeployed} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
-                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} />} />
+                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} useUsableItem={this.useUsableItem} />} />
                 <Route exact path="/play/welcome" render={(props) => <PlayPageWelcome {...props} gameToPlay={this.state.gameToPlay} />} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />

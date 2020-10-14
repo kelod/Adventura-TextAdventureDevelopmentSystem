@@ -403,8 +403,12 @@ public class PlayService {
         return gameSessionJTO;
     }
 
-    public GameSessionJTO loadGameFromDescription(Integer id){
+    public GameSessionJTO loadGameFromDescription(Integer id) throws Exception {
         GameSession savedSession = gameSessionRepository.findById(id).get();
+
+        if(savedSession.isFinished()){
+            throw new Exception();
+        }
 
         // Creating JTO-s to send to React App
         GameSessionJTO gameSessionJTO = GameSessionJTO.builder()
@@ -618,5 +622,29 @@ public class PlayService {
         });
 
         passageIGRepository.saveAll(passages);
+    }
+
+    public void updateItems(GameSessionJTO gameSessionJTO){ // This is for usable items
+        List<ItemIG> items = itemIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());
+
+        gameSessionJTO.getItems().forEach(igItemJTO -> {
+            for(ItemIG itemIG : items){
+                if(itemIG.getId().equals(igItemJTO.getId())){
+                    itemIG.setUsed(igItemJTO.isUsed());
+                }
+            }
+        });
+
+        itemIGRepository.saveAll(items);
+    }
+
+    public GameSessionJTO gameOver(Integer id){
+        GameSession gameSession = gameSessionRepository.findById(id).get();
+
+        gameSession.setFinished(true);
+
+        gameSessionRepository.save(gameSession);
+
+        return null;
     }
 }

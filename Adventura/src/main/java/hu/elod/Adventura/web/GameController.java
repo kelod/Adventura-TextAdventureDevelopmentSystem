@@ -26,8 +26,14 @@ public class GameController {
 
     @PutMapping("/passages")
     public ResponseEntity<GameSessionJTO> updatePassages(@RequestBody GameSessionJTO gameSessionJTO){
-        System.out.println("bejovok");
         playService.updatePassages(gameSessionJTO);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/items")
+    public ResponseEntity<GameSessionJTO> updateItems(@RequestBody GameSessionJTO gameSessionJTO){
+        playService.updateItems(gameSessionJTO);
 
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }
@@ -42,6 +48,13 @@ public class GameController {
     @GetMapping("/{id}")
     public ResponseEntity<GameSessionJTO> loadGame(@PathVariable Integer id) throws Exception{
         GameSessionJTO gameSessionJTO = playService.loadGameFromDescription(id);
+
+        return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/game/over/{id}")
+    public ResponseEntity<GameSessionJTO> gameOver(@PathVariable Integer id){
+        GameSessionJTO gameSessionJTO = playService.gameOver(id);
 
         return new ResponseEntity<>(gameSessionJTO, HttpStatus.OK);
     }
