@@ -554,7 +554,11 @@ class PlayPage extends Component {
 
     state = {
         descriptionText: this.props.gameToPlay.player.inRoom.description,
-        battleOver: false
+        battleOver: false,
+        mandatoryOpen: true,
+        currentMandatoryEnemy: null,
+        playerDamage: 0,
+        enemyDamage: 0
     }
 
     constructor(props) {
@@ -673,10 +677,12 @@ class PlayPage extends Component {
             if (enemyToFight.gameOverPenalty) {
                 this.props.history.push("/play/over");
             }
-            
-            this.setState({
-                battleOver: true
-            })
+
+            if (enemyToFight.fightingType === "optional") { // else after defeating mandatory enemies optional enemies dialog a little buggy
+                this.setState({
+                    battleOver: true
+                })
+            }
         }
     }
 
@@ -687,8 +693,53 @@ class PlayPage extends Component {
     }
 
     render() {
+        var mandatoryEnemies = [];
+        for (var enemy of this.props.gameToPlay.enemies) {
+            if (enemy.presentInRoom === this.props.gameToPlay.player.inRoom && enemy.fightingType === "mandatory" && enemy.alive) {
+                mandatoryEnemies = [...mandatoryEnemies, enemy];
+            }
+        }
+        if (mandatoryEnemies.length != 0 && !this.state.currentMandatoryEnemy) {
+            this.setState({
+                currentMandatoryEnemy: mandatoryEnemies[0]
+            })
+        }
+
         return (
             <div>
+                <Dialog open={this.state.currentMandatoryEnemy}  aria-labelledby="form-dialog-title" onEntered={() => { window.alert(this.state.currentMandatoryEnemy.preBattleDescription); }}>
+                    <DialogTitle id="form-dialog-title">Battle {this.props.gameToPlay.player.name} vs {this.state.currentMandatoryEnemy === null ? "" : this.state.currentMandatoryEnemy.name}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {this.props.gameToPlay.player.name}'s HP: {this.props.gameToPlay.player.hp}
+                        </DialogContentText>
+                        <DialogContentText>
+                            {this.state.currentMandatoryEnemy === null ? "" : this.state.currentMandatoryEnemy.name}'s HP: {this.state.currentMandatoryEnemy === null ? "" : this.state.currentMandatoryEnemy.hp}
+                        </DialogContentText>
+                        <DialogContentText>
+                            Your damage caused to enemy: {this.state.playerDamage}
+                        </DialogContentText>
+                        <DialogContentText>
+                            Enemy damage caused to You: {this.state.enemyDamage}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disabled={this.state.currentMandatoryEnemy === null? true : !this.state.currentMandatoryEnemy.alive} onClick={() => {
+                            const eDamage = Math.random() * this.state.currentMandatoryEnemy.attack * 2 + 1;
+                            const pDamage = Math.random() * this.props.gameToPlay.player.attack * 2 + 1;
+                            this.setState({
+                                playerDamage: pDamage,
+                                enemyDamage: eDamage
+                            })
+                            this.causeDamages(pDamage, eDamage, this.state.currentMandatoryEnemy);
+                        }} color="primary">
+                            Fight!
+                    </Button>
+                        <Button disabled={this.state.currentMandatoryEnemy === null ? false : this.state.currentMandatoryEnemy.alive} onClick={() => { this.setState({ enemyDamage: 0, playerDamage: 0, currentMandatoryEnemy: null }) }} color="primary">
+                            Finish Battle
+                    </Button>
+                    </DialogActions>
+                </Dialog>
                 <AppBar position="static">
                     <Toolbar>
                         <Grid container item justify="center">
