@@ -50,6 +50,7 @@ public class PlayService {
         // Creating a new game session and saving it to database
         GameSession gameSession =   GameSession.builder()
                                     .description(gameDefinition.getDescription())
+                                    .winDescription(gameDefinition.getWinDescription())
                                     .gameGoal(gameDefinition.getGameGoal())
                                     .finished(false)
                                     .name(gameDefinition.getName())
@@ -242,6 +243,7 @@ public class PlayService {
         GameSessionJTO gameSessionJTO = GameSessionJTO.builder()
                                         .gameGoal(gameSession.getGameGoal())
                                         .description(gameSession.getDescription())
+                                        .winDescription(gameSession.getWinDescription())
                                         .id(savedSession.getId())
                                         .name(gameSession.getName())
                                         .enemies(new ArrayList<>())
@@ -414,6 +416,7 @@ public class PlayService {
         GameSessionJTO gameSessionJTO = GameSessionJTO.builder()
                 .gameGoal(savedSession.getGameGoal())
                 .description(savedSession.getDescription())
+                .winDescription(savedSession.getWinDescription())
                 .id(savedSession.getId())
                 .name(savedSession.getName())
                 .enemies(new ArrayList<>())
@@ -663,7 +666,6 @@ public class PlayService {
     }
 
     public void battleWon(GameSessionJTO gameSessionJTO, Integer id){
-        // TODO: Jutalmak meg nincsenek benne
         EnemyIG enemyIG = enemyIGRepository.findById(id).get();
         PlayerIG playerIG = playerIGRepository.findById(gameSessionJTO.getPlayer().getId()).get();
         List<ItemIG> items = itemIGRepository.findByPresentInGameSessionId(gameSessionJTO.getId());

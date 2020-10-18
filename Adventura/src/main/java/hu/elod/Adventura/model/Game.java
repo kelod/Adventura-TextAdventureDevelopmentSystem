@@ -31,6 +31,10 @@ public class Game {
     @Column(name="description", length=1024)
     private String description;
 
+    @Lob
+    @Column(name="win_description", length=1024)
+    private String winDescription;
+
     private String gameGoal;
 
     @OneToOne(cascade = CascadeType.ALL)

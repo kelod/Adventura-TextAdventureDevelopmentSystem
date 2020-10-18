@@ -21,6 +21,8 @@ public class GameToCreateJTO {
 
     private String description;
 
+    private String winDescription;
+
     private String gameGoal;
 
     private List<EnemyJTO> goalEnemies;

@@ -16,6 +16,8 @@ public class GameSessionJTO {
 
     private String description;
 
+    private String winDescription;
+
     private String gameGoal;
 
     private List<IGEnemyJTO> goalEnemies;

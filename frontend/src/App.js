@@ -15,6 +15,7 @@ import PassageCreatePage from './PassageCreatePage';
 import ParticularPassageEdit from './ParticularPassageEdit';
 import PlayerCreatePage from './PlayerCreatePage';
 import PlayPageWelcome from './PlayPageWelcome';
+import GameOver from './GameOver';
 import Map from './Map';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -267,12 +268,14 @@ function CreatePageHeader() {
 class App extends Component {
     state = {
         createdGameId: '',
+        gameOverText: '',
         gameToCreate: {
             id: null,
             anySessionStarted: false,
             deployed: false,
             name: '',
             description: '',
+            winDescription: '',
             gameGoal: null,
             goalRoom: null,
             goalEnemies: [],
@@ -296,6 +299,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.setGameProperty = this.setGameProperty.bind(this);
+        this.setGameOverText = this.setGameOverText.bind(this);
         this.setGameToCreateGoalRoom = this.setGameToCreateGoalRoom.bind(this);
         this.setGameToCreateGoalItems = this.setGameToCreateGoalItems.bind(this);
         this.setGameToCreateGoalEnemies = this.setGameToCreateGoalEnemies.bind(this);
@@ -637,6 +641,12 @@ class App extends Component {
                 ...this.state.gameToCreate,
                 [name]: value
             }
+        })
+    }
+
+    setGameOverText = (text) => {
+        this.setState({
+            gameOverText: text
         })
     }
 
@@ -1782,7 +1792,8 @@ class App extends Component {
                 <Route path="/create" component={CreatePageHeader} />
                 <Route exact path="/create" render={(props) => <CreatePage {...props} submitGame={this.submitGame} updateGame={this.updateGame} gameToCreate={this.state.gameToCreate} validateGame={this.validateGame} setGameToCreateDeployed={this.setGameToCreateDeployed} />} />
                 <Route exact path="/created" render={(props) => <GameCreated {...props} gameId={this.state.createdGameId} />} />
-                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} useUsableItem={this.useUsableItem} causeDamages={this.causeDamages} />} />
+                <Route exact path="/play/over" render={(props) => <GameOver {...props} gameOverText={this.state.gameOverText} />} />
+                <Route exact path="/play" render={(props) => <PlayPage {...props} gameToPlay={this.state.gameToPlay} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory} useInventoryItem={this.useInventoryItem} useUsableItem={this.useUsableItem} causeDamages={this.causeDamages} setGameOverText={this.setGameOverText} />} />
                 <Route exact path="/play/welcome" render={(props) => <PlayPageWelcome {...props} gameToPlay={this.state.gameToPlay} />} />
                 <Route exact path="/create/rooms" render={(props) => <RoomCreatePage {...props} addRoom={this.addRoom} deleteRoom={this.deleteRoom} rooms={this.state.gameToCreate.rooms} />} />
                 <Route exact path="/create/rooms/:roomIndex" render={(props) => <ParticularRoomEdit {...props} rooms={this.state.gameToCreate.rooms} items={this.state.gameToCreate.items} enemies={this.state.gameToCreate.enemies} player={this.state.gameToCreate.player} setRoomName={this.setRoomName} setRoomDescription={this.setRoomDescription} setPassageBetweenRooms={this.setPassageBetweenRooms} hasPassageBetweenRooms={this.hasPassageBetweenRooms} setItemToRoom={this.setItemToRoom} IsItemInRoom={this.IsItemInRoom} setEnemyToRoom={this.setEnemyToRoom} IsEnemyInRoom={this.IsEnemyInRoom} getItemsInRoom={this.getItemsInRoom} getEnemiesInRoom={this.getEnemiesInRoom} />} />

@@ -605,6 +605,20 @@ class GeneralCreatePage extends Component {
                                 onChange={setGameProperty}/>
                         </Box>
                     </Grid>
+                    <Grid item>
+                        <Box mb={3} ml={1} mr={1}>
+                            <TextField
+                                id="win-description"
+                                name="winDescription"
+                                label="Win Description"
+                                multiline
+                                rows={14}
+                                variant="outlined"
+                                defaultValue={this.props.gameToCreate.winDescription}
+                                fullWidth
+                                onChange={setGameProperty} />
+                        </Box>
+                    </Grid>
 
                     <Grid item>                      
                         <Box m={1} boxShadow={3}>

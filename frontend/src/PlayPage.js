@@ -591,6 +591,7 @@ class PlayPage extends Component {
         if (allowed) {
             if (this.props.gameToPlay.gameGoal === "room" && this.props.gameToPlay.goalRoom === passage.to) {
                 await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+                this.props.setGameOverText(this.props.gameToPlay.winDescription);
                 this.props.history.push("/play/over");
             }
             else {
@@ -617,6 +618,7 @@ class PlayPage extends Component {
             else {
                 await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
             }
+            this.props.setGameOverText(item.usageDescription);
             this.props.history.push("/play/over");
         }
         else { // usage type is not game winning/losing
@@ -646,6 +648,7 @@ class PlayPage extends Component {
             else {
                 await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
             }
+            this.props.setGameOverText(item.usageDescription);
             this.props.history.push("/play/over");
         }
         else { // usage type is not game winning/losing
@@ -672,8 +675,8 @@ class PlayPage extends Component {
             battleInProcess: true
         })
         if (this.props.gameToPlay.player.hp - eDamage <= 0) {
-            window.alert(enemyToFight.postBattleDescriptionLose);
-            await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+            await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+            this.props.setGameOverText(enemyToFight.postBattleDescriptionLose);
             this.props.history.push("/play/over");
             return;
         }
@@ -692,12 +695,14 @@ class PlayPage extends Component {
                     }
                     if (finish) {
                         await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                        this.props.setGameOverText(this.props.gameToPlay.winDescription);
                         this.props.history.push("/play/over");
                     }
                 }
             }
             else {
-                if (enemyToFight.gameOverPenalty) {
+                if (this.props.gameToPlay.player.hp <= 0 || enemyToFight.gameOverPenalty) {
+                    this.props.setGameOverText(enemyToFight.postBattleDescriptionLose);
                     this.props.history.push("/play/over");
                 }
 
@@ -736,6 +741,7 @@ class PlayPage extends Component {
             }
             if (finish) {
                 await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                this.props.setGameOverText(this.props.gameToPlay.winDescription);
                 this.props.history.push("/play/over");
             }
         }
