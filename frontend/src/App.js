@@ -565,10 +565,10 @@ class App extends Component {
                 }
             }
 
-            if (this.state.gameToCreate.goalRoom != null && this.state.gameToCreate.goalRoom.name === room.name) {
+            if (this.state.gameToPlay.goalRoom != null && this.state.gameToPlay.goalRoom.name === room.name) {
                 this.setState({
-                    gameToCreate: {
-                        ...this.state.gameToCreate,
+                    gameToPlay: {
+                        ...this.state.gameToPlay,
                         goalRoom: room
                     }
                 })
@@ -851,13 +851,19 @@ class App extends Component {
 
     setItems = (_items) => {
         this.setState({
-            items: _items
+            gameToPlay: {
+                ...this.state.gameToPlay,
+                items: _items
+            }
         })
     }
 
     setPassages = (_passages) => {
         this.setState({
-            passages: _passages
+            gameToPlay: {
+                ...this.state.gameToPlay,
+                passages: _passages
+            }
         })
     }
 

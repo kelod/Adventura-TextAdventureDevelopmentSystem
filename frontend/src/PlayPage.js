@@ -568,9 +568,10 @@ class PlayPage extends Component {
         this.useUsableItem = this.useUsableItem.bind(this);
         this.causeDamages = this.causeDamages.bind(this);
         this.setBattleOver = this.setBattleOver.bind(this);
+        this.putItemToInventory = this.putItemToInventory.bind(this);
     }
 
-    usePassage = (passage) => {
+    async usePassage(passage){
         var requestedItems = [];
         for (var item of this.props.gameToPlay.items) {
             if (item.requestedInPassages.includes(passage)) {
@@ -588,10 +589,16 @@ class PlayPage extends Component {
         }
 
         if (allowed) {
-            this.props.usePassage(passage);
-            this.setState({
-                descriptionText: passage.description + passage.to.description
-            })
+            if (this.props.gameToPlay.gameGoal === "room" && this.props.gameToPlay.goalRoom === passage.to) {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`);
+                this.props.history.push("/play/over");
+            }
+            else {
+                this.props.usePassage(passage);
+                this.setState({
+                    descriptionText: passage.description + passage.to.description
+                })
+            }
         }
         else {
             var message = "You need to have to following items to use passage: ";
@@ -674,14 +681,31 @@ class PlayPage extends Component {
 
         const cont = await this.props.causeDamages(pDamage, eDamage, enemyToFight);
         if (!cont) {
-            if (enemyToFight.gameOverPenalty) {
-                this.props.history.push("/play/over");
+            if (enemyToFight.hp < 0) { // enemy died
+                if (this.props.gameToPlay.gameGoal === "enemies") { // check for game goal
+                    var finish = true;
+                    for (var goalEnemy of this.props.gameToPlay.goalEnemies) {
+                        if (goalEnemy.alive) {
+                            finish = false;
+                            break;
+                        }
+                    }
+                    if (finish) {
+                        await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                        this.props.history.push("/play/over");
+                    }
+                }
             }
+            else {
+                if (enemyToFight.gameOverPenalty) {
+                    this.props.history.push("/play/over");
+                }
 
-            if (enemyToFight.fightingType === "optional") { // else after defeating mandatory enemies optional enemies dialog a little buggy
-                this.setState({
-                    battleOver: true
-                })
+                if (enemyToFight.fightingType === "optional") { // else after defeating mandatory enemies optional enemies dialog a little buggy
+                    this.setState({
+                        battleOver: true
+                    })
+                }
             }
         }
     }
@@ -690,6 +714,31 @@ class PlayPage extends Component {
         this.setState({
             battleOver: bool
         })
+    }
+
+    async putItemToInventory(item) {
+        this.props.putItemToInventory(item);
+
+        // check for game goal
+        if (this.props.gameToPlay.gameGoal === "items") {
+            var finish = true;
+            for (var goalItem of this.props.gameToPlay.goalItems) {
+                var found = false;
+                for (var item of this.props.gameToPlay.player.inventory) {
+                    if (item === goalItem) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    finish = false;
+                }
+            }
+            if (finish) {
+                await axios.put(`/play/game/over/${this.props.gameToPlay.id}`)
+                this.props.history.push("/play/over");
+            }
+        }
     }
 
     render() {
@@ -805,7 +854,7 @@ class PlayPage extends Component {
                     </Grid>
 
                     <Grid container item justify="center">
-                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.props.putItemToInventory} useUsableItem={this.useUsableItem} />
+                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.putItemToInventory} useUsableItem={this.useUsableItem} />
                     </Grid>
 
                     <Grid container item justify="center">
