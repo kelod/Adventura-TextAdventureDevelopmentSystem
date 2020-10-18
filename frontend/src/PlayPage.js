@@ -37,6 +37,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import PropTypes from 'prop-types';
+import BuildIcon from '@material-ui/icons/Build';
 
 
 
@@ -550,6 +554,93 @@ const RedTableCell = withStyles((theme) => ({
     },
 }))(TableCell);
 
+function TabPages(props) {
+
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    var enabledPassagesFromRoom = [];
+    for (var passage of props.gameToPlay.passages) {
+        if (passage.from === props.gameToPlay.player.inRoom && passage.enabled) {
+            enabledPassagesFromRoom = [...enabledPassagesFromRoom, passage];
+        }
+    }
+
+    var inventoryItems = [];
+    var usableItems = [];
+    for (var item of props.gameToPlay.items) {
+        if (item.presentInRoom === props.gameToPlay.player.inRoom && item.type === "inventory") {
+            inventoryItems = [...inventoryItems, item];
+        }
+        else {
+            if (item.presentInRoom === props.gameToPlay.player.inRoom) {
+                usableItems = [...usableItems, item];
+            }
+        }
+    }
+
+    var optionalEnemiesInRoom = [];
+    for (var enemy of props.gameToPlay.enemies) {
+        if (enemy.presentInRoom === props.gameToPlay.player.inRoom && enemy.fightingType === "optional") {
+            optionalEnemiesInRoom = [...optionalEnemiesInRoom, enemy];
+        }
+    }
+
+    return (
+        <div>
+            <AppBar position="static">
+                <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" centered>
+                    <Tab label="Inventory" disabled={props.gameToPlay.player.inventory.length === 0} icon={<LocalMallIcon /*style={{ color: teal[900] }}*/ />}/>
+                    <Tab label="Passages" disabled={enabledPassagesFromRoom.length === 0} icon={<Icon icon={doorOpen} style={{fontSize: "24px"}}/* color="green" *//>}/>
+                    <Tab label="Items" disabled={inventoryItems.length === 0 && usableItems.length === 0} icon={<BuildIcon />}/>
+                    <Tab label="Enemies" disabled={optionalEnemiesInRoom.length === 0} icon={<Icon icon={swordCross} style={{ fontSize: "24px" }}/*style={{ color: grey[400] }}*/ />}/>
+                </Tabs>
+            </AppBar>
+            <TabPanel value={value} index={0}>
+                <InventoryList gameToPlay={props.gameToPlay} useInventoryItem={props.useInventoryItem} />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                <PassageList gameToPlay={props.gameToPlay} usePassage={props.usePassage} />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+                <ItemList gameToPlay={props.gameToPlay} putItemToInventory={props.putItemToInventory} useUsableItem={props.useUsableItem} />
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+                <EnemyList gameToPlay={props.gameToPlay} causeDamages={props.causeDamages} battleOver={props.battleOver} setBattleOver={props.setBattleOver} />
+            </TabPanel>
+        </div>
+    )
+}
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
+
 class PlayPage extends Component {
 
     state = {
@@ -851,21 +942,10 @@ class PlayPage extends Component {
                         </Grid>
                     </Grid>
 
-                    <Grid container item justify="center">
-                        <InventoryList gameToPlay={this.props.gameToPlay} useInventoryItem={this.useInventoryItem} />
-                    </Grid>
+                    <TabPages gameToPlay={this.props.gameToPlay} useInventoryItem={this.useInventoryItem} usePassage={this.usePassage} putItemToInventory={this.putItemToInventory}
+                        useUsableItem={this.useUsableItem} causeDamages={this.causeDamages} battleOver={this.state.battleOver} setBattleOver={this.setBattleOver} />
 
-                    <Grid container item justify="center">
-                        <PassageList gameToPlay={this.props.gameToPlay} usePassage={this.usePassage} />
-                    </Grid>
-
-                    <Grid container item justify="center">
-                        <ItemList gameToPlay={this.props.gameToPlay} putItemToInventory={this.putItemToInventory} useUsableItem={this.useUsableItem} />
-                    </Grid>
-
-                    <Grid container item justify="center">
-                        <EnemyList gameToPlay={this.props.gameToPlay} causeDamages={this.causeDamages} battleOver={this.state.battleOver} setBattleOver={this.setBattleOver} />
-                    </Grid>
+                    
                                       
                 </Grid>
             </div>
