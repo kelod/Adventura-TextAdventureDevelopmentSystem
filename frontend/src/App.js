@@ -70,8 +70,7 @@ function CreatePageHeader() {
         "Passages",
         "Enemies",
         "Player",
-        "Map",
-        "Etc..."
+        "Map"
     ]
     const [anchorEl, setAnchorEl] = React.useState(null);
     const menuOpen = Boolean(anchorEl);
@@ -185,8 +184,6 @@ function CreatePageHeader() {
                                 </Grid>
                                 <BigTooltip title="Home page" TransitionComponent={Zoom} placement="bottom">
                                     <IconButton
-                                     //   component={Link}
-                                      //  to={`/`}
                                         aria-label="home page"
                                         aria-controls="menu-appbar"
                                         aria-haspopup="true"
@@ -222,8 +219,6 @@ function CreatePageHeader() {
                                 </Dialog>
                                 <BigTooltip title="About" TransitionComponent={Zoom} placement="bottom">
                                     <IconButton
-                                       // component={Link}
-                                        //to={`/about`}
                                         aria-label="about"
                                         aria-controls="menu-appbar"
                                         aria-haspopup="true"
@@ -739,10 +734,7 @@ class App extends Component {
                 defaultEnabled: true,
                 preDescription: "",
                 description: ""
-                //activationRewardForEnemies: []
-                //requestedItems: []
             }
-            //_rooms[_rooms.indexOf(roomFrom)].passages = [..._rooms[_rooms.indexOf(roomFrom)].passages, newPassage];
             _passages = [..._passages, newPassage];
         }
         
@@ -750,7 +742,6 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                //rooms: _rooms,
                 passages: _passages
             }
         })
@@ -783,15 +774,6 @@ class App extends Component {
     }
 
     hasPassageBetweenRooms = (roomFrom, roomTo) => {
-        /*const _rooms = this.state.gameToCreate.rooms;
-        const _roomFrom = _rooms[_rooms.indexOf(roomFrom)];
-        
-        for (var i = 0; i < _roomFrom.passages.length; ++i) {
-            if (_roomFrom.passages[i].to === roomTo) {
-                return _roomFrom.passages[i];
-            }
-        }
-        return null;*/
 
         var _passages = this.state.gameToCreate.passages;
 
@@ -822,26 +804,17 @@ class App extends Component {
     }
 
     setNeccessaryItemToPassage = (passage, item) => {
-        /*var _passages = this.state.gameToCreate.passages;
-        var _items = this.state.gameToCreate.items;*/
 
-        if (/*_passages[_passages.indexOf(passage)].requestedItems.includes(item)*/ item.requestedInPassages.includes(passage)) {
-            /*_passages[_passages.indexOf(passage)].requestedItems.splice(_passages[_passages.indexOf(passage)].requestedItems.indexOf(item), 1);
-            _items[_items.indexOf(item)].requestedInPassages.splice(_items[_items.indexOf(item)].requestedInPassages.indexOf(passage), 1);*/
+        if ( item.requestedInPassages.includes(passage)) {
             item.requestedInPassages.splice(item.requestedInPassages.indexOf(passage), 1);
         }
         else {
-           /* _passages[_passages.indexOf(passage)].requestedItems = [..._passages[_passages.indexOf(passage)].requestedItems, item];
-            _items[_items.indexOf(item)].requestedInPassages = [..._items[_items.indexOf(item)].requestedInPassages, passage];*/
-
             item.requestedInPassages = [...item.requestedInPassages, passage];
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-               /* passages: _passages,
-                items: _items*/
                 items: this.state.gameToCreate.items
             }
         })
@@ -1056,12 +1029,6 @@ class App extends Component {
             this.state.gameToCreate.goalItems.splice(this.state.gameToCreate.goalItems.indexOf(item), 1);
         }
 
-        /*for (var room of this.state.gameToCreate.rooms) {
-            if (room.items.includes(item)) {
-                room.items.splice(room.items.indexOf(item), 1);
-            }
-        }*/
-
         for (var enemy of this.state.gameToCreate.enemies) {
             if (enemy.itemGainReward.includes(item)) {
                 enemy.itemGainReward.splice(enemy.itemGainReward.indexOf(item), 1);
@@ -1070,12 +1037,6 @@ class App extends Component {
                 enemy.itemLosePenalty.splice(enemy.itemLosePenalty.indexOf(item), 1);
             }
         }
-
-        /*for (var passage of this.state.gameToCreate.passages) {
-            if (passage.requestedItems.includes(item)) {
-                passage.requestedItems.splice(passage.requestedItems.indexOf(item), 1);
-            }
-        }*/
 
         if (this.state.gameToCreate.player.startingItems.includes(item)) {
             this.state.gameToCreate.player.startingItems.splice(this.state.gameToCreate.player.startingItems.indexOf(item), 1);
@@ -1088,7 +1049,6 @@ class App extends Component {
                     items: _items,
                     rooms: this.state.gameToCreate.rooms,
                     enemies: this.state.gameToCreate.enemies,
-                    //passages: this.state.gameToCreate.passages,
                     player: this.state.gameToCreate.player
                 }
             })
@@ -1289,48 +1249,17 @@ class App extends Component {
     }
 
     setItemToRoom = (room, item) => {
-        //var _rooms = this.state.gameToCreate.rooms;
-        //var _items = this.state.gameToCreate.items;
 
-        if (/*room.items.includes(item)*/ item.presentInRoom == room) {
-            
-            //_items[_items.indexOf(item)].presentInRoom = room;
-            //_rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];
-            //room.items.splice(room.items.indexOf(item), 1);
+        if (item.presentInRoom == room) {
             item.presentInRoom = null;
         }
         else {
-            /*for (var _room of this.state.gameToCreate.rooms) {
-                if (_room.items.includes(item)) {
-                    _room.items.splice(_room.items.indexOf(item), 1);
-                }
-            }
-
-            room.items = [...room.items, item];*/
-
             item.presentInRoom = room;
-
-            /*if (_items[_items.indexOf(item)].presentInRoom === _rooms[_rooms.indexOf(room)]) {
-                _rooms[_rooms.indexOf(room)].items.splice(_rooms[_rooms.indexOf(room)].items.indexOf(item), 1);
-                _items[_items.indexOf(item)].presentInRoom = false;
-                this.setState({
-                    gameToCreate: {
-                        ...this.state.gameToCreate,
-                        rooms: _rooms,
-                        items: _items
-                    }
-                });
-                return;
-            }
-            _rooms[_rooms.indexOf(item.presentInRoom)].items.splice(_rooms[_rooms.indexOf(item.presentInRoom)].items.indexOf(item), 1);
-            _items[_items.indexOf(item)].presentInRoom = room;
-            _rooms[_rooms.indexOf(room)].items = [..._rooms[_rooms.indexOf(room)].items, item];*/
         }
 
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                //rooms: this.state.gameToCreate.rooms,
                 items: this.state.gameToCreate.items
             }
         })
@@ -1469,12 +1398,6 @@ class App extends Component {
         if (this.state.gameToCreate.goalEnemies.includes(enemy)) {
             this.state.gameToCreate.goalEnemies.splice(this.state.gameToCreate.goalEnemies.indexOf(enemy), 1);
         }
-
-        /*for (var room of this.state.gameToCreate.rooms) {
-            if (room.enemies.includes(enemy)) {
-                room.enemies.splice(room.enemies.indexOf(enemy), 1);
-            }
-        }*/
         
             this.setState({
                 gameToCreate: {
@@ -1515,18 +1438,10 @@ class App extends Component {
 
     setEnemyToRoom = (room, enemy) => {
 
-        if (/*room.enemies.includes(enemy)*/ enemy.presentInRoom == room) {
-            //room.enemies.splice(room.enemies.indexOf(enemy), 1);
+        if (enemy.presentInRoom == room) {
             enemy.presentInRoom = null;
         }
         else {
-            /*for (var _room of this.state.gameToCreate.rooms) {
-                if (_room.enemies.includes(enemy)) {
-                    _room.enemies.splice(_room.enemies.indexOf(enemy), 1);
-                }
-            }
-
-            room.enemies = [...room.enemies, enemy];*/
 
             enemy.presentInRoom = room;
         }
@@ -1534,7 +1449,6 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                //rooms: this.state.gameToCreate.rooms,
                 enemies: this.state.gameToCreate.enemies
             }
         })
@@ -1560,14 +1474,6 @@ class App extends Component {
             ..._enemies[_enemies.indexOf(enemy)],
             [name]: value
         }
-
-        /*const { name, value } = event.target;
-        enemy = {
-            ...enemy,
-            [name]: event.target.value
-        }
-
-        console.log(enemy);*/
 
         this.setState({
             gameToCreate: {
@@ -1643,12 +1549,6 @@ class App extends Component {
             enemy.passageActivationReward = [];
         }
         else {
-            /*if (passage.activationRewardForEnemies.includes(enemy)) {
-                passage.activationRewardForEnemies.splice(passage.activationRewardForEnemies.indexOf(enemy), 1);
-            }
-            else {
-                passage.activationRewardForEnemies = [...passage.activationRewardForEnemies, enemy];
-            }*/
             if (enemy.passageActivationReward.includes(passage)) {
                 enemy.passageActivationReward.splice(enemy.passageActivationReward.indexOf(passage), 1);
             }
@@ -1660,7 +1560,6 @@ class App extends Component {
         this.setState({
             gameToCreate: {
                 ...this.state.gameToCreate,
-                //passages: this.state.gameToCreate.passages
                 enemies: this.state.gameToCreate.enemies
             }
         })
@@ -1697,7 +1596,6 @@ class App extends Component {
             }
         }
 
-        //_rooms[_rooms.indexOf(passage.from)].passages.splice(_rooms[_rooms.indexOf(passage.from)].passages.indexOf(passage), 1);
         _passages.splice(_passages.indexOf(passage), 1);
 
         this.setState({
@@ -1752,16 +1650,6 @@ class App extends Component {
                 })
             }
         }
-
-        /*this.setState({
-            gameToCreate: {
-                ...this.state.gameToCreate,
-                player: {
-                    ...this.state.gameToCreate.player,
-                    startingRoom: event.target.value
-                }
-            }
-        })*/
     }
 
     setPlayerStartingItems = (item) => {
